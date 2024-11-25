@@ -16,14 +16,16 @@ import type { StreamEvent } from '@langchain/core/tracers/log_stream';
 import type { BaseChatModel } from '@langchain/core/language_models/chat_models';
 import type { Embeddings } from '@langchain/core/embeddings';
 import formatChatHistoryAsString from '../utils/formatHistory';
-import eventEmitter from 'events';
+import eventEmitter, { EventEmitter } from 'events';
 import computeSimilarity from '../utils/computeSimilarity';
 import logger from '../utils/logger';
 import LineListOutputParser from '../lib/outputParsers/listLineOutputParser';
 import { getDocumentsFromLinks } from '../lib/linkDocument';
 import LineOutputParser from '../lib/outputParsers/lineOutputParser';
 import { IterableReadableStream } from '@langchain/core/utils/stream';
-import { ChatOpenAI } from '@langchain/openai';
+// import { ChatOpenAI } from '@langchain/openai';
+import { AzureChatOpenAI, AzureOpenAIEmbeddings } from '@langchain/azure-openai';
+
 
 const basicSearchRetrieverPrompt = `
 You are an AI question rephraser. You will be given a conversation and a follow-up question,  you will have to rephrase the follow up question so it is a standalone question and can be used by another LLM to search the web for information to answer it.
@@ -144,7 +146,60 @@ const handleStream = async (
       emitter.emit('end');
     }
   }
+}
+
+/*const handleStream = async (
+  stream: IterableReadableStream<StreamEvent>,
+  emitter: EventEmitter,
+): Promise<void> => {
+  try {
+    for await (const event of stream) {
+      console.log("Event received in stream:", event); // Log the raw event
+
+      if (
+        event.event === 'on_chain_end' &&
+        event.name === 'FinalSourceRetriever'
+      ) {
+        console.log("FinalSourceRetriever data:", event.data.output); // Debug FinalSourceRetriever
+        emitter.emit(
+          'data',
+          JSON.stringify({ type: 'sources', data: event.data.output }),
+        );
+      }
+      if (
+        event.event === 'on_chain_stream' &&
+        event.name === 'FinalResponseGenerator'
+      ) {
+        console.log("Response chunk from Azure:", event.data.chunk); // Debug Azure response chunk
+        emitter.emit(
+          'data',
+          JSON.stringify({ type: 'response', data: event.data.chunk }),
+        );
+      }
+      if (
+        event.event === 'on_chain_end' &&
+        event.name === 'FinalResponseGenerator'
+      ) {
+        console.log("Final Azure LLM Response completed."); // Debug response completion
+        emitter.emit('end');
+      }
+    }
+  } catch (error) {
+    console.error('Error in handleStream:', error); // Log error details
+    const errorMessage =
+      typeof error === 'object' ? JSON.stringify(error, null, 2) : String(error);
+    console.error('Error in handleStream:', errorMessage);
+
+    emitter.emit(
+      'error',
+      JSON.stringify({
+        data: 'An error occurred during the streaming process',
+        error: errorMessage,
+      }),
+    );
+  }
 };
+*/
 
 type BasicChainInput = {
   chat_history: BaseMessage[];
@@ -152,13 +207,15 @@ type BasicChainInput = {
 };
 
 const createBasicWebSearchRetrieverChain = (llm: BaseChatModel) => {
-  (llm as unknown as ChatOpenAI).temperature = 0;
+  (llm as unknown as AzureChatOpenAI).temperature = 0;
 
   return RunnableSequence.from([
     PromptTemplate.fromTemplate(basicSearchRetrieverPrompt),
     llm,
     strParser,
     RunnableLambda.from(async (input: string) => {
+      console.log("Input passed to Azure OpenAI LLM:", input); // Debug Input
+
       const linksOutputParser = new LineListOutputParser({
         key: 'links',
       });
@@ -169,6 +226,9 @@ const createBasicWebSearchRetrieverChain = (llm: BaseChatModel) => {
 
       const links = await linksOutputParser.parse(input);
       let question = await questionOutputParser.parse(input);
+
+      console.log("Azure LLM response parsed links:", links); // Debug links
+      console.log("Azure LLM response parsed question:", question); // Debug question
 
       if (question === 'not_needed') {
         return { query: '', docs: [] };
@@ -339,7 +399,7 @@ const createBasicWebSearchAnsweringChain = (
     if (query.toLocaleLowerCase() === 'summarize') {
       return docs.slice(0, 15)
     }
-
+    console.log("Query being passed to rerankDocs:", query); // Log the query
     const docsWithContent = docs.filter(
       (doc) => doc.pageContent && doc.pageContent.length > 0,
     );
@@ -427,7 +487,6 @@ const basicWebSearch = (
         version: 'v1',
       },
     );
-
     handleStream(stream, emitter);
   } catch (err) {
     emitter.emit(
@@ -446,15 +505,47 @@ const handleWebSearch = (
   llm: BaseChatModel,
   embeddings: Embeddings,
   optimizationMode: 'speed' | 'balanced' | 'quality',
-) => {
-  const emitter = basicWebSearch(
-    message,
-    history,
-    llm,
-    embeddings,
-    optimizationMode,
-  );
+): EventEmitter => {
+
+  const emitter = new EventEmitter();
+  try {
+    const webSearchEmitter = basicWebSearch(
+      message,
+      history,
+      llm,
+      embeddings,
+      optimizationMode,
+    );
+
+    // Relay events from the basicWebSearch emitter to the returned emitter
+    webSearchEmitter.on('data', (data) => emitter.emit('data', data));
+    webSearchEmitter.on('error', (error) => emitter.emit('error', error));
+    webSearchEmitter.on('end', () => emitter.emit('end'));
+  } catch (error) {
+    // Log error and emit an error event
+    const errorMessage =
+      typeof error === 'object' ? JSON.stringify(error, null, 2) : String(error);
+    console.error('Error in handleWebSearch:', errorMessage);
+
+    // Emit error event to the caller
+    emitter.emit(
+      'error',
+      JSON.stringify({ data: 'An error occurred during web search', error: errorMessage }),
+    );
+  }
+
   return emitter;
 };
+
+
+// const emitter = basicWebSearch(
+// message,
+// history,
+// llm,
+// embeddings,
+// optimizationMode,
+// );
+// return emitter;
+// };
 
 export default handleWebSearch;

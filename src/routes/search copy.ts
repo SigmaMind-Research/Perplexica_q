@@ -2,7 +2,7 @@ import express from 'express';
 import logger from '../utils/logger';
 import { BaseChatModel } from '@langchain/core/language_models/chat_models';
 import type { Embeddings } from '@langchain/core/embeddings';
-import { AzureChatOpenAI,ChatOpenAI} from '@langchain/openai';
+import { ChatOpenAI,AzureChatOpenAI } from '@langchain/openai';
 import {
   getAvailableChatModelProviders,
   getAvailableEmbeddingModelProviders,

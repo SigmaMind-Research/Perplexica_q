@@ -13,7 +13,6 @@ router.get('/', async (req, res) => {
       getAvailableChatModelProviders(),
       getAvailableEmbeddingModelProviders(),
     ]);
-
     Object.keys(chatModelProviders).forEach((provider) => {
       Object.keys(chatModelProviders[provider]).forEach((model) => {
         delete chatModelProviders[provider][model].model;

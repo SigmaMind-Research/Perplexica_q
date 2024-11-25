@@ -8,6 +8,7 @@ import {
   getOllamaApiEndpoint,
   getAnthropicApiKey,
   getOpenaiApiKey,
+  getAzureOpenaiApiKey,
   updateConfig,
 } from '../config';
 import logger from '../utils/logger';
@@ -52,6 +53,7 @@ router.get('/', async (_, res) => {
     config['ollamaApiUrl'] = getOllamaApiEndpoint();
     config['anthropicApiKey'] = getAnthropicApiKey();
     config['groqApiKey'] = getGroqApiKey();
+    config['azureApiKey'] = getAzureOpenaiApiKey();
 
     res.status(200).json(config);
   } catch (err: any) {
@@ -68,6 +70,7 @@ router.post('/', async (req, res) => {
       OPENAI: config.openaiApiKey,
       GROQ: config.groqApiKey,
       ANTHROPIC: config.anthropicApiKey,
+      AZURE_OPENAI_API_KEY:config.azureApiKey
     },
     API_ENDPOINTS: {
       OLLAMA: config.ollamaApiUrl,
