@@ -26,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html className="h-full" lang="en" suppressHydrationWarning>
-  <body className={cn('h-full', montserrat.className)} style={{ backgroundColor: '#17202a' }}>
+      <body className={cn('h-full', montserrat.className)}>
         <ThemeProvider>
           <Sidebar>{children}</Sidebar>
           <Toaster

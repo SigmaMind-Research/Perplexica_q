@@ -19,27 +19,18 @@ const EmptyChat = ({
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   return (
-    <div className="relative bg-[#17202a]">
-
-      {/* Logo in the top-left corner */}
-      <div className="absolute top-0 left-0 p-4">
-        <img src="/path-to-your-logo.png" alt="Logo" className="w-12 h-12" />
-      </div>
-
+    <div className="relative">
       <SettingsDialog isOpen={isSettingsOpen} setIsOpen={setIsSettingsOpen} />
-      
       <div className="absolute w-full flex flex-row items-center justify-end mr-5 mt-5">
-        {/* <Settings
+        <Settings
           className="cursor-pointer lg:hidden"
           onClick={() => setIsSettingsOpen(true)}
-        /> */}
+        />
       </div>
-      
-      <div className="flex flex-col items-center justify-center min-h-screen max-w-screen-sm mx-auto p-2 space-y-6">
-        <h1 className="text-black/70 dark:text-white/70 text-3xl font-medium -mt-35">
+      <div className="flex flex-col items-center justify-center min-h-screen max-w-screen-sm mx-auto p-2 space-y-8">
+        <h2 className="text-black/70 dark:text-white/70 text-3xl font-medium -mt-8">
           PotatoAI
-        </h1>
-        
+        </h2>
         <EmptyChatMessageInput
           sendMessage={sendMessage}
           focusMode={focusMode}
