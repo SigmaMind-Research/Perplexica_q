@@ -212,13 +212,13 @@ import {
   StopCircle,
   Layers3,
   Plus,
+  X,
+  Link,
 } from 'lucide-react';
 import Markdown from 'markdown-to-jsx';
 import Copy from './MessageActions/Copy';
 import Rewrite from './MessageActions/Rewrite';
 import { useSpeech } from 'react-text-to-speech';
-import SearchImages from './SearchImages';
-import SearchVideos from './SearchVideos';
 
 const MessageBox = ({
   message,
@@ -241,6 +241,7 @@ const MessageBox = ({
 }) => {
   const [parsedMessage, setParsedMessage] = useState(message.content);
   const [speechMessage, setSpeechMessage] = useState(message.content);
+  const [showPanel, setShowPanel] = useState(false);
 
   useEffect(() => {
     const regex = /\[(\d+)\]/g;
@@ -268,24 +269,59 @@ const MessageBox = ({
   return (
     <div>
       {message.role === 'user' && (
-        <div className={cn('w-full', messageIndex === 0 ? 'pt-16' : 'pt-8')}>
-          <h2 className="text-black dark:text-white font-medium text-3xl lg:w-9/12">
-            {message.content}
-          </h2>
-        </div>
+      <div className={cn('w-full', messageIndex === 0 ? 'pt-16' : 'pt-8')}>
+      <h2 className="text-black dark:text-white font-medium text-3xl lg:w-9/12 mx-auto text-center">
+        {message.content}
+      </h2>
+    </div>
+    
       )}
 
       {message.role === 'assistant' && (
         <div className="flex flex-col lg:flex-row lg:space-x-9 lg:justify-between">
-          {/* Sources (Moved to top for small screens) */}
+          {/* Sources for small screens */}
           <div className="lg:w-3/12 flex flex-col space-y-4 pb-4 lg:order-none order-first">
             {message.sources && message.sources.length > 0 && (
               <div className="flex flex-col space-y-1 mt-4">
                 <div className="flex flex-row items-center space-x-2">
-                  <BookCopy className="text-black dark:text-white" size={20} />
-                  <h3 className="text-black dark:text-white font-medium text-xl">
+                  {/* <BookCopy className="text-black dark:text-white" size={20} /> */}
+                  {/* <h3 className="text-black dark:text-white font-medium text-xl">
                     Sources
-                  </h3>
+                  </h3> */}
+                </div>
+
+                {/* Sources grouping for small screens */}
+                <div className="lg:hidden flex flex-wrap items-center space-x-1 p-3 m-4 rounded-lg bg-light-secondary dark:bg-dark-secondary shadow-md hover:scale-105 transition-transform">
+                  <div className="w-full flex items-center justify-start text-xs font-semibold text-black dark:text-white mb-2">
+                    <button
+                      onClick={() => setShowPanel(true)}
+                      className="text-blue-500 hover:text-blue-700 p-1 flex items-center ml-2"
+                    >
+                      <Link className="text-sm" />
+                    </button>
+                    <span>View All Links</span>
+                  </div>
+
+                  {message.sources.slice(0, 10).map((source, i) => (
+                    <div
+                      key={i}
+                      onClick={() => setShowPanel(true)}
+                      className="flex items-center justify-center p-1 rounded-lg bg-light-secondary dark:bg-dark-secondary cursor-pointer"
+                    >
+                      <img
+                        src={`https://s2.googleusercontent.com/s2/favicons?domain_url=${source.metadata.url}`}
+                        width={20}
+                        height={20}
+                        alt="favicon"
+                        className="rounded-full"
+                      />
+                    </div>
+                  ))}
+                  {message.sources.length > 10 && (
+                    <div className="flex items-center justify-center p-1 rounded-lg bg-light-secondary dark:bg-dark-secondary text-xs text-black/70 dark:text-white/70">
+                      +{message.sources.length - 10} more...
+                    </div>
+                  )}
                 </div>
 
                 {/* Card wrapping the sources for large screens */}
@@ -300,7 +336,6 @@ const MessageBox = ({
                         target="_blank"
                         className="source-info flex flex-col space-y-1 font-medium"
                       >
-                        {/* On large screens: Display title, URL, and favicon */}
                         <div className="hidden lg:flex flex-col">
                           <p className="text-xs text-black/70 dark:text-white/70 overflow-hidden whitespace-nowrap text-ellipsis">
                             {source.metadata.title}
@@ -309,8 +344,8 @@ const MessageBox = ({
                             <div className="flex flex-row items-center space-x-1">
                               <img
                                 src={`https://s2.googleusercontent.com/s2/favicons?domain_url=${source.metadata.url}`}
-                                width={16}
-                                height={16}
+                                width={20}
+                                height={20}
                                 alt="favicon"
                                 className="rounded-lg h-4 w-4"
                               />
@@ -327,38 +362,72 @@ const MessageBox = ({
                     </div>
                   ))}
                 </div>
-
-                {/* Sources Grouping for Small Screens */}
-                <div className="lg:hidden flex flex-wrap items-center space-x-1 p-3 m-4 rounded-lg bg-light-secondary dark:bg-dark-secondary shadow-md">
-                  {message.sources.slice(0, 10).map((source, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-center p-1 rounded-lg bg-light-secondary dark:bg-dark-secondary"
-                    >
-                      <img
-                        src={`https://s2.googleusercontent.com/s2/favicons?domain_url=${source.metadata.url}`}
-                        width={20}
-                        height={20}
-                        alt="favicon"
-                        className="rounded-full"
-                      />
-                    </div>
-                  ))}
-                  {/* If there are more than 9 sources, display the count */}
-                  {message.sources.length > 10 && (
-                    <div className="flex items-center justify-center p-1 rounded-lg bg-light-secondary dark:bg-dark-secondary text-xs text-black/70 dark:text-white/70">
-                      +{message.sources.length - 10} more...
-                    </div>
-                  )}
-                </div>
               </div>
             )}
           </div>
 
-          {/* Main Content (Answer, Suggestions) */}
+          {/* Sliding Panel for small screens */}
+          {showPanel && (
+  <div className="fixed top-0 right-0 h-full w-4/4 sm:w-3/3 lg:hidden bg-white dark:bg-black shadow-lg z-50 overflow-y-auto">
+    <div className="flex justify-between items-center p-3 border-b border-light-secondary dark:border-dark-secondary">
+      <h3 className="text-xl font-medium text-black dark:text-white">
+        Sources
+      </h3>
+      <button
+        onClick={() => setShowPanel(false)}
+        className="text-black dark:text-white"
+      >
+        <X size={20} />
+      </button>
+    </div>
+    <div className="p-4">
+      {message.sources.map((source, i) => (
+        <div
+          key={i}
+          className="block p-2 mb-1 bg-light-secondary dark:bg-dark-secondary rounded-lg shadow-md"
+        >
+          <div className="flex flex-row items-center space-x-2 cursor-pointer">
+            {/* Make the favicon clickable */}
+            <a href={source.metadata.url} target="_blank" rel="noopener noreferrer">
+              <img
+                src={`https://s2.googleusercontent.com/s2/favicons?domain_url=${source.metadata.url}`}
+                width={20}
+                height={20}
+                alt="favicon"
+                className="rounded-full"
+              />
+            </a>
+            <div>
+              {/* Make the title clickable */}
+              <a
+                href={source.metadata.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-black dark:text-white truncate max-w-[200px] sm:max-w-[300px] block"
+              >
+                {source.metadata.title}
+              </a>
+              {/* Make the URL clickable */}
+              <a
+                href={source.metadata.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-black/50 dark:text-white/50 overflow-hidden whitespace-nowrap text-ellipsis block"
+              >
+                {source.metadata.url.replace(/.+\/\/|www.|\..+/g, '')}
+              </a>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
+
+          {/* Main Content */}
           <div className="flex flex-col space-y-9 lg:w-9/12">
             <div ref={dividerRef} className="flex flex-col space-y-6">
-              {/* Answer */}
               <div className="flex flex-col space-y-2">
                 <div className="flex flex-row items-center space-x-2">
                   <Disc3
@@ -380,7 +449,6 @@ const MessageBox = ({
                 >
                   {parsedMessage}
                 </Markdown>
-
                 {loading && isLast ? null : (
                   <div className="flex flex-row items-center justify-between w-full text-black dark:text-white py-4 -mx-2">
                     <div className="flex flex-row items-center space-x-1">
@@ -414,9 +482,7 @@ const MessageBox = ({
                   </div>
                 )}
               </div>
-
               <hr className="border-light-secondary dark:border-dark-secondary my-6" />
-
               {/* Related Suggestions */}
               {isLast &&
                 message.suggestions &&
