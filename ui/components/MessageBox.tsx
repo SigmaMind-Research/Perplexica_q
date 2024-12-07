@@ -269,12 +269,11 @@ const MessageBox = ({
   return (
     <div>
       {message.role === 'user' && (
-      <div className={cn('w-full', messageIndex === 0 ? 'pt-16' : 'pt-8')}>
-      <h2 className="text-black dark:text-white font-medium text-3xl lg:w-9/12 mx-auto text-center">
-        {message.content}
-      </h2>
-    </div>
-    
+        <div className={cn('w-full', messageIndex === 0 ? 'pt-16' : 'pt-8')}>
+          <h2 className="text-black dark:text-white font-medium text-3xl lg:w-9/12 mx-auto text-center">
+            {message.content}
+          </h2>
+        </div>
       )}
 
       {message.role === 'assistant' && (
@@ -291,21 +290,27 @@ const MessageBox = ({
                 </div>
 
                 {/* Sources grouping for small screens */}
-                <div className="lg:hidden flex flex-wrap items-center space-x-1 p-3 m-4 rounded-lg bg-light-secondary dark:bg-dark-secondary shadow-md hover:scale-105 transition-transform">
+                <div
+                  onClick={() => setShowPanel(true)} // Click handler for the entire container
+                  className="lg:hidden flex flex-wrap items-center space-x-1 p-3 m-4 rounded-lg bg-light-secondary dark:bg-dark-secondary shadow-md hover:scale-105 transition-transform cursor-pointer"
+                >
                   <div className="w-full flex items-center justify-start text-xs font-semibold text-black dark:text-white mb-2">
                     <button
-                      onClick={() => setShowPanel(true)}
+                      onClick={(e) => e.stopPropagation()} // Prevent triggering the container's onClick
                       className="text-blue-500 hover:text-blue-700 p-1 flex items-center ml-2"
                     >
                       <Link className="text-sm" />
                     </button>
-                    <span>View All Links</span>
+                    <span>Show All</span>
                   </div>
 
                   {message.sources.slice(0, 10).map((source, i) => (
                     <div
                       key={i}
-                      onClick={() => setShowPanel(true)}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent triggering the container's onClick
+                        setShowPanel(true); // Optional: Specific behavior for individual items
+                      }}
                       className="flex items-center justify-center p-1 rounded-lg bg-light-secondary dark:bg-dark-secondary cursor-pointer"
                     >
                       <img
@@ -317,8 +322,12 @@ const MessageBox = ({
                       />
                     </div>
                   ))}
+
                   {message.sources.length > 10 && (
-                    <div className="flex items-center justify-center p-1 rounded-lg bg-light-secondary dark:bg-dark-secondary text-xs text-black/70 dark:text-white/70">
+                    <div
+                      onClick={(e) => e.stopPropagation()} // Prevent triggering the container's onClick
+                      className="flex items-center justify-center p-1 rounded-lg bg-light-secondary dark:bg-dark-secondary text-xs text-black/70 dark:text-white/70"
+                    >
                       +{message.sources.length - 10} more...
                     </div>
                   )}
@@ -326,6 +335,7 @@ const MessageBox = ({
 
                 {/* Card wrapping the sources for large screens */}
                 <div className="hidden lg:flex flex-col space-y-1 p-3 rounded-lg bg-light-secondary dark:bg-dark-secondary shadow-md">
+                <h2 className="text-sm font-semibold text-black dark:text-white mb-1">Resources</h2> {/* Added heading */}
                   {message.sources.map((source, i) => (
                     <div
                       key={i}
@@ -368,62 +378,65 @@ const MessageBox = ({
 
           {/* Sliding Panel for small screens */}
           {showPanel && (
-  <div className="fixed top-0 right-0 h-full w-4/4 sm:w-3/3 lg:hidden bg-white dark:bg-black shadow-lg z-50 overflow-y-auto">
-    <div className="flex justify-between items-center p-3 border-b border-light-secondary dark:border-dark-secondary">
-      <h3 className="text-xl font-medium text-black dark:text-white">
-        Sources
-      </h3>
-      <button
-        onClick={() => setShowPanel(false)}
-        className="text-black dark:text-white"
-      >
-        <X size={20} />
-      </button>
-    </div>
-    <div className="p-4">
-      {message.sources.map((source, i) => (
-        <div
-          key={i}
-          className="block p-2 mb-1 bg-light-secondary dark:bg-dark-secondary rounded-lg shadow-md"
-        >
-          <div className="flex flex-row items-center space-x-2 cursor-pointer">
-            {/* Make the favicon clickable */}
-            <a href={source.metadata.url} target="_blank" rel="noopener noreferrer">
-              <img
-                src={`https://s2.googleusercontent.com/s2/favicons?domain_url=${source.metadata.url}`}
-                width={20}
-                height={20}
-                alt="favicon"
-                className="rounded-full"
-              />
-            </a>
-            <div>
-              {/* Make the title clickable */}
-              <a
-                href={source.metadata.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-black dark:text-white truncate max-w-[200px] sm:max-w-[300px] block"
-              >
-                {source.metadata.title}
-              </a>
-              {/* Make the URL clickable */}
-              <a
-                href={source.metadata.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-black/50 dark:text-white/50 overflow-hidden whitespace-nowrap text-ellipsis block"
-              >
-                {source.metadata.url.replace(/.+\/\/|www.|\..+/g, '')}
-              </a>
+            <div className="fixed top-0 right-0 h-full w-4/4 sm:w-3/3 lg:hidden bg-white dark:bg-black shadow-lg z-50 overflow-y-auto">
+              <div className="flex justify-between items-center p-3 border-b border-light-secondary dark:border-dark-secondary">
+                <h3 className="text-xl font-medium text-black dark:text-white">
+                  Links
+                </h3>
+                <button
+                  onClick={() => setShowPanel(false)}
+                  className="text-black dark:text-white"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="p-4">
+                {message.sources.map((source, i) => (
+                  <div
+                    key={i}
+                    className="block p-2 mb-1 bg-light-secondary dark:bg-dark-secondary rounded-lg shadow-md"
+                  >
+                    <div className="flex flex-row items-center space-x-2 cursor-pointer">
+                      {/* Make the favicon clickable */}
+                      <a
+                        href={source.metadata.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <img
+                          src={`https://s2.googleusercontent.com/s2/favicons?domain_url=${source.metadata.url}`}
+                          width={20}
+                          height={20}
+                          alt="favicon"
+                          className="rounded-full"
+                        />
+                      </a>
+                      <div>
+                        {/* Make the title clickable */}
+                        <a
+                          href={source.metadata.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-black dark:text-white truncate max-w-[200px] sm:max-w-[300px] block"
+                        >
+                          {source.metadata.title}
+                        </a>
+                        {/* Make the URL clickable */}
+                        <a
+                          href={source.metadata.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-black/50 dark:text-white/50 overflow-hidden whitespace-nowrap text-ellipsis block"
+                        >
+                          {source.metadata.url.replace(/.+\/\/|www.|\..+/g, '')}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-)}
-
+          )}
 
           {/* Main Content */}
           <div className="flex flex-col space-y-9 lg:w-9/12">

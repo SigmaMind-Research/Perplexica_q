@@ -1,4 +1,4 @@
-import { Clock, Edit, Share, Trash } from 'lucide-react';
+import { History, Clock, Edit, Share, Trash } from 'lucide-react';
 import { Message } from './ChatWindow';
 import { useEffect, useState } from 'react';
 import { formatTimeDifference } from '@/lib/utils';
@@ -46,13 +46,26 @@ const Navbar = ({
 
   return (
     <div className="fixed z-40 top-0 left-0 right-0 px-4 lg:pl-[104px] lg:pr-6 lg:px-8 flex flex-row items-center justify-between w-full py-4 text-sm text-black dark:text-white/70 border-b bg-light-primary dark:bg-dark-primary border-light-100 dark:border-dark-200">
-      <a
+      {/* <a
         href="/"
         className="active:scale-95 transition duration-100 cursor-pointer lg:hidden"
       >
         <Edit size={17} />
-      </a>
-      <div className="hidden lg:flex flex-row items-center justify-center space-x-2">
+      </a> */}
+
+      {/* Logo */}
+      <a href="/" className="lg:hidden">
+    <img src="/path-to-your-logo.png" alt="logo" className="h-8 w-auto mb-5" />
+  </a>
+
+       {/* Recents History Icon visible only on mobile screens */}
+  <div className="flex flex-row items-center space-x-4 p-1 lg:hidden mt-[-10px]">
+    <History size={17} className="active:scale-95 transition duration-100 cursor-pointer" />
+  </div>
+
+
+       {/* upload and delete */}
+      {/* <div className="hidden lg:flex flex-row items-center justify-center space-x-2">
         <Clock size={17} />
         <p className="text-xs">{timeAgo} ago</p>
       </div>
@@ -64,7 +77,7 @@ const Navbar = ({
           className="active:scale-95 transition duration-100 cursor-pointer"
         />
         <DeleteChat redirect chatId={chatId} chats={[]} setChats={() => {}} />
-      </div>
+      </div> */}
     </div>
   );
 };
