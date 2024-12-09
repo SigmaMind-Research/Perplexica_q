@@ -335,7 +335,9 @@ const MessageBox = ({
 
                 {/* Card wrapping the sources for large screens */}
                 <div className="hidden lg:flex flex-col space-y-1 p-3 rounded-lg bg-light-secondary dark:bg-dark-secondary shadow-md">
-                <h2 className="text-sm font-semibold text-black dark:text-white mb-1">Resources</h2> {/* Added heading */}
+                <h2 className="text-sm text-black dark:text-white mb-1">Resources</h2>
+                <hr className="border-t border-gray-500" />
+
                   {message.sources.map((source, i) => (
                     <div
                       key={i}
@@ -475,7 +477,7 @@ const MessageBox = ({
                         initialMessage={message.content}
                         message={message}
                       />
-                      <button
+                      {/* <button
                         onClick={() => {
                           if (speechStatus === 'started') {
                             stop();
@@ -490,7 +492,7 @@ const MessageBox = ({
                         ) : (
                           <Volume2 size={18} />
                         )}
-                      </button>
+                      </button> */}
                     </div>
                   </div>
                 )}

@@ -82,10 +82,10 @@ const MessageInput = ({
       />
       {mode === 'single' && (
         <div className="flex flex-row items-center space-x-4">
-          <CopilotToggle
+          {/* <CopilotToggle
             copilotEnabled={copilotEnabled}
             setCopilotEnabled={setCopilotEnabled}
-          />
+          /> */}
           <button
             disabled={message.trim().length === 0 || loading}
             className="bg-[#24A0ED] text-white disabled:text-black/50 dark:disabled:text-white/50 hover:bg-opacity-85 transition duration-100 disabled:bg-[#e0e0dc79] dark:disabled:bg-[#ececec21] rounded-full p-2"
@@ -98,10 +98,10 @@ const MessageInput = ({
         <div className="flex flex-row items-center justify-between w-full pt-2">
           <Attach />
           <div className="flex flex-row items-center space-x-4">
-            <CopilotToggle
+            {/* <CopilotToggle
               copilotEnabled={copilotEnabled}
               setCopilotEnabled={setCopilotEnabled}
-            />
+            /> */}
             <button
               disabled={message.trim().length === 0 || loading}
               className="bg-[#24A0ED] text-white text-black/50 dark:disabled:text-white/50 hover:bg-opacity-85 transition duration-100 disabled:bg-[#e0e0dc79] dark:disabled:bg-[#ececec21] rounded-full p-2"
