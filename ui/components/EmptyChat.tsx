@@ -23,7 +23,7 @@ const EmptyChat = ({
   return (
     <div className="relative">
       {/* Logo visible only on mobile screens and positioned in the left corner */}
-      <a href="/" className="absolute left-0 top-0 lg:hidden">
+      <a href="/" className="absolute left-0 top-2 lg:hidden">
   <img src="/plogo.png" alt="" className="h-14 w-auto mb-0 -ml-2" />
 </a>
 
@@ -38,7 +38,7 @@ const EmptyChat = ({
         {/* history */}
         <Link
           href="/library"
-          className="flex flex-row items-center space-x-4 p-1 lg:hidden mt-[-10px]"
+          className="flex flex-row items-center space-x-4 p-1 lg:hidden mt-[-4px]"
         >
           <History
             size={17}

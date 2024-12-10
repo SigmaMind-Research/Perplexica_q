@@ -298,23 +298,29 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
             href="/"
             className={cn(
               'flex items-center', // Align items horizontally
-              isCollapsed ? 'justify-center flex-col' : 'flex-row', // Center align in collapsed, horizontal in expanded
+              isCollapsed ? 'justify-start flex-col' : 'flex-row', // Center align in collapsed, horizontal in expanded
             )}
           >
             {/* Logo image */}
             <img
               src="/plogo.png"
               className={cn(
-                'transition-transform duration-300', // Smooth scaling
+                'transition-transform duration-300 object-contain', // Smooth scaling
                 isCollapsed
-                  ? 'w-24 h-24 mx-auto -mt-10'
-                  : 'w-20 h-20 -ml-14 -mt-8', // Center align only in collapsed state
+                  ? 'w-20 h-20 mx-auto -mt-8' // Increased size for collapsed state
+                  : 'w-20 h-20 -ml-12 -mt-8', // Normal size for expanded state
               )}
+              alt="Logo"
             />
             {/* Text beside the logo, only visible when sidebar is expanded */}
             {!isCollapsed && (
-              <span className="text-sm text-black dark:text-white -ml-5 -mt-3">
-                potato AI
+              <span
+                className={cn(
+                  'text-base font-dancing text-black dark:text-white -ml-5 -mt-1', // Cursive font and small size
+                  'italic font-light tracking-wide', // Italic, thin, and spaced
+                )}
+              >
+                Potato AI
               </span>
             )}
           </a>
@@ -362,13 +368,13 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
           {!isCollapsed && (
             <div className="mt-auto w-full">
               <a
-                href="/signUp"
+                href="/auth"
                 className="block w-full py-2 px-4 text-center bg-blue-500 text-white rounded-lg hover:bg-blue-600"
               >
                 Sign Up
               </a>
               <a
-                href="/login"
+                href="/auth"
                 className="block w-full mt-2 py-2 px-4 text-center bg-green-500 text-white rounded-lg hover:bg-green-600"
               >
                 Log In
@@ -379,7 +385,12 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
           {/* User Icon only when collapsed */}
           {isCollapsed && (
             <div className="-mt-1 mr-4">
-              <User className="cursor-pointer text-black dark:text-white" />
+              <a
+                href="/auth"
+                className="cursor-pointer text-black dark:text-white"
+              >
+                <User />
+              </a>
             </div>
           )}
 
@@ -423,9 +434,8 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
           </Link>
         ))}
 
-
-         {/* New Search Icon wrapped in an <a> tag */}
-         <a
+        {/* New Search Icon wrapped in an <a> tag */}
+        <a
           href="/"
           className="flex flex-col items-center space-y-1 text-center"
         >
@@ -435,11 +445,11 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
 
         {/* User Icon with text Profile in mobile view */}
         <div className="flex flex-col items-center space-y-1">
-          <User className="text-xl text-black dark:text-white" />
-          <span className="text-xs text-black dark:text-white">Profile</span>
+          <a href="/auth" className="text-center cursor-pointer">
+            <User className="text-xl text-black dark:text-white" />
+            <span className="text-xs text-black dark:text-white">Profile</span>
+          </a>
         </div>
-
-       
       </div>
 
       {/* Main content */}

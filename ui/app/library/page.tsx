@@ -112,6 +112,8 @@
 // };
 
 // export default Page;
+
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -120,12 +122,16 @@ import { BookOpenText, ClockIcon } from 'lucide-react';
 import Link from 'next/link';
 import DeleteChat from '@/components/DeleteChat';
 
+// Truncate long titles utility function
+const truncateTitle = (title: string, maxLength: number) =>
+  title.length > maxLength ? `${title.slice(0, maxLength)}...` : title;
+
 export interface Chat {
   id: string;
   title: string;
   createdAt: string;
   focusMode: string;
-  history: { message: string; source: string; link: string }[];  // Added field for chat history
+  history: { message: string; source: string; link: string }[]; // Added field for chat history
 }
 
 const Page = () => {
@@ -138,7 +144,7 @@ const Page = () => {
     return chats.reduce((groups, chat) => {
       const date = new Date(chat.createdAt).toLocaleDateString();
       if (!groups[date]) {
-        groups[date] = { firstChat: chat.title, chats: [] };
+        groups[date] = { firstChat: truncateTitle(chat.title, 30), chats: [] };
       }
       groups[date].chats.push(chat);
       return groups;
@@ -195,7 +201,7 @@ const Page = () => {
     </div>
   ) : (
     <div className="space-y-2">
-      <div className="card p-4 shadow-md bg-white dark:bg-[#1c1c1c]">
+      <div className="card p-4 shadow-md bg-white dark:bg-[#1c1c1c] mt-6">
         <div className="flex items-center">
           <BookOpenText />
           <h1 className="text-3xl font-medium p-2">Library</h1>
@@ -247,7 +253,7 @@ const Page = () => {
                     href={`/c/${chat.id}`}
                     className="text-black dark:text-white lg:text-xl font-medium truncate transition duration-200 hover:text-[#24A0ED] dark:hover:text-[#24A0ED] cursor-pointer"
                   >
-                    {chat.title}
+                    {truncateTitle(chat.title, 30)}
                   </Link>
                   <div className="flex flex-row items-center justify-between w-full">
                     <div className="flex flex-row items-center space-x-1 lg:space-x-1.5 text-black/70 dark:text-white/70">
