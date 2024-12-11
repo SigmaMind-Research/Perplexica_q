@@ -57,23 +57,22 @@ const Navbar = ({
 
       {/* Logo */}
       <a href="/" className="lg:hidden">
-    <img src="/plogo.png" alt="" className="h-14 w-auto mb-0 -ml-2" />
-  </a>
+        <img src="/plogo.png" alt="" className="h-14 w-auto mb-0 -ml-2" />
+      </a>
 
       {/* Recents History Icon visible only on mobile screens */}
-<Link
-  href="/library"
-  className="flex flex-row items-center space-x-4 p-1 lg:hidden mt-[-10px]"
->
-  <History
-    size={17}
-    className="active:scale-95 transition duration-100 cursor-pointer"
-  />
-</Link>
+{/* 
+      <Link
+        href="/library"
+        className="flex flex-row items-center space-x-4 p-1 lg:hidden mt-[-10px]"
+      >
+        <History
+          size={17}
+          className="active:scale-95 transition duration-100 cursor-pointer"
+        />
+      </Link> */}
 
-
-
-       {/* upload and delete */}
+      {/* upload and delete */}
       {/* <div className="hidden lg:flex flex-row items-center justify-center space-x-2">
         <Clock size={17} />
         <p className="text-xs">{timeAgo} ago</p>
