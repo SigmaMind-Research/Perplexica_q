@@ -15,7 +15,7 @@ const Auth = () => {
           <h3 className="text-xl font-medium text-gray-600 dark:text-gray-300 mb-2">
             Sign Up
           </h3>
-          <p className="text-gray-500 dark:text-gray-400">We're working on something exciting! Stay tuned for our upcoming Sign Up feature.</p>
+          <p className="text-gray-500 dark:text-gray-400">We&apos;re working on something exciting! Stay tuned for our upcoming Sign Up feature.</p>
         </div>
 
         {/* Log In Section */}

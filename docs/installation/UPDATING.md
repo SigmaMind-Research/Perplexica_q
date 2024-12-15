@@ -1,13 +1,13 @@
-# Update Perplexica to the latest version
+# Update PotatoAI to the latest version
 
-To update Perplexica to the latest version, follow these steps:
+To update PotatoAI to the latest version, follow these steps:
 
 ## For Docker users
 
-1. Clone the latest version of Perplexica from GitHub:
+1. Clone the latest version of PotatoAI from GitHub:
 
 ```bash
-   git clone https://github.com/ItzCrazyKns/Perplexica.git
+   git clone https://github.com/ItzCrazyKns/PotatoAI.git
 ```
 
 2. Navigate to the Project Directory.
@@ -28,10 +28,10 @@ docker compose up -d
 
 ## For non Docker users
 
-1. Clone the latest version of Perplexica from GitHub:
+1. Clone the latest version of PotatoAI from GitHub:
 
 ```bash
-   git clone https://github.com/ItzCrazyKns/Perplexica.git
+   git clone https://github.com/ItzCrazyKns/PotatoAI.git
 ```
 
 2. Navigate to the Project Directory

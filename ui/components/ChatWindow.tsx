@@ -181,7 +181,7 @@ const useSocket = (
               }
             }, 5);
             clearTimeout(timeoutId);
-            console.log('[DEBUG] opened');
+            // console.log('[DEBUG] opened');
           }
           if (data.type === 'error') {
             toast.error(data.data);
@@ -197,7 +197,7 @@ const useSocket = (
         ws.onclose = () => {
           clearTimeout(timeoutId);
           setError(true);
-          console.log('[DEBUG] closed');
+          // console.log('[DEBUG] closed');
         };
 
         setWs(ws);

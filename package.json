@@ -1,5 +1,5 @@
 {
-  "name": "perplexica-backend",
+  "name": "potatoai-backend",
   "version": "1.9.3",
   "license": "MIT",
   "author": "ItzCrazyKns",
@@ -7,7 +7,7 @@
     "start": "npm run db:push && node dist/app.js",
     "build": "tsc",
     "dev": "nodemon src/app.ts",
-    "db:push": "drizzle-kit push sqlite",
+    "db:push": "drizzle-kit push",
     "format": "prettier . --check",
     "format:write": "prettier . --write"
   },
@@ -43,6 +43,7 @@
     "html-to-text": "^9.0.5",
     "langchain": "^0.3.6",
     "pdf-parse": "^1.1.1",
+    "postgres": "^3.4.5",
     "winston": "^3.13.0",
     "ws": "^8.17.1",
     "zod": "^3.22.4"

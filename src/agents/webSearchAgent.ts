@@ -28,9 +28,13 @@ import { AzureChatOpenAI, AzureOpenAIEmbeddings } from '@langchain/azure-openai'
 
 
 const basicSearchRetrieverPrompt = `
-You are an AI question rephraser. You will be given a conversation and a follow-up question,  you will have to rephrase the follow up question so it is a standalone question and can be used by another LLM to search the web for information to answer it.
+You are PotatoAI,an AI question rephraser. You will be given a conversation and a follow-up question,  you will have to rephrase the follow up question so it is a standalone question and can be used by another LLM to search the web for information to answer it.
 If it is a smple writing task or a greeting (unless the greeting contains a question after it) like Hi, Hello, How are you, etc. than a question then you need to return \`not_needed\` as the response (This is because the LLM won't need to search the web for finding information on this topic).
 If the user asks some question from some URL or wants you to summarize a PDF or a webpage (via URL) you need to return the links inside the \`links\` XML block and the question inside the \`question\` XML block. If the user wants to you to summarize the webpage or the PDF you need to return \`summarize\` inside the \`question\` XML block in place of a question and the link to summarize in the \`links\` XML block.
+If the user asks "Who are you?", "What is your name?", "What are you?", or similar introductory questions, always return the following as the response: 
+\`<question>
+I am PotatoAI, an AI model specialized in web searching, summarizing documents, and answering queries with an unbiased and journalistic tone. How can I assist you today?
+</question>\`
 You must always return the rephrased question inside the \`question\` XML block, if there are no links in the follow-up question then don't insert a \`links\` XML block in your response.
 
 There are several examples attached for your reference inside the below \`examples\` XML block
@@ -91,7 +95,7 @@ Rephrased question:
 `;
 
 const basicWebSearchResponsePrompt = `
-    You are Perplexica, an AI model who is expert at searching the web and answering user's queries. You are also an expert at summarizing web pages or documents and searching for content in them.
+    You are PotatoAI, an AI model who is expert at searching the web and answering user's queries. You are also an expert at summarizing web pages or documents and searching for content in them.
 
     Generate a response that is informative and relevant to the user's query based on provided context (the context consits of search results containing a brief description of the content of that page).
     You must use this context to answer the user's query in the best way possible. Use an unbaised and journalistic tone in your response. Do not repeat the text.
@@ -116,7 +120,7 @@ const basicWebSearchResponsePrompt = `
 
 const strParser = new StringOutputParser();
 
-const handleStream = async (
+/*const handleStream = async (
   stream: IterableReadableStream<StreamEvent>,
   emitter: eventEmitter,
 ) => {
@@ -146,9 +150,9 @@ const handleStream = async (
       emitter.emit('end');
     }
   }
-}
+}*/
 
-/*const handleStream = async (
+const handleStream = async (
   stream: IterableReadableStream<StreamEvent>,
   emitter: EventEmitter,
 ): Promise<void> => {
@@ -199,7 +203,7 @@ const handleStream = async (
     );
   }
 };
-*/
+
 
 type BasicChainInput = {
   chat_history: BaseMessage[];
@@ -227,8 +231,8 @@ const createBasicWebSearchRetrieverChain = (llm: BaseChatModel) => {
       const links = await linksOutputParser.parse(input);
       let question = await questionOutputParser.parse(input);
 
-      console.log("Azure LLM response parsed links:", links); // Debug links
-      console.log("Azure LLM response parsed question:", question); // Debug question
+      // console.log("Azure LLM response parsed links:", links); // Debug links
+      // console.log("Azure LLM response parsed question:", question); // Debug question
 
       if (question === 'not_needed') {
         return { query: '', docs: [] };

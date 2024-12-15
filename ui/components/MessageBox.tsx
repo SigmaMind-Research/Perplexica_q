@@ -393,7 +393,7 @@ const MessageBox = ({
                 </button>
               </div>
               <div className="p-4">
-                {message.sources.map((source, i) => (
+                {message.sources && message.sources.map((source, i) => (
                   <div
                     key={i}
                     className="block p-2 mb-1 bg-light-secondary dark:bg-dark-secondary rounded-lg shadow-md"

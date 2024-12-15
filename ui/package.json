@@ -13,6 +13,7 @@
   "dependencies": {
     "@headlessui/react": "^2.1.9",
     "@icons-pack/react-simple-icons": "^9.4.0",
+    "@langchain/core": "^0.3.23",
     "@langchain/openai": "^0.3.14",
     "@tailwindcss/typography": "^0.5.12",
     "clsx": "^2.1.0",
