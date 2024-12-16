@@ -24,11 +24,11 @@ import { getDocumentsFromLinks } from '../lib/linkDocument';
 import LineOutputParser from '../lib/outputParsers/lineOutputParser';
 import { IterableReadableStream } from '@langchain/core/utils/stream';
 // import { ChatOpenAI } from '@langchain/openai';
-import { AzureChatOpenAI, AzureOpenAIEmbeddings } from '@langchain/azure-openai';
+import { AzureChatOpenAI} from '@langchain/openai';
 
 
 const basicSearchRetrieverPrompt = `
-You are an AI question rephraser. You will be given a conversation and a follow-up question,  you will have to rephrase the follow up question so it is a standalone question and can be used by another LLM to search the web for information to answer it.
+You are PotatoAI,an AI question rephraser. You will be given a conversation and a follow-up question,  you will have to rephrase the follow up question so it is a standalone question and can be used by another LLM to search the web for information to answer it.
 If it is a smple writing task or a greeting (unless the greeting contains a question after it) like Hi, Hello, How are you, etc. than a question then you need to return \`not_needed\` as the response (This is because the LLM won't need to search the web for finding information on this topic).
 If the user asks some question from some URL or wants you to summarize a PDF or a webpage (via URL) you need to return the links inside the \`links\` XML block and the question inside the \`question\` XML block. If the user wants to you to summarize the webpage or the PDF you need to return \`summarize\` inside the \`question\` XML block in place of a question and the link to summarize in the \`links\` XML block.
 You must always return the rephrased question inside the \`question\` XML block, if there are no links in the follow-up question then don't insert a \`links\` XML block in your response.
@@ -91,7 +91,7 @@ Rephrased question:
 `;
 
 const basicWebSearchResponsePrompt = `
-    You are Perplexica, an AI model who is expert at searching the web and answering user's queries. You are also an expert at summarizing web pages or documents and searching for content in them.
+    You are PotatoAI, an AI model who is expert at searching the web and answering user's queries. You are also an expert at summarizing web pages or documents and searching for content in them.
 
     Generate a response that is informative and relevant to the user's query based on provided context (the context consits of search results containing a brief description of the content of that page).
     You must use this context to answer the user's query in the best way possible. Use an unbaised and journalistic tone in your response. Do not repeat the text.
@@ -200,7 +200,6 @@ const handleStream = async (
   }
 };
 */
-
 type BasicChainInput = {
   chat_history: BaseMessage[];
   query: string;
@@ -214,7 +213,7 @@ const createBasicWebSearchRetrieverChain = (llm: BaseChatModel) => {
     llm,
     strParser,
     RunnableLambda.from(async (input: string) => {
-      console.log("Input passed to Azure OpenAI LLM:", input); // Debug Input
+      // console.log("Input passed to Azure OpenAI LLM:", input); // Debug Input
 
       const linksOutputParser = new LineListOutputParser({
         key: 'links',
@@ -227,8 +226,8 @@ const createBasicWebSearchRetrieverChain = (llm: BaseChatModel) => {
       const links = await linksOutputParser.parse(input);
       let question = await questionOutputParser.parse(input);
 
-      console.log("Azure LLM response parsed links:", links); // Debug links
-      console.log("Azure LLM response parsed question:", question); // Debug question
+      // console.log("Azure LLM response parsed links:", links); // Debug links
+      // console.log("Azure LLM response parsed question:", question); // Debug question
 
       if (question === 'not_needed') {
         return { query: '', docs: [] };
@@ -399,7 +398,7 @@ const createBasicWebSearchAnsweringChain = (
     if (query.toLocaleLowerCase() === 'summarize') {
       return docs.slice(0, 15)
     }
-    console.log("Query being passed to rerankDocs:", query); // Log the query
+    // console.log("Query being passed to rerankDocs:", query); // Log the query
     const docsWithContent = docs.filter(
       (doc) => doc.pageContent && doc.pageContent.length > 0,
     );

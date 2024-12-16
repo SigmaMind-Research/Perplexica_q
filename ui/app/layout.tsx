@@ -6,17 +6,17 @@ import Sidebar from '@/components/Sidebar';
 import { Toaster } from 'sonner';
 import ThemeProvider from '@/components/theme/Provider';
 
-const montserrat = Montserrat({
-  weight: ['300', '400', '500', '700'],
-  subsets: ['latin'],
-  display: 'swap',
-  fallback: ['Arial', 'sans-serif'],
-});
+// const montserrat = Montserrat({
+  // weight: ['300', '400', '500', '700'],
+  // subsets: ['latin'],
+  // display: 'swap',
+  // fallback: ['Arial', 'sans-serif'],
+// });
 
 export const metadata: Metadata = {
-  title: 'Perplexica - Chat with the internet',
+  title: 'PotatoAI - Chat with the internet',
   description:
-    'Perplexica is an AI powered chatbot that is connected to the internet.',
+    'PotatoAI is an AI powered chatbot that is connected to the internet.',
 };
 
 export default function RootLayout({
@@ -26,8 +26,8 @@ export default function RootLayout({
 }>) {
   return (
     <html className="h-full" lang="en" suppressHydrationWarning>
-      <body className={cn('h-full', montserrat.className)}>
-        <ThemeProvider>
+      <body className={cn('h-full font-montserrat')}>
+      <ThemeProvider>
           <Sidebar>{children}</Sidebar>
           <Toaster
             toastOptions={{
