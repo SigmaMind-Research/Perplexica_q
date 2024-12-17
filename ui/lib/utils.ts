@@ -1,7 +1,20 @@
 import clsx, { ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-export const cn = (...classes: ClassValue[]) => twMerge(clsx(...classes));
+// export function cn(...inputs: ClassValue[]) {
+//   return twMerge(clsx(inputs));
+// } 
+
+// export const cn = (...classes: ClassValue[]) => twMerge(clsx(...classes));
+
+// First version of the function using the function declaration syntax
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+// Second version of the function using the arrow function syntax
+export const cnArrow = (...classes: ClassValue[]) => twMerge(clsx(...classes));
+
 
 export const formatTimeDifference = (
   date1: Date | string,

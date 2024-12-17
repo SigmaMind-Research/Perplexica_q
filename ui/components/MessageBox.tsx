@@ -219,6 +219,8 @@ import Markdown from 'markdown-to-jsx';
 import Copy from './MessageActions/Copy';
 import Rewrite from './MessageActions/Rewrite';
 import { useSpeech } from 'react-text-to-speech';
+import SearchImages from './SearchImages';
+import SearchVideos from './SearchVideos';
 
 const MessageBox = ({
   message,
@@ -335,7 +337,7 @@ const MessageBox = ({
 
                 {/* Card wrapping the sources for large screens */}
                 <div className="hidden lg:flex flex-col space-y-1 p-3 rounded-lg bg-light-secondary dark:bg-dark-secondary shadow-md">
-                <h2 className="text-sm text-black dark:text-white mb-1">Resources</h2>
+                <h2 className="text-base font-bold text-black dark:text-white mb-0">Resources</h2>
                 <hr className="border-t border-gray-500" />
 
                   {message.sources.map((source, i) => (
@@ -530,10 +532,7 @@ const MessageBox = ({
                   </div>
                 )}
             </div>
-
-            {/* <SearchImages message={message} />    
-            <SearchVideos message={message} /> */}
-
+            {/* Images and sources */}
             {/* <div className="lg:sticky lg:top-20 flex flex-col items-center space-y-3 w-full lg:w-3/12 z-30 h-full pb-4">
               <SearchImages
                 query={history[messageIndex - 1].content}

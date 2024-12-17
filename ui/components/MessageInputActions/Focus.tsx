@@ -41,30 +41,30 @@ const focusModes = [
     description: 'Computational knowledge engine',
     icon: <BadgePercent size={20} />,
   },
-  {
-    key: 'youtubeSearch',
-    title: 'Youtube',
-    description: 'Search and watch videos',
-    icon: (
-      <SiYoutube
-        className="h-5 w-auto mr-0.5"
-        onPointerEnterCapture={undefined}
-        onPointerLeaveCapture={undefined}
-      />
-    ),
-  },
-  {
-    key: 'redditSearch',
-    title: 'Reddit',
-    description: 'Search for discussions and opinions',
-    icon: (
-      <SiReddit
-        className="h-5 w-auto mr-0.5"
-        onPointerEnterCapture={undefined}
-        onPointerLeaveCapture={undefined}
-      />
-    ),
-  },
+  // {
+  //   key: 'youtubeSearch',
+  //   title: 'Youtube',
+  //   description: 'Search and watch videos',
+  //   icon: (
+  //     <SiYoutube
+  //       className="h-5 w-auto mr-0.5"
+  //       onPointerEnterCapture={undefined}
+  //       onPointerLeaveCapture={undefined}
+  //     />
+  //   ),
+  // },
+  // {
+  //   key: 'redditSearch',
+  //   title: 'Reddit',
+  //   description: 'Search for discussions and opinions',
+  //   icon: (
+  //     <SiReddit
+  //       className="h-5 w-auto mr-0.5"
+  //       onPointerEnterCapture={undefined}
+  //       onPointerLeaveCapture={undefined}
+  //     />
+  //   ),
+  // },
 ];
 
 const Focus = ({

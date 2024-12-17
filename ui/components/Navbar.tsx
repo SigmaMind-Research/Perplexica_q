@@ -61,7 +61,7 @@ const Navbar = ({
       </a>
 
       {/* Recents History Icon visible only on mobile screens */}
-{/* 
+
       <Link
         href="/library"
         className="flex flex-row items-center space-x-4 p-1 lg:hidden mt-[-10px]"
@@ -70,7 +70,7 @@ const Navbar = ({
           size={17}
           className="active:scale-95 transition duration-100 cursor-pointer"
         />
-      </Link> */}
+      </Link>
 
       {/* upload and delete */}
       {/* <div className="hidden lg:flex flex-row items-center justify-center space-x-2">
