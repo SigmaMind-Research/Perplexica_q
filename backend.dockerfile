@@ -1,14 +1,17 @@
 FROM node:18-slim
 
-WORKDIR /home/perplexica
+WORKDIR /home/potatoai
 
-COPY src /home/perplexica/src
-COPY tsconfig.json /home/perplexica/
-COPY drizzle.config.ts /home/perplexica/
-COPY package.json /home/perplexica/
-COPY yarn.lock /home/perplexica/
+COPY src /home/potatoai/src
+COPY tsconfig.json /home/potatoai/
+COPY config.toml /home/potatoai/
+COPY drizzle.config.ts /home/potatoai/
+COPY package.json /home/potatoai/
+COPY yarn.lock /home/potatoai/
 
-RUN mkdir /home/perplexica/data
+# RUN mkdir /home/potatoai/data
+# Expose port 80 to be used by Azure
+EXPOSE 3001
 
 RUN yarn install --frozen-lockfile --network-timeout 600000
 RUN yarn build

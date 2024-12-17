@@ -1,7 +1,7 @@
 // azureopenai.ts
 // import { AzureChatOpenAI,OpenAIEmbeddings } from "@langchain/openai";
-import { AzureChatOpenAI } from "@langchain/openai";
-import { AzureOpenAIEmbeddings } from '@langchain/azure-openai';
+import { AzureChatOpenAI,OpenAIEmbeddings } from "@langchain/openai";
+// import { AzureOpenAIEmbeddings } from '@langchain/azure-openai';
 
 import { getAzureOpenaiApiKey, getAzureEndpoint } from '../../config';
 import logger from '../../utils/logger';
@@ -52,16 +52,25 @@ export const loadAzureOpenAIEmbeddingsModels = async () => {
 
   try {
     const embeddingModels = {
-      'text-embedding-3-large': {
-        displayName: 'text-large',
-        model: new AzureOpenAIEmbeddings({
-          azureOpenAIApiKey: azureApiKey,
-          azureOpenAIEndpoint: azureEndpoint,
-          azureOpenAIApiVersion: "2023-05-15",
-          azureOpenAIEmbeddingsApiDeploymentName: 'text-embedding-3-large'
-        }),
-      },
+      // 'text-embedding-3-large': {
+        // displayName: 'text-large',
+        // model: new AzureOpenAIEmbeddings({
+          // azureOpenAIApiKey: azureApiKey,
+          // azureOpenAIEndpoint: azureEndpoint,
+          // azureOpenAIApiVersion: "2023-05-15",
+          // azureOpenAIEmbeddingsApiDeploymentName: 'text-embedding-3-large'
+        // }),
+      // },
       // Add more models if available
+        'text-embedding-3-large':{ 
+        displayName:'text-large',
+        model: new OpenAIEmbeddings({
+          openAIApiKey:azureApiKey,
+          azureOpenAIApiEmbeddingsDeploymentName:'text-embedding-3-large',
+          azureOpenAIApiVersion:"2023-05-15",
+          azureOpenAIBasePath:azureEndpoint,
+        })
+      }
     };
     // console.log(embeddingModels);
     return embeddingModels;

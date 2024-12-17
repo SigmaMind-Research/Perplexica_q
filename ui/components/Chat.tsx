@@ -43,7 +43,7 @@ const Chat = ({
     messageEnd.current?.scrollIntoView({ behavior: 'smooth' });
 
     if (messages.length === 1) {
-      document.title = `${messages[0].content.substring(0, 30)} - Perplexica`;
+      document.title = `${messages[0].content.substring(0, 30)} - PotatoAI`;
     }
   }, [messages]);
 
@@ -75,8 +75,8 @@ const Chat = ({
       <div ref={messageEnd} className="h-0" />
       {dividerWidth > 0 && (
         <div
-          className="bottom-24 lg:bottom-10 fixed z-40"
-          style={{ width: dividerWidth }}
+        className="bottom-24 lg:bottom-10 fixed z-40 left-1/2 lg:left-[43%] transform -translate-x-1/2 lg:-translate-x-[10%]"
+        style={{ width: dividerWidth }}
         >
           <MessageInput loading={loading} sendMessage={sendMessage} />
         </div>
