@@ -12,8 +12,11 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.1.9",
+    "@hookform/resolvers": "^3.9.1",
     "@icons-pack/react-simple-icons": "^9.4.0",
     "@langchain/openai": "^0.3.14",
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.47.8",
     "@tailwindcss/typography": "^0.5.12",
     "clsx": "^2.1.0",
     "langchain": "^0.3.6",
@@ -28,7 +31,7 @@
     "sonner": "^1.4.41",
     "tailwind-merge": "^2.2.2",
     "yet-another-react-lightbox": "^3.17.2",
-    "zod": "^3.22.4"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@types/node": "^20",
