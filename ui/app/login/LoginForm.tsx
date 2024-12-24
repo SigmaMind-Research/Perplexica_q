@@ -387,7 +387,7 @@ export default function LoginForm() {
         // Check session after login
         const { user } = await getSessionAndUser();
         if (user) {
-          router.push("/dashboard");
+          router.push("/");
         }
       }
     } catch (error) {

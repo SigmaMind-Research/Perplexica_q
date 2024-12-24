@@ -140,7 +140,7 @@ export default function LoginPage() {
 
         if (user) {
           // If the user is logged in, redirect to the dashboard
-          router.push("/dashboard");
+          router.push("/");
         }
       } catch (error) {
         console.error("Error during session check:", error);

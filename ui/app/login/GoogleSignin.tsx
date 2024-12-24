@@ -187,7 +187,7 @@ export default function GoogleSignin() {
       // Check session after sign-in using the centralized service
       const { user } = await getSessionAndUser();
       if (user) {
-        router.push(next || "/dashboard");
+        router.push(next || "/");
       }
     } catch (error: any) {
       toast({
