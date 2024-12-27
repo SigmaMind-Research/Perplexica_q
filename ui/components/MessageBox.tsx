@@ -219,6 +219,8 @@ import Markdown from 'markdown-to-jsx';
 import Copy from './MessageActions/Copy';
 import Rewrite from './MessageActions/Rewrite';
 import { useSpeech } from 'react-text-to-speech';
+import SearchImages from './SearchImages';
+import SearchVideos from './SearchVideos';
 
 const MessageBox = ({
   message,
