@@ -79,7 +79,7 @@ const EmptyChat = ({
   optimizationMode,
   setOptimizationMode,
 }: {
-  sendMessage: (message: string) => void;
+  sendMessage: (message: string, userId: string) => void;
   focusMode: string;
   setFocusMode: (mode: string) => void;
   optimizationMode: string;
