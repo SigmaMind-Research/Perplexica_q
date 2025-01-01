@@ -157,7 +157,7 @@ const Navbar = ({
   };
 
   return (
-    <div className="fixed z-40 top-2 left-0 right-0 px-2 lg:pl-[104px] lg:pr-6 lg:px-8 flex flex-row items-center justify-between w-full py-0 text-sm text-black dark:text-white/70 border-b bg-light-primary dark:bg-dark-primary border-light-100 dark:border-dark-200">
+    <div className="fixed z-40 top-0   left-0 right-0 px-2 lg:pl-[104px] lg:pr-6 lg:px-8 flex flex-row items-center justify-between w-full py-0 text-sm text-black dark:text-white/70 border-b bg-light-primary dark:bg-dark-primary border-light-100 dark:border-dark-200">
       {/* Logo */}
       <a href="/" className="lg:hidden">
         <img src="/plogo.png" alt="" className="h-14 w-auto mb-0 -ml-2" />
