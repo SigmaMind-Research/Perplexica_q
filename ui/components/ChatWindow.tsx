@@ -10,10 +10,13 @@ import { toast } from 'sonner';
 import { useSearchParams } from 'next/navigation';
 import { getSuggestions } from '@/lib/actions';
 import Error from 'next/error';
+import { createClient } from '@/utils/supabase/client';
+
 
 export type Message = {
   messageId: string;
   chatId: string;
+  userId:string;
   createdAt: Date;
   content: string;
   role: 'user' | 'assistant';
@@ -335,6 +338,15 @@ const ChatWindow = ({ id }: { id?: string }) => {
   }, [isMessagesLoaded, isWSReady]);
 
   const sendMessage = async (message: string, messageId?: string) => {
+    const supabase = createClient()
+      const { data, error } = await supabase.auth.getSession();
+
+      if (error || !data.session) {
+        console.error('Failed to fetch session:', error);
+        return;
+      }
+// 
+      const userId = data.session.user.id; // Get the user ID from session
     if (loading) return;
 
     setLoading(true);
@@ -352,6 +364,7 @@ const ChatWindow = ({ id }: { id?: string }) => {
         message: {
           messageId: messageId,
           chatId: chatId!,
+          userId: userId, // Include the userId here
           content: message,
         },
         focusMode: focusMode,
@@ -366,6 +379,7 @@ const ChatWindow = ({ id }: { id?: string }) => {
         content: message,
         messageId: messageId,
         chatId: chatId!,
+        userId:userId,
         role: 'user',
         createdAt: new Date(),
       },
@@ -389,6 +403,7 @@ const ChatWindow = ({ id }: { id?: string }) => {
               content: '',
               messageId: data.messageId,
               chatId: chatId!,
+              userId:userId,
               role: 'assistant',
               sources: sources,
               createdAt: new Date(),
@@ -407,6 +422,7 @@ const ChatWindow = ({ id }: { id?: string }) => {
               content: data.data,
               messageId: data.messageId,
               chatId: chatId!,
+              userId:userId,
               role: 'assistant',
               sources: sources,
               createdAt: new Date(),
