@@ -304,7 +304,7 @@ import { cn, formatTimeDifference } from '@/lib/utils';
 import { BookOpenText, ClockIcon } from 'lucide-react';
 import Link from 'next/link';
 import DeleteChat from '@/components/DeleteChat';
-import { supabase } from '@/lib/supabase'; // Import the Supabase client
+import { createClient } from '@/utils/supabase/client'; // Import the Supabase client
 
 // Truncate long titles utility function
 const truncateTitle = (title: string, maxLength: number) =>
@@ -323,6 +323,7 @@ const Page = () => {
   const [loading, setLoading] = useState(true);
   const [expandedDate, setExpandedDate] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
+
 
   const groupChatsByDate = (chats: Chat[]) => {
     return chats.reduce((groups, chat) => {
@@ -346,18 +347,26 @@ const Page = () => {
   const fetchChats = async () => {
     setLoading(true);
     // Fetch chats from Supabase
+    const supabase = createClient();
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession();
+    const userId = session?.user?.id;
+
     const { data, error } = await supabase
       .from('chats') // Replace 'chats' with your Supabase table name
-      .select('*');
+      .select('*')
+      .eq('userId',userId);
 
     if (error) {
       console.error('Error fetching chats:', error);
       setLoading(false);
       return;
     }
-
-    console.log('Fetched chats:', data);  // Log the data
-    setChats(data);
+    const sortedChats = data.reverse();
+    // console.log('Fetched chats:', data);  // Log the data
+    setChats(sortedChats);
     setLoading(false);
   };
 
