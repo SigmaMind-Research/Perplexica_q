@@ -664,146 +664,45 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
           <div className="mt-auto w-full">
             {user ? (
               <div className="w-full flex items-center justify-center gap-3">
-                {/* Expanded state: Show email in pill-shaped button */}
-                {!isCollapsed ? (
-                  <div className="flex flex-col items-center relative">
-                    <button
-                      onClick={() =>
-                        setIsLogoutCardVisible(!isLogoutCardVisible)
-                      } // Toggle the logout card
-                      className="text-black dark:text-white mb-2 px-2 py-2 bg-[#212122] rounded-full text-xs flex items-center space-x-1"
-                    >
-                      {/* Circle with the first letter of the email and updated background color */}
-                      <div className="w-8 h-8 bg-[#343434] text-white rounded-full flex items-center justify-center">
-                        {user.email.charAt(0).toUpperCase()}
-                      </div>
-                      {/* Display truncated email if it's long */}
-                      <span>
-                        {user.email.length > 9
-                          ? `${user.email.slice(0, 9)}...`
-                          : user.email}
-                      </span>
-                      {/* Arrow Icon */}
-                      <ArrowRightCircle className="text-white" size={15} />
-                    </button>
-                    {/* Conditionally render logout card */}
-                    {isLogoutCardVisible && (
-                      <div className="bg-[#212122] p-2 rounded-lg shadow-lg fixed top-[420px] left-[8px] z-20 w-[250px]">
-                        {/* Medium size square card showing full email and green tick */}
-                        <div className="flex items-center justify-between">
-                          {/* First letter of the email and green tick */}
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 bg-[#343434] text-white rounded-full flex items-center justify-center">
-                              {user.email.charAt(0).toUpperCase()}
-                            </div>
-                            {/* Conditional email display */}
-                            <span
-                              className="text-black dark:text-white text-xs font-semibold truncate"
-                              style={{
-                                maxWidth: '140px',
-                                display: 'block',
-                                whiteSpace: 'nowrap',
-                                overflow: 'hidden',
-                                textOverflow:
-                                  user.email.length > 28 ? 'ellipsis' : 'clip',
-                              }}
-                            >
-                              {user.email.length <= 28
-                                ? user.email
-                                : `${user.email.slice(0, 25)}...`}{' '}
-                              {/* Truncate if longer */}
-                            </span>
-                            {/* Green tick placed right beside the email */}
-                            <div className="text-green-500 text-sm">✔</div>
-                          </div>
-                        </div>
-
-                        {/* Confirmation message */}
-                        <div className="text-white text-xs mt-2 text-center">
-                          Are you sure you want to log out?
-                        </div>
-
-                        {/* Buttons for confirming or canceling logout */}
-                        <div className="flex justify-between mt-4">
-                          <button
-                            onClick={handleLogout} // Proceed with logout
-                            className="w-[30%] py-1.5 bg-red-500 text-white text-sm rounded-lg hover:bg-red-600"
-                          >
-                            Logout
-                          </button>
-                          <button
-                            onClick={() => setIsLogoutCardVisible(false)} // Close the card without logging out
-                            className="w-[30%] py-1.5 bg-gray-500 text-white text-sm rounded-lg hover:bg-gray-600"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+             {/* Expanded state: Show email in pill-shaped button */}
+             {!isCollapsed ? (
+                 <div className="flex flex-col items-center relative">
+                 <button
+                   onClick={() => window.location.href = '/account'} // Navigate to Account page
+                   className="text-black dark:text-white mb-2 px-2 py-2 bg-[#212122] rounded-full text-xs flex items-center space-x-1"
+                 >
+                   {/* Circle with the first letter of the email */}
+                   <div className="w-8 h-8 bg-[#343434] text-white rounded-full flex items-center justify-center">
+                     {user?.email?.charAt(0).toUpperCase()}
+                   </div>
+               
+                   {/* Display truncated email if it's long, otherwise full email */}
+                   <span>
+                     {user ? (
+                       user?.email.length > 9 ? `${user?.email.slice(0, 9)}...` : user?.email
+                     ) : (
+                       <span>Login</span> // Default state for the fresh view after logout
+                     )}
+                   </span>
+               
+                   {/* Arrow Icon */}
+                   <ArrowRightCircle className="text-white" size={15} />
+                 </button>
+               </div>
+               
                 ) : (
                   // Collapsed state: Show avatar
                   <div className="relative">
                   <div
                     className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center cursor-pointer"
                     title={user.email}
-                    onClick={() => setIsLogoutCardVisible(!isLogoutCardVisible)} // Toggle logout card visibility
+                     onClick={() => window.location.href = '/account'} // Navigate to Account page
                   >
                     {user.email[0].toUpperCase()}
                   </div>
                 
                   {/* Conditionally render logout confirmation card */}
-                  {isLogoutCardVisible && (
-                    <div className="bg-[#212122] p-2 rounded-lg shadow-lg fixed top-[440px] left-[8px] z-20 w-[250px]">
-                      {/* Header: Display avatar and email with green tick */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          {/* Avatar */}
-                          <div className="w-8 h-8 bg-[#343434] text-white rounded-full flex items-center justify-center">
-                            {user.email.charAt(0).toUpperCase()}
-                          </div>
-                          {/* Email with truncation if too long */}
-                          <span
-                            className="text-black dark:text-white text-xs font-semibold truncate"
-                            style={{
-                              maxWidth: '140px',
-                              display: 'block',
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: user.email.length > 28 ? 'ellipsis' : 'clip',
-                            }}
-                          >
-                            {user.email.length <= 28
-                              ? user.email
-                              : `${user.email.slice(0, 25)}...`}
-                          </span>
-                          {/* Green tick icon */}
-                          <div className="text-green-500 text-sm">✔</div>
-                        </div>
-                      </div>
-                
-                      {/* Confirmation message */}
-                      <div className="text-white text-xs mt-2 text-center">
-                        Are you sure you want to log out?
-                      </div>
-                
-                      {/* Buttons for confirming or canceling logout */}
-                      <div className="flex justify-between mt-4">
-                        <button
-                          onClick={handleLogout} // Proceed with logout
-                          className="w-[30%] py-1.5 bg-red-500 text-white text-sm rounded-lg hover:bg-red-600"
-                        >
-                          Logout
-                        </button>
-                        <button
-                          onClick={() => setIsLogoutCardVisible(false)} // Close the card without logging out
-                          className="w-[30%] py-1.5 bg-gray-500 text-white text-sm rounded-lg hover:bg-gray-600"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                  
                 </div>
                 
                 )}
@@ -877,7 +776,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
         <div className="flex flex-col items-center space-y-1">
           {user ? (
             <div
-              onClick={() => setIsLogoutCardVisible(!isLogoutCardVisible)}
+            onClick={() => window.location.href = '/account'}
               className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center cursor-pointer"
               title={user?.email || 'User'}
             >
@@ -887,19 +786,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
                   {user.email[0]?.toUpperCase()}
 
                   {/* Conditionally render logout card */}
-                  {isLogoutCardVisible && (
-                    <div className="bg-white dark:bg-dark-secondary p-0 rounded-lg shadow-lg -mt-9 mr-2">
-                      <button
-                        onClick={handleLogout} // Logout and close the card
-                        className="flex items-center justify-center gap-1 w-full py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                      >
-                        {/* Display the first letter of the user's email first */}
-                        {user.email[0]?.toUpperCase()}
-                        <LogOut size={27} className="text-white" />{' '}
-                        {/* Logout icon */}
-                      </button>
-                    </div>
-                  )}
+                 
                 </div>
               ) : (
                 // Show "Profile" icon when not logged in
@@ -925,3 +812,4 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
 };
 
 export default Sidebar;
+

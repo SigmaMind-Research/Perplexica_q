@@ -39,4 +39,15 @@ export const chats = pgTable('chats', {
 });
 
 // potatoai@123
-// postgresql://postgres:[YOUR-PASSWORD]@db.lqfncvigfsrmhownygra.supabase.co:5432/postgres
+// postgresql://postgres:[YOUR-PASSWORD]@db.lqfncvigfsrmhownygra.supabase.co:5432/postgres 
+
+
+
+
+
+
+
+
+
+
+

@@ -176,7 +176,7 @@ const Navbar = ({
 
       {/* Additional navbar items */}
       {/* Uncomment and use these if needed */}
-      {/* <div className="hidden lg:flex flex-row items-center justify-center space-x-2">
+      <div className="hidden lg:flex flex-row items-center justify-center space-x-2">
         <Clock size={17} />
         <p className="text-xs">{timeAgo} ago</p>
       </div>
@@ -186,8 +186,8 @@ const Navbar = ({
           size={17}
           className="active:scale-95 transition duration-100 cursor-pointer"
         />
-        <DeleteChat redirect chatId={chatId} chats={[]} setChats={() => {}} />
-      </div> */}
+        {/* <DeleteChat redirect chatId={chatId} chats={[]} setChats={() => {}} /> */}
+      </div>
     </div>
   );
 };
