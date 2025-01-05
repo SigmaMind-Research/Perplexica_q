@@ -176,18 +176,18 @@ const Navbar = ({
 
       {/* Additional navbar items */}
       {/* Uncomment and use these if needed */}
-      <div className="hidden lg:flex flex-row items-center justify-center space-x-2">
+      {/* <div className="hidden lg:flex flex-row items-center justify-center space-x-2">
         <Clock size={17} />
         <p className="text-xs">{timeAgo} ago</p>
-      </div>
-      <p className="hidden lg:flex">{title}</p>
-      <div className="flex flex-row items-center space-x-4">
+      </div> */}
+      {/* <p className="hidden lg:flex">{title}</p> */}
+      {/* <div className="flex flex-row items-center space-x-4">
         <Share
           size={17}
           className="active:scale-95 transition duration-100 cursor-pointer"
         />
-        {/* <DeleteChat redirect chatId={chatId} chats={[]} setChats={() => {}} /> */}
-      </div>
+        <DeleteChat redirect chatId={chatId} chats={[]} setChats={() => {}} />
+      </div> */}
     </div>
   );
 };

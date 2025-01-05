@@ -528,6 +528,8 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
     fetchUser();
   }, []);
 
+  
+
   // const navLinks = [
   //   {
   //     icon: Home,
