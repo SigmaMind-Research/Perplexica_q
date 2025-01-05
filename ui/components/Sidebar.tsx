@@ -528,8 +528,6 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
     fetchUser();
   }, []);
 
-  
-
   // const navLinks = [
   //   {
   //     icon: Home,
@@ -587,7 +585,8 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
       >
         <div className="flex grow flex-col items-center justify-start gap-y-5 overflow-y-auto bg-light-secondary dark:bg-dark-secondary px-2 py-8">
           {/* Logo */}
-          <a
+          {/* Logo */}
+          <Link
             href="/"
             className={cn(
               'flex items-center transition-all duration-300', // Smooth animation
@@ -614,21 +613,20 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
                 Potato AI
               </span>
             )}
-          </a>
-
+          </Link>
           {/* New Search Button */}
           {!isCollapsed && (
-            <a
+            <Link
               href="/"
               className="w-full px-4 py-2 mt-4 mb-2 border-2 border-grey-300 dark:border-black-700 rounded-full text-center text-sm text-black dark:text-white hover:border-[#2980b9]"
             >
               New Search
-            </a>
+            </Link>
           )}
           {isCollapsed && (
-            <a href="/">
-              <Search className="cursor-pointer mb-2 mr-4 " />
-            </a>
+            <Link href="/">
+              <Search className="cursor-pointer mb-2 mr-4" />
+            </Link>
           )}
 
           <VerticalIconContainer>
@@ -666,65 +664,55 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
           <div className="mt-auto w-full">
             {user ? (
               <div className="w-full flex items-center justify-center gap-3">
-             {/* Expanded state: Show email in pill-shaped button */}
-             {!isCollapsed ? (
-                 <div className="flex flex-col items-center relative">
-                 <button
-                   onClick={() => window.location.href = '/account'} // Navigate to Account page
-                   className="text-black dark:text-white mb-2 px-2 py-2 bg-[#212122] rounded-full text-xs flex items-center space-x-1"
-                 >
-                   {/* Circle with the first letter of the email */}
-                   <div className="w-8 h-8 bg-[#343434] text-white rounded-full flex items-center justify-center">
-                     {user?.email?.charAt(0).toUpperCase()}
-                   </div>
-               
-                   {/* Display truncated email if it's long, otherwise full email */}
-                   <span>
-                     {user ? (
-                       user?.email.length > 9 ? `${user?.email.slice(0, 9)}...` : user?.email
-                     ) : (
-                       <span>Login</span> // Default state for the fresh view after logout
-                     )}
-                   </span>
-               
-                   {/* Arrow Icon */}
-                   <ArrowRightCircle className="text-white" size={15} />
-                 </button>
-               </div>
-               
+                {/* Expanded state: Show email in pill-shaped button */}
+                {!isCollapsed ? (
+                  // Inside your Sidebar component
+                  <div className="flex flex-col items-center relative">
+                    <Link href="/account">
+                      <button className="text-black dark:text-white mb-2 px-2 py-2 bg-[#212122] rounded-full text-xs flex items-center space-x-1">
+                        <div className="w-8 h-8 bg-[#343434] text-white rounded-full flex items-center justify-center">
+                          {user?.email?.charAt(0).toUpperCase()}
+                        </div>
+                        <span>
+                          {user?.email.length > 9
+                            ? `${user?.email.slice(0, 9)}...`
+                            : user?.email}
+                        </span>
+                        <ArrowRightCircle className="text-white" size={15} />
+                      </button>
+                    </Link>
+                  </div>
                 ) : (
                   // Collapsed state: Show avatar
                   <div className="relative">
-                  <div
-                    className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center cursor-pointer"
-                    title={user.email}
-                     onClick={() => window.location.href = '/account'} // Navigate to Account page
-                  >
-                    {user.email[0].toUpperCase()}
+                    <Link href="/account">
+                      <div
+                        className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center cursor-pointer"
+                        title={user.email}
+                      >
+                        {user.email[0].toUpperCase()}
+                      </div>
+                    </Link>
                   </div>
-                
-                  {/* Conditionally render logout confirmation card */}
-                  
-                </div>
-                
                 )}
               </div>
             ) : (
               // Show "Sign In" and "Log In" only when expanded
+              // Show "Sign In" and "Log In" for larger screens when user is anonymous
               !isCollapsed && (
                 <div className="mt-4 w-full">
-                  <a
+                  <Link
                     href="/login"
                     className="block w-full py-2 px-4 text-center bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                   >
                     Sign In
-                  </a>
-                  <a
+                  </Link>
+                  <Link
                     href="/login"
                     className="block w-full mt-2 py-2 px-4 text-center bg-green-500 text-white rounded-lg hover:bg-green-600"
                   >
                     Log In
-                  </a>
+                  </Link>
                 </div>
               )
             )}
@@ -768,41 +756,39 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
             <p className="text-xs">{link.label}</p>
           </Link>
         ))}
-        <a
+        <Link
           href="/"
           className="flex flex-col items-center space-y-1 text-center"
         >
           <Search className="text-xl text-black dark:text-white" />
           <span className="text-xs text-black dark:text-white">New Search</span>
-        </a>
+        </Link>
         <div className="flex flex-col items-center space-y-1">
           {user ? (
-            <div
-            onClick={() => window.location.href = '/account'}
-              className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center cursor-pointer"
-              title={user?.email || 'User'}
-            >
-              {user?.email ? (
-                <div className="user-email" title={user.email}>
-                  {/* Display the first letter of the email */}
-                  {user.email[0]?.toUpperCase()}
-
-                  {/* Conditionally render logout card */}
-                 
-                </div>
-              ) : (
-                // Show "Profile" icon when not logged in
-                <div className="profile-icon">Profile</div>
-              )}
-            </div>
+            <Link href="/account">
+              <div
+                className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center cursor-pointer"
+                title={user?.email || 'User'}
+              >
+                {user?.email ? (
+                  <div className="user-email" title={user.email}>
+                    {/* Display the first letter of the email */}
+                    {user.email[0]?.toUpperCase()}
+                  </div>
+                ) : (
+                  // Show "Profile" icon when not logged in
+                  <div className="profile-icon">Profile</div>
+                )}
+              </div>
+            </Link>
           ) : (
-            // Show "Profile" icon when not logged in
-            <a href="/login" className="text-center cursor-pointer">
+            // Always show "Profile" icon when user is anonymous and logout
+            <Link href="/login" className="text-center cursor-pointer">
               <User className="text-xl text-black dark:text-white" />
               <span className="text-xs text-black dark:text-white">
                 Profile
               </span>
-            </a>
+            </Link>
           )}
         </div>
       </div>
@@ -814,4 +800,3 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
 };
 
 export default Sidebar;
-
