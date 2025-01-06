@@ -470,10 +470,11 @@ import {
   User,
   LogOut,
   ArrowRightCircle,
+  LogIn,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useSelectedLayoutSegments } from 'next/navigation';
-import React, { useState, useEffect, type ReactNode } from 'react';
+import React, { useState, useEffect, useRef, type ReactNode } from 'react';
 import Layout from './Layout';
 
 import SettingsDialog from './SettingsDialog';
@@ -493,6 +494,13 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
   const [isCollapsed, setIsCollapsed] = useState(false); // State to handle sidebar collapse/expand
   const [user, setUser] = useState<any>(null); // User state to store logged-in user
   const [isLogoutCardVisible, setIsLogoutCardVisible] = useState(false); // State for logout card visibility
+  const isInitialized = useRef(false); // Prevent multiple initializations
+  // const BottomNavigation = ({ mobileNavLinks, user }) => {
+  const [showLogin, setShowLogin] = useState(false);
+
+  const handleProfileClick = () => {
+    setShowLogin(true);
+  };
 
   // useEffect(() => {
   //   const fetchUser = async () => {
@@ -506,27 +514,51 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
   //   fetchUser();
   // }, []);
 
+  // Initialize Supabase client
+  const supabase = createClient();
+
   useEffect(() => {
-    const fetchUser = async () => {
-      const supabase = createClient();
+    const initializeUser = async () => {
+      if (isInitialized.current) return; // Skip if already initialized
+      isInitialized.current = true;
+      console.log('init user check');
+
       const { data: sessionData, error: sessionError } =
         await supabase.auth.getSession();
 
       if (sessionError || !sessionData?.session) {
-        // Handle cases where the session is invalid or not available
-        // console.error("Session not found or expired");
-        setUser(null);
-        return;
-      }
+        console.log('No session found, creating an anonymous user...');
+        const { data: anonData, error: anonError } =
+          await supabase.auth.signInAnonymously();
 
-      const user = sessionData.session.user;
-      if (user) {
-        setUser(user);
+        if (anonError) {
+          console.error('Failed to create anonymous user:', anonError);
+          return;
+        }
+
+        console.log('Anonymous user created:', anonData?.user);
+        setUser(anonData?.user || null);
+      } else {
+        const sessionUser = sessionData.session.user;
+
+        if (sessionUser?.is_anonymous) {
+          console.log('Existing anonymous user detected:', sessionUser);
+        } else {
+          console.log('Logged-in user detected:', sessionUser);
+        }
+
+        setUser(sessionUser);
       }
     };
 
-    fetchUser();
-  }, []);
+    initializeUser();
+  }, [supabase, isInitialized]);
+
+  const handleLogin = async () => {
+    // await supabase.auth.signOut();
+    // setUser(null);
+    window.location.href = '/login';
+  };
 
   // const navLinks = [
   //   {
@@ -552,13 +584,12 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
     },
     {
       icon: BookOpenText,
-      href: user ? '/library' : '/login', // Redirect to login if not authenticated
+      href: user && !user.is_anonymous ? '/library' : '/login', // If authenticated, go to library, else login
       active: segments.includes('library'),
       label: 'Library',
-      disabled: !user, // Optional: Add this property for UI checks
+      disabled: !user || user.is_anonymous, // Disable the link if no user or if the user is anonymous
     },
   ];
-
   const mobileNavLinks = [
     {
       icon: Home,
@@ -583,7 +614,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
           isCollapsed ? 'lg:w-20 opacity-80' : 'lg:w-40 opacity-100',
         )}
       >
-        <div className="flex grow flex-col items-center justify-start gap-y-5 overflow-y-auto bg-light-secondary dark:bg-dark-secondary px-2 py-8">
+        <div className="flex grow flex-col items-center justify-start gap-y-5 overflow-y-auto bg-light-secondary dark:bg-dark-secondary px-2 py-8 overflow-hidden">
           {/* Logo */}
           {/* Logo */}
           <Link
@@ -649,8 +680,8 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
               </Link>
             ))}
           </VerticalIconContainer>
-          {/* User Icon only when collapsed */}
-          {isCollapsed && !user && (
+          {/* User Icon only when collapsed and user is either not present or anonymous */}
+          {isCollapsed && (!user || user.is_anonymous) && (
             <div className="-mt-1 mr-4">
               <a
                 href="/login"
@@ -662,59 +693,86 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
           )}
 
           <div className="mt-auto w-full">
-            {user ? (
+            {user?.is_anonymous ? (
               <div className="w-full flex items-center justify-center gap-3">
-                {/* Expanded state: Show email in pill-shaped button */}
-                {!isCollapsed ? (
-                  // Inside your Sidebar component
-                  <div className="flex flex-col items-center relative">
-                    <Link href="/account">
-                      <button className="text-black dark:text-white mb-2 px-2 py-2 bg-[#212122] rounded-full text-xs flex items-center space-x-1">
-                        <div className="w-8 h-8 bg-[#343434] text-white rounded-full flex items-center justify-center">
-                          {user?.email?.charAt(0).toUpperCase()}
-                        </div>
-                        <span>
-                          {user?.email.length > 9
-                            ? `${user?.email.slice(0, 9)}...`
-                            : user?.email}
-                        </span>
-                        <ArrowRightCircle className="text-white" size={15} />
-                      </button>
+                {/* Show Sign Up and Log In buttons for anonymous users when not collapsed */}
+                {!isCollapsed && (
+                  <div className="mt-4 w-full">
+                    <Link
+                      href="/login"
+                      className="block w-full py-2 px-4 text-center bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                    >
+                      Sign Up
                     </Link>
-                  </div>
-                ) : (
-                  // Collapsed state: Show avatar
-                  <div className="relative">
-                    <Link href="/account">
-                      <div
-                        className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center cursor-pointer"
-                        title={user.email}
-                      >
-                        {user.email[0].toUpperCase()}
-                      </div>
+                    <Link
+                      href="/login"
+                      className="block w-full mt-2 py-2 px-4 text-center bg-green-500 text-white rounded-lg hover:bg-green-600"
+                    >
+                      Log In
                     </Link>
                   </div>
                 )}
               </div>
             ) : (
-              // Show "Sign In" and "Log In" only when expanded
-              // Show "Sign In" and "Log In" for larger screens when user is anonymous
-              !isCollapsed && (
-                <div className="mt-4 w-full">
-                  <Link
-                    href="/login"
-                    className="block w-full py-2 px-4 text-center bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    href="/login"
-                    className="block w-full mt-2 py-2 px-4 text-center bg-green-500 text-white rounded-lg hover:bg-green-600"
-                  >
-                    Log In
-                  </Link>
-                </div>
-              )
+              <div className="mt-auto w-full">
+                {user ? (
+                  <div className="w-full flex items-center justify-center gap-3">
+                    {/* Expanded state: Show email in pill-shaped button */}
+                    {!isCollapsed ? (
+                      <div className="flex flex-col items-center relative">
+                        <Link href="/account">
+                          <button className="text-black dark:text-white mb-2 px-2 py-2 bg-[#212122] rounded-full text-xs flex items-center space-x-1">
+                            <div className="w-8 h-8 bg-[#343434] text-white rounded-full flex items-center justify-center">
+                              {user?.email?.charAt(0).toUpperCase()}{' '}
+                              {/* Display first letter */}
+                            </div>
+                            <span>
+                              {user?.email?.length > 9
+                                ? `${user?.email.slice(0, 9)}...`
+                                : user?.email}
+                            </span>
+                            <ArrowRightCircle
+                              className="text-white"
+                              size={15}
+                            />
+                          </button>
+                        </Link>
+                      </div>
+                    ) : (
+                      // Collapsed state: Show first letter of email
+                      <div className="relative">
+                        <Link href="/account">
+                          <div
+                            className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center cursor-pointer"
+                            title={user.email}
+                          >
+                            {user.email[0]?.toUpperCase()}{' '}
+                            {/* Display first letter */}
+                          </div>
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  // Show "Sign In" and "Log In" only when expanded
+                  !isCollapsed && (
+                    <div className="mt-4 w-full">
+                      <Link
+                        href="/login"
+                        className="block w-full py-2 px-4 text-center bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                      >
+                        Sign Up
+                      </Link>
+                      <Link
+                        href="/login"
+                        className="block w-full mt-2 py-2 px-4 text-center bg-green-500 text-white rounded-lg hover:bg-green-600"
+                      >
+                        Log In
+                      </Link>
+                    </div>
+                  )
+                )}
+              </div>
             )}
           </div>
 
@@ -737,6 +795,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
         </div>
       </div>
       {/* Bottom navigation for small screens */}
+
       <div className="fixed bottom-0 w-full z-50 flex justify-center gap-x-20 bg-light-primary dark:bg-dark-primary px-2 py-2 shadow-sm lg:hidden">
         {mobileNavLinks.map((link, i) => (
           <Link
@@ -764,31 +823,48 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
           <span className="text-xs text-black dark:text-white">New Search</span>
         </Link>
         <div className="flex flex-col items-center space-y-1">
-          {user ? (
+          {user && !user.is_anonymous ? (
+            // Show account info if user is logged in
             <Link href="/account">
               <div
                 className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center cursor-pointer"
                 title={user?.email || 'User'}
               >
-                {user?.email ? (
+                {user.email ? (
                   <div className="user-email" title={user.email}>
-                    {/* Display the first letter of the email */}
                     {user.email[0]?.toUpperCase()}
                   </div>
                 ) : (
-                  // Show "Profile" icon when not logged in
                   <div className="profile-icon">Profile</div>
                 )}
               </div>
             </Link>
           ) : (
-            // Always show "Profile" icon when user is anonymous and logout
-            <Link href="/login" className="text-center cursor-pointer">
-              <User className="text-xl text-black dark:text-white" />
-              <span className="text-xs text-black dark:text-white">
-                Profile
-              </span>
-            </Link>
+            // Show "Profile" or "Login" based on state
+            <>
+              {!showLogin ? (
+                <div
+                  onClick={handleProfileClick}
+                  className="flex flex-col items-center space-y-1 cursor-pointer"
+                >
+                  <User className="text-xl text-black dark:text-white" />
+                  <span className="text-xs text-black dark:text-white">
+                    Profile
+                  </span>
+                </div>
+              ) : (
+                <Link
+                  href="/login"
+                  className="flex flex-col items-center space-y-1 text-center cursor-pointer"
+                >
+                  {/* <User className="text-xl text-black dark:text-white" /> */}
+                  <LogIn className="text-xl text-black dark:text-white" />
+                  <span className="text-xs text-black dark:text-white">
+                    Login
+                  </span>
+                </Link>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -800,3 +876,207 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
 };
 
 export default Sidebar;
+
+// 'use client';
+
+// import { cn } from '@/lib/utils';
+// import { Home, BookOpenText } from 'lucide-react';
+// import Link from 'next/link';
+// import { useSelectedLayoutSegments } from 'next/navigation';
+// import React, { useState, useEffect, ReactNode, useRef } from 'react';
+// import { createClient } from '@/utils/supabase/client'; // Supabase client
+
+// const VerticalIconContainer = ({ children }: { children: ReactNode }) => (
+//   <div className="flex flex-col items-center gap-y-3 w-full mt-6">{children}</div>
+// );
+
+// const Sidebar = ({ children }: { children: React.ReactNode }) => {
+//   const segments = useSelectedLayoutSegments();
+//   const [isCollapsed, setIsCollapsed] = useState(false);
+//   const [user, setUser] = useState<any>(null);
+//   const isInitialized = useRef(false); // Prevent multiple initializations
+
+//   // Initialize Supabase client
+//   const supabase = createClient();
+
+//   useEffect(() => {
+//     const initializeUser = async () => {
+//       if (isInitialized.current) return; // Skip if already initialized
+//       isInitialized.current = true;
+//       console.log("init user check")
+
+//       const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+
+//       if (sessionError || !sessionData?.session) {
+//         console.log('No session found, creating an anonymous user...');
+//         const { data: anonData, error: anonError } = await supabase.auth.signInAnonymously();
+
+//         if (anonError) {
+//           console.error('Failed to create anonymous user:', anonError);
+//           return;
+//         }
+
+//         console.log('Anonymous user created:', anonData?.user);
+//         setUser(anonData?.user || null);
+//       } else {
+//         const sessionUser = sessionData.session.user;
+
+//         if (sessionUser?.is_anonymous) {
+//           console.log('Existing anonymous user detected:', sessionUser);
+//         } else {
+//           console.log('Logged-in user detected:', sessionUser);
+//         }
+
+//         setUser(sessionUser);
+//       }
+//     };
+
+//     initializeUser();
+//   }, [supabase, isInitialized]);
+
+//   const handleLogin = async () => {
+//     // await supabase.auth.signOut();
+//     // setUser(null);
+//     window.location.href = '/login';
+//   };
+
+//   const handleLogout = async () => {
+//     await supabase.auth.signOut();
+//     setUser(null);
+//   };
+
+//   const navLinks = [
+//     {
+//       icon: Home,
+//       href: '/',
+//       active: segments.length === 0 || segments.includes('c'),
+//       label: 'Home',
+//     },
+//     {
+//       icon: BookOpenText,
+//       href: user ? '/library' : '/login',
+//       active: segments.includes('library'),
+//       label: 'Library',
+//       disabled: !user,
+//     },
+//   ];
+
+//   return (
+//     <div>
+//       <div
+//         className={cn(
+//           'hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:flex-col transition-all duration-200 ease-in-out',
+//           isCollapsed ? 'lg:w-20 opacity-80' : 'lg:w-40 opacity-100',
+//         )}
+//       >
+//         <div className="flex grow flex-col items-center justify-start gap-y-5 overflow-y-auto bg-light-secondary dark:bg-dark-secondary px-2 py-8">
+//           <Link href="/">
+//             <img
+//               src="/plogo.png"
+//               alt="Logo"
+//               className={cn('w-20 h-20', isCollapsed ? 'mx-auto' : 'ml-0')}
+//             />
+//             {!isCollapsed && <span className="text-base font-light">Potato AI</span>}
+//           </Link>
+//           <VerticalIconContainer>
+//             {navLinks.map((link, i) => (
+//               <Link
+//                 key={i}
+//                 href={link.href}
+//                 className={cn(
+//                   'flex items-center gap-x-3 p-2 rounded-md transition',
+//                   link.active ? 'bg-blue-200 text-blue-800' : 'text-gray-600',
+//                 )}
+//               >
+//                 <link.icon size={20} />
+//                 {!isCollapsed && <span>{link.label}</span>}
+//               </Link>
+//             ))}
+//           </VerticalIconContainer>
+//           <div className="mt-auto">
+//             {user?.is_anonymous ? (
+//               <button
+//                 onClick={handleLogin}
+//                 className="block w-full py-2 px-4 text-center bg-red-500 text-white rounded-lg hover:bg-red-600"
+//               >
+//                 Login
+//               </button>
+//             ) : user ? (
+//               <div>
+//                 <p>Welcome, {user.email || 'User'}!</p>
+//                 <button
+//                   onClick={handleLogout}
+//                   className="block w-full py-2 px-4 text-center bg-red-500 text-white rounded-lg hover:bg-red-600"
+//                 >
+//                   Logout
+//                 </button>
+//               </div>
+//             ) : (
+//               <p>Loading...</p>
+//             )}
+//           </div>
+//         </div>
+//       </div>
+//       <div className="lg:ml-40">{children}</div>
+//     </div>
+//   );
+// };
+
+// export default Sidebar;
+
+// <div className="mt-auto w-full">
+//   {/* Always show Sign Up and Log In for anonymous users */}
+//   {user?.is_anonymous ? (
+//     <div className="w-full flex items-center justify-center gap-3">
+//       {/* Show Sign Up and Log In buttons for anonymous users */}
+//       <div className="mt-4 w-full">
+//         <Link
+//           href="/signup"
+//           className="block w-full py-2 px-4 text-center bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+//         >
+//           Sign Up
+//         </Link>
+//         <Link
+//           href="/login"
+//           className="block w-full mt-2 py-2 px-4 text-center bg-green-500 text-white rounded-lg hover:bg-green-600"
+//         >
+//           Log In
+//         </Link>
+//       </div>
+//     </div>
+//   ) : (
+//     // For logged-in users
+//     <div className="w-full flex items-center justify-center gap-3">
+//       {user ? (
+//         // Inside your Sidebar component
+//         <div className="flex flex-col items-center relative">
+//           <Link href="/account">
+//             <button className="text-black dark:text-white mb-2 px-2 py-2 bg-[#212122] rounded-full text-xs flex items-center space-x-1">
+//               <div className="w-8 h-8 bg-[#343434] text-white rounded-full flex items-center justify-center">
+//                 {user?.email?.charAt(0).toUpperCase()}
+//               </div>
+//               <span>
+//                 {user?.email?.length > 9
+//                   ? `${user?.email.slice(0, 9)}...`
+//                   : user?.email}
+//               </span>
+//               <ArrowRightCircle className="text-white" size={15} />
+//             </button>
+//           </Link>
+//         </div>
+//       ) : (
+//         // Collapsed state: Show avatar
+//         <div className="relative">
+//           <Link href="/account">
+//             <div
+//               className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center cursor-pointer"
+//               title={user?.email || 'User'} // fallback to 'User' if email is undefined
+//             >
+//               {user?.email ? user?.email[0].toUpperCase() : 'U'}
+//             </div>
+//           </Link>
+//         </div>
+//       )}
+//     </div>
+//   )}
+// </div>

@@ -147,7 +147,7 @@ const Navbar = ({
   const handleHistoryClick = async () => {
     const { session, user } = await getSessionAndUser(); // Check authentication
 
-    if (!session || !user) {
+    if (!session || !user || user?.is_anonymous) {
       // Redirect to login if not authenticated
       window.location.href = '/login';
     } else {

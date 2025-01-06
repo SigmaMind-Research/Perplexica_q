@@ -123,6 +123,43 @@
 // }
 
 
+// "use client";
+
+// import { useEffect } from "react";
+// import { useRouter } from "next/navigation";
+// import { getSessionAndUser } from "@/lib/sessionService";
+// import LoginForm from "./LoginForm";
+
+// export default function LoginPage() {
+//   const router = useRouter(); // Router for redirection
+
+//   useEffect(() => {
+//     const checkSession = async () => {
+//       try {
+//         const { user } = await getSessionAndUser();
+
+//         if (user) {
+//           // If the user is logged in, redirect to the dashboard
+//           router.push("/");
+//         }
+//       } catch (error) {
+//         console.error("Error during session check:", error);
+//       }
+//     };
+
+//     checkSession();
+//   }, [router]); // Re-run if router changes
+
+//   return <LoginForm />; // Render the login form if user is not redirected
+// }
+
+
+
+
+
+
+
+
 "use client";
 
 import { useEffect } from "react";
@@ -138,7 +175,7 @@ export default function LoginPage() {
       try {
         const { user } = await getSessionAndUser();
 
-        if (user) {
+        if (!user?.is_anonymous) {
           // If the user is logged in, redirect to the dashboard
           router.push("/");
         }

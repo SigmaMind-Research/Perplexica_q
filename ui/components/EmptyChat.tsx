@@ -99,7 +99,7 @@ const EmptyChat = ({
 
     const { session, user } = await getSessionAndUser();
 
-    if (!session || !user) {
+    if (!session || !user || user?.is_anonymous) {
       // If not authenticated, redirect to login page
       window.location.href = '/login'; // Use window.location for navigation
     } else {
