@@ -8,7 +8,7 @@ import ThemeProvider from '@/components/theme/Provider';
 
 // const montserrat = Montserrat({
   // weight: ['300', '400', '500', '700'],
-  // subsets: ['latin'],
+  // subsets: ['latin'],google
   // display: 'swap',
   // fallback: ['Arial', 'sans-serif'],
 // });
@@ -49,15 +49,15 @@ export default function RootLayout({
             __html: `
               var componentID = new JotformFeedback({
                 type: false,
-                width: 500,
-                height: 400,
+                width: 400,
+                height: 300,
                 fontColor: "#ffffff",
                 background: "#4a4a4a",
                 isCardForm: false,
-                formId: "250072738261454",
+                formId: "250071808308453",
                 buttonText: "Feedback",
                 buttonSide: "right",
-                buttonAlign: "center", // Moves button vertically centered
+                buttonAlign: "bottom", // Moves button vertically centered
                 base: "https://form.jotform.com/",
               }).componentID;
             `,
@@ -67,13 +67,13 @@ export default function RootLayout({
           src="https://cdn.jotfor.ms/s/umd/latest/for-form-embed-handler.js"
           async
         ></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.jotformEmbedHandler("iframe[id='" + componentID + "_iframe']", "https://form.jotform.com/");
-            `,
-          }}
-        ></script>
+        {/* <script */}
+          {/* // dangerouslySetInnerHTML={{ */}
+            {/* // __html: ` */}
+              {/* // window.jotformEmbedHandler("iframe[id='" + componentID + "_iframe']", "https://form.jotform.com/"); */}
+             {/* `, */}
+          {/* // }} */}
+        {/* // ></script> */}
       </body>
     </html>
   );

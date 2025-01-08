@@ -172,9 +172,12 @@ const EmptyChat = ({
             </button>
           ))}
         </div>
-        <a href="/" className="mt-6">
-          <img src="/MSL.png" alt="Logo" className="h-14 w-auto mx-auto" />
-        </a>
+        <div className="mt-6 text-center">
+          <p className="text-sm font-medium text-gray-600">Backed by</p>
+          <a href="https://www.microsoft.com/en-us/startups" className="mt-6">
+            <img src="/MSL.png" alt="Logo" className="h-14 w-auto mx-auto" />
+          </a>
+        </div>  
       </div>
     </div>
   );

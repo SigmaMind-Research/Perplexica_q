@@ -469,6 +469,7 @@ import {
   Search,
   User,
   LogOut,
+  SquarePen,
   ArrowRightCircle,
   LogIn,
 } from 'lucide-react';
@@ -522,31 +523,31 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
     const initializeUser = async () => {
       if (isInitialized.current) return; // Skip if already initialized
       isInitialized.current = true;
-      console.log('init user check');
+      // console.log('init user check');
 
       const { data: sessionData, error: sessionError } =
         await supabase.auth.getSession();
 
       if (sessionError || !sessionData?.session) {
-        console.log('No session found, creating an anonymous user...');
+        // console.log('No session found, creating an anonymous user...');
         const { data: anonData, error: anonError } =
           await supabase.auth.signInAnonymously();
 
         if (anonError) {
-          console.error('Failed to create anonymous user:', anonError);
+          // console.error('Failed to create anonymous user:', anonError);
           return;
         }
 
-        console.log('Anonymous user created:', anonData?.user);
+        // console.log('Anonymous user created:', anonData?.user);
         setUser(anonData?.user || null);
       } else {
         const sessionUser = sessionData.session.user;
 
-        if (sessionUser?.is_anonymous) {
-          console.log('Existing anonymous user detected:', sessionUser);
-        } else {
-          console.log('Logged-in user detected:', sessionUser);
-        }
+        // if (sessionUser?.is_anonymous) {
+          // console.log('Existing anonymous user detected:', sessionUser);
+        // } else {
+          // console.log('Logged-in user detected:', sessionUser);
+        // }
 
         setUser(sessionUser);
       }
@@ -692,7 +693,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
           )}
           {isCollapsed && (
             <Link href="/">
-              <Search className="cursor-pointer mb-2 mr-4" />
+              <SquarePen className="cursor-pointer mb-2 mr-4" />
             </Link>
           )}
 
@@ -735,7 +736,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
                 {!isCollapsed && (
                   <div className="mt-4 w-full">
                     <Link
-                      href="/login"
+                      href="/register"
                       className="block w-full py-2 px-4 text-center bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                     >
                       Sign Up
@@ -855,7 +856,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
           href="/"
           className="flex flex-col items-center space-y-1 text-center"
         >
-          <Search className="text-xl text-black dark:text-white" />
+          <SquarePen className="text-xl text-black dark:text-white" />
           <span className="text-xs text-black dark:text-white">New Search</span>
         </Link>
         <div className="flex flex-col items-center space-y-1">
@@ -888,7 +889,8 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
                     Profile
                   </span>
                 </div>
-              ) : (
+              ) : 
+              (
                 <Link
                   href="/login"
                   className="flex flex-col items-center space-y-1 text-center cursor-pointer"
