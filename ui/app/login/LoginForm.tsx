@@ -386,8 +386,9 @@ export default function LoginForm() {
       } else {
         // Check session after login
         const { user } = await getSessionAndUser();
-        if (user) {
-          router.push("/");
+        if (!user?.is_anonymous) {
+          window.location.href = '/'; // Force reload
+          // router.push("/?reload=true");
         }
       }
     } catch (error) {
