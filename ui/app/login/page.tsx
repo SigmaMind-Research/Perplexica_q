@@ -175,7 +175,8 @@ export default function LoginPage() {
       try {
         const { user } = await getSessionAndUser();
 
-        if (!user?.is_anonymous) {
+        // if (!user?.is_anonymous || user? ) {
+          if (!user || !user?.is_anonymous) {
           // If the user is logged in, redirect to the dashboard
           router.push("/");
         }

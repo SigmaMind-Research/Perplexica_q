@@ -2,7 +2,6 @@
 // import EmptyChatMessageInput from './EmptyChatMessageInput';
 // import SettingsDialog from './SettingsDialog';
 
-
 // import { useState } from 'react';
 // import Link from 'next/link';
 
@@ -27,7 +26,6 @@
 //       <a href="/" className="absolute left-0 top-2 lg:hidden">
 //   <img src="/plogo.png" alt="" className="h-14 w-auto mb-0 -ml-2" />
 // </a>
-
 
 //       <div className="absolute w-full flex flex-row items-center justify-end mr-5 mt-5">
 //         {/* settings */}
@@ -65,7 +63,6 @@
 
 // export default EmptyChat;
 
-
 import { Settings, Library, History } from 'lucide-react';
 import EmptyChatMessageInput from './EmptyChatMessageInput';
 import SettingsDialog from './SettingsDialog';
@@ -87,6 +84,13 @@ const EmptyChat = ({
 }) => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false); // State to track mounting of component
+
+  // Predefined trending questions
+  const trendingQuestions = [
+    'What is the latest technology in AI?',
+    'How to improve coding skills?',
+    'What are the top programming languages of 2025?',
+  ];
 
   // Delay component mounting logic to ensure we are on the client side
   useEffect(() => {
@@ -112,6 +116,11 @@ const EmptyChat = ({
   if (!isMounted) {
     return null; // Optionally return a loading spinner or something else until the component is mounted
   }
+
+  // Function to handle clicking on a trending question
+  const handleTrendingQuestionClick = (question: string) => {
+    sendMessage(question, 'userId'); // Trigger the sendMessage function with the question
+  };
 
   return (
     <div className="relative">
@@ -149,6 +158,23 @@ const EmptyChat = ({
           optimizationMode={optimizationMode}
           setOptimizationMode={setOptimizationMode}
         />
+
+        {/* Trending Questions Section */}
+        <div className="flex flex-wrap justify-center gap-4 mt-4">
+          {trendingQuestions.map((question, index) => (
+            <button
+              key={index}
+              onClick={() => handleTrendingQuestionClick(question)}
+              className="bg-[#212121] text-sm text-grey-500 font-small py-1 px-2 rounded-md shadow-sm border border-light-200 dark:border-dark-200 flex-shrink-0 hover:border-grey-400 dark:hover:border-grey-600 hover:bg-grey-700 dark:hover:bg-grey-900 hover:scale-105 hover:text-md transition-all duration-200"
+              style={{ maxWidth: 'calc(100% - 16px)' }} // Ensure it fits within the container
+            >
+              {question}
+            </button>
+          ))}
+        </div>
+        <a href="/" className="mt-6">
+          <img src="/MSL.png" alt="Logo" className="h-14 w-auto mx-auto" />
+        </a>
       </div>
     </div>
   );

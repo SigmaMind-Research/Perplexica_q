@@ -516,6 +516,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
 
   // Initialize Supabase client
   const supabase = createClient();
+ 
 
   useEffect(() => {
     const initializeUser = async () => {
@@ -555,10 +556,46 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
   }, [supabase, isInitialized]);
 
   const handleLogin = async () => {
-    // await supabase.auth.signOut();
-    // setUser(null);
-    window.location.href = '/login';
-  };
+    // Perform login logic here
+    const { error } = await supabase.auth.signInWithPassword({
+        email: 'user@example.com', // Replace with actual email input
+        password: 'password123', // Replace with actual password input
+    });
+
+    if (error) {
+        console.error('Login failed:', error.message);
+        return;
+    }
+
+    // Fetch session and update user state immediately
+    const { data: sessionData } = await supabase.auth.getSession();
+    setUser(sessionData?.session?.user || null); // Update user state
+    window.location.href = '/'; // Redirect to home page
+};
+
+
+// const handleLogin = async () => {
+//   const { error } = await supabase.auth.signInWithPassword({
+//     email: 'user@example.com', // Replace with actual input
+//     password: 'password123', // Replace with actual input
+//   });
+
+//   if (error) {
+//     console.error('Login failed:', error.message);
+//     return;
+//   }
+
+//   // Fetch session and update user state
+//   const { data: sessionData } = await supabase.auth.getSession();
+//   setUser(sessionData?.session?.user || null); // Update user state
+// };
+
+
+  // const handleLogin = async () => {
+  //   // await supabase.auth.signOut();
+  //   // setUser(null);
+  //   window.location.href = '/login';
+  // };
 
   // const navLinks = [
   //   {

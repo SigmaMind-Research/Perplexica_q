@@ -39,6 +39,41 @@ export default function RootLayout({
             }}
           />
         </ThemeProvider>
+         {/* Feedback Form Integration */}
+         <script
+          src="https://form.jotform.com/static/feedback2.js"
+          async
+        ></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              var componentID = new JotformFeedback({
+                type: false,
+                width: 500,
+                height: 400,
+                fontColor: "#ffffff",
+                background: "#4a4a4a",
+                isCardForm: false,
+                formId: "250072738261454",
+                buttonText: "Feedback",
+                buttonSide: "right",
+                buttonAlign: "center", // Moves button vertically centered
+                base: "https://form.jotform.com/",
+              }).componentID;
+            `,
+          }}
+        ></script>
+        <script
+          src="https://cdn.jotfor.ms/s/umd/latest/for-form-embed-handler.js"
+          async
+        ></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.jotformEmbedHandler("iframe[id='" + componentID + "_iframe']", "https://form.jotform.com/");
+            `,
+          }}
+        ></script>
       </body>
     </html>
   );
@@ -85,3 +120,85 @@ export default function RootLayout({
 //     </html>
 //   );
 // }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
