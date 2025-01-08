@@ -77,10 +77,13 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client'; // Supabase client import
+import { useRouter } from "next/navigation";
+
 
 const Account = () => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
   // Fetch user data after component mounts
@@ -119,8 +122,6 @@ const Account = () => {
       const supabase = createClient();
       await supabase.auth.signOut();
       setUser(null); // Clear user on logout
-
-      // Redirect instantly to the sidebar (or home page)
       window.location.href = '/'; // Change this to the correct path for your sidebar
     } catch (err) {
       setError('Logout failed.');

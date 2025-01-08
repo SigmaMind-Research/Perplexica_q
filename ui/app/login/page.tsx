@@ -162,21 +162,22 @@
 
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getSessionAndUser } from "@/lib/sessionService";
 import LoginForm from "./LoginForm";
 
+
 export default function LoginPage() {
   const router = useRouter(); // Router for redirection
-
+  const [user, setUser] = useState<any>(null); // User state to store logged-in user
+  
   useEffect(() => {
     const checkSession = async () => {
       try {
         const { user } = await getSessionAndUser();
 
         if (!user?.is_anonymous) {
-          // If the user is logged in, redirect to the dashboard
           router.push("/");
         }
       } catch (error) {

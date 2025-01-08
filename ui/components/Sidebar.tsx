@@ -616,7 +616,6 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
       >
         <div className="flex grow flex-col items-center justify-start gap-y-5 overflow-y-auto bg-light-secondary dark:bg-dark-secondary px-2 py-8 overflow-hidden">
           {/* Logo */}
-          {/* Logo */}
           <Link
             href="/"
             className={cn(
