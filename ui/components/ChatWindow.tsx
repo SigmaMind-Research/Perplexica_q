@@ -318,7 +318,7 @@ const ChatWindow = ({ id }: { id?: string }) => {
     return () => {
       if (ws?.readyState === 1) {
         ws.close();
-        console.log('[DEBUG] closed');
+        // console.log('[DEBUG] closed');
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

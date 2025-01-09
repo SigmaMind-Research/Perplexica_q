@@ -638,12 +638,12 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
       active: segments.length === 0 || segments.includes('c'),
       label: 'Home',
     },
-    // {
-    //   icon: Search,
-    //   href: '/explore',
-    //   active: segments.includes('explore'),
-    //   label: 'Explore',
-    // },
+    {
+      icon: Search,
+      href: '/discover',
+      active: segments.includes('discover'),
+      label: 'Explore',
+    },
   ];
 
   const handleLogout = async () => {
@@ -695,7 +695,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
           {!isCollapsed && (
             <Link
               href="/"
-              onClick={() => window.location.reload()}
+              onClick={() => window.location.href='/'}
               className="w-full px-4 py-2 mt-4 mb-2 border-2 border-grey-300 dark:border-black-700 rounded-full text-center text-sm text-black dark:text-white hover:border-[#2980b9]"
             >
               New Search
@@ -706,7 +706,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
               href="/"
               onClick={(e) => {
                 e.preventDefault(); // Prevent the default link behavior
-                window.location.reload(); // Force the page reload
+                window.location.href='/'; // Force the page reload
               }}
             >
               <SquarePen className="cursor-pointer mb-2 mr-4" />
@@ -847,21 +847,29 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
       </div>
       {/* Bottom navigation for small screens */}
 
-      <div className="fixed bottom-0 w-full z-50 flex justify-center gap-x-20 bg-light-primary dark:bg-dark-primary px-2 py-2 shadow-sm lg:hidden">
+      {/* <div className="fixed bottom-0 w-full z-50 flex justify-center gap-x-20 bg-light-primary dark:bg-dark-primary px-2 py-2 shadow-sm lg:hidden"> */}
+      <div className="fixed bottom-0 w-full z-50 flex justify-between px-4 py-2 bg-light-primary dark:bg-dark-primary shadow-sm lg:hidden">
         {mobileNavLinks.map((link, i) => (
           <Link
             href={link.href}
             key={i}
             className={cn(
               'relative flex flex-col items-center space-y-1 text-center',
-              link.active
-                ? 'text-black dark:text-white'
-                : 'text-black dark:text-white/70',
-            )}
+              // link.active
+                // ? 'text-black dark:text-white'
+                // : 'text-black dark:text-white/70',
+            // )}
+            link.active
+              ? 'text-black dark:text-white font-bold' // Highlight active link
+              : 'text-black/70 dark:text-white/70' // Dim inactive links
+          )}
           >
-            {link.active && <div className="absolute top-0 -mt-4 h-1" />}
-            <link.icon />
-            <p className="text-xs">{link.label}</p>
+            {/* // {link.active && <div className="absolute top-0 -mt-4 h-1" />} */}
+            {/* // <link.icon /> */}
+            {/* // <p className="text-xs">{link.label}</p> */}
+            {link.active && <div className="absolute top-0 -mt-4 h-1 w-6 bg-black dark:bg-white rounded-full" />} {/* Indicator */}
+          <link.icon className="text-xl" />
+          <p className="text-xs">{link.label}</p>
           </Link>
         ))}
         <Link
@@ -869,13 +877,13 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
           className="flex flex-col items-center space-y-1 text-center"
           onClick={(e) => {
             e.preventDefault(); // Prevent default link behavior
-            window.location.reload(); // Force the page reload
+            window.location.href='/'; // Force the page reload
           }}
         >
           <SquarePen className="text-xl text-black dark:text-white" />
           <span className="text-xs text-black dark:text-white">New Search</span>
         </Link>
-
+        {/* User Login/Profile Section */}
         <div className="flex flex-col items-center space-y-1">
           {user && !user.is_anonymous ? (
             // Show account info if user is logged in
@@ -893,20 +901,21 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
                 )}
               </div>
             </Link>
-          ) : (
+          // ) : (
             // Show "Profile" or "Login" based on state
-            <>
-              {!showLogin ? (
-                <div
-                  onClick={handleProfileClick}
-                  className="flex flex-col items-center space-y-1 cursor-pointer"
-                >
-                  <User className="text-xl text-black dark:text-white" />
-                  <span className="text-xs text-black dark:text-white">
-                    Profile
-                  </span>
-                </div>
-              ) : (
+            
+              // {!showLogin ? (
+                // <div
+                  // onClick={handleProfileClick}
+                  // className="flex flex-col items-center space-y-1 cursor-pointer"
+                // >
+                  // <User className="text-xl text-black dark:text-white" />
+                  // <span className="text-xs text-black dark:text-white">
+                    // Profile
+                  // </span>
+                // </div>
+              ) : 
+              (
                 <Link
                   href="/login"
                   className="flex flex-col items-center space-y-1 text-center cursor-pointer"
@@ -917,8 +926,8 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
                     Login
                   </span>
                 </Link>
-              )}
-            </>
+              // )}
+            // </>
           )}
         </div>
       </div>
