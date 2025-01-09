@@ -86,15 +86,34 @@ const EmptyChat = ({
   const [isMounted, setIsMounted] = useState(false); // State to track mounting of component
 
   // Predefined trending questions
-  const trendingQuestions = [
-    'What is the latest technology in AI?',
-    'How to improve coding skills?',
-    'What are the top programming languages of 2025?',
+  const allTrendingQuestions = [
+    "What is the latest technology in AI?",
+    "How to improve coding skills?",
+    "What are the top programming languages of 2025?",
+    "How to start a career in data science?",
+    "What are the benefits of learning JavaScript?",
+    "What is the future of blockchain?",
+    "How to create a successful startup?",
+    "What are the best practices for web development?",
+    "How to ace coding interviews?",
   ];
 
-  // Delay component mounting logic to ensure we are on the client side
+  const [trendingQuestions, setTrendingQuestions] = useState<string[]>([]);
+
+  // Shuffle array and select three random questions
+  const shuffleArray = (array: string[]) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled.slice(0, 3);
+  };
+
+  // Ensure we are on the client side
   useEffect(() => {
     setIsMounted(true);
+    setTrendingQuestions(shuffleArray(allTrendingQuestions));
   }, []);
 
   // Function to handle redirection if the user is not authenticated

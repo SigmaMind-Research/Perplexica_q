@@ -8,30 +8,39 @@ router.get('/', async (req, res) => {
   try {
     const data = (
       await Promise.all([
-        searchSearxng('site:businessinsider.com AI', {
-          engines: ['bing news'],
-          pageno: 1,
-        }),
-        searchSearxng('site:www.exchangewire.com AI', {
-          engines: ['bing news'],
-          pageno: 1,
-        }),
-        searchSearxng('site:yahoo.com AI', {
-          engines: ['bing news'],
-          pageno: 1,
-        }),
-        searchSearxng('site:businessinsider.com tech', {
-          engines: ['bing news'],
-          pageno: 1,
-        }),
-        searchSearxng('site:www.exchangewire.com tech', {
-          engines: ['bing news'],
-          pageno: 1,
-        }),
-        searchSearxng('site:yahoo.com tech', {
-          engines: ['bing news'],
-          pageno: 1,
-        }),
+        // searchSearxng('site:businessinsider.com AI', {
+          // engines: ['bing news'],
+          // pageno: 1,
+        // }),
+        // searchSearxng('site:www.exchangewire.com AI', {
+          // engines: ['bing news'],
+          // pageno: 1,
+        // }),
+        // searchSearxng('site:yahoo.com AI', {
+          // engines: ['bing news'],
+          // pageno: 1,
+        // }),
+        // searchSearxng('site:businessinsider.com tech', {
+          // engines: ['bing news'],
+          // pageno: 1,
+        // }),
+        // searchSearxng('site:www.exchangewire.com tech', {
+          // engines: ['bing news'],
+          // pageno: 1,
+        // }),
+        // searchSearxng('site:yahoo.com tech', {
+          // engines: ['bing news'],
+          // pageno: 1,
+        // }),
+        searchSearxng('site:propublica.org AI', { engines: ['bing news'], pageno: 1 }),
+        searchSearxng('site:propublica.org politics', { engines: ['bing news'], pageno: 1 }),
+        searchSearxng('site:globalvoices.org AI', { engines: ['bing news'], pageno: 1 }),
+        searchSearxng('site:wikinews.org AI', { engines: ['bing news'], pageno: 1 }),
+        // searchSearxng('site:propublica.org tech', { engines: ['bing news'], pageno: 1 }),
+        searchSearxng('site:globalvoices.org tech', { engines: ['bing news'], pageno: 1 }),
+        searchSearxng('site:globalvoices.org politics', { engines: ['bing news'], pageno: 1 }),
+        searchSearxng('site:wikinews.org tech', { engines: ['bing news'], pageno: 1 }),
+        searchSearxng('site:yahoo.com AI', {engines: ['bing news'],pageno: 1,}),
       ])
     )
       .map((result) => result.results)
