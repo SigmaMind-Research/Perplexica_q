@@ -71,7 +71,7 @@ const Page = () => {
         <div className="flex flex-col pt-4">
           <div className="flex items-center">
             <Search />
-            <h1 className="text-3xl font-medium p-2">Discover</h1>
+            <h1 className="text-3xl font-medium p-2">Explore</h1>
           </div>
           <hr className="border-t border-[#2B2C2C] my-4 w-full" />
         </div>

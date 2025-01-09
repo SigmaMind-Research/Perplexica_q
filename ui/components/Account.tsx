@@ -78,6 +78,7 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client'; // Supabase client import
 import { useRouter } from "next/navigation";
+import Navbar from './Navbar'; // Import the Navbar component
 
 
 const Account = () => {
@@ -131,7 +132,9 @@ const Account = () => {
   if (loading) return <p>Loading...</p>;
 
   return (
-    <div className="account-page flex items-center justify-center min-h-screen bg-[#1c1c1c]">
+    <div className="account-page flex items-center justify-center min-h-screen ">
+        {/* Navbar */}
+        <Navbar chatId="12345" messages={[]} />
       {error && <p className="text-red-500">{error}</p>}
 
       {user ? (

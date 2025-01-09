@@ -517,7 +517,6 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
 
   // Initialize Supabase client
   const supabase = createClient();
- 
 
   useEffect(() => {
     const initializeUser = async () => {
@@ -544,9 +543,9 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
         const sessionUser = sessionData.session.user;
 
         // if (sessionUser?.is_anonymous) {
-          // console.log('Existing anonymous user detected:', sessionUser);
+        // console.log('Existing anonymous user detected:', sessionUser);
         // } else {
-          // console.log('Logged-in user detected:', sessionUser);
+        // console.log('Logged-in user detected:', sessionUser);
         // }
 
         setUser(sessionUser);
@@ -559,38 +558,36 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
   const handleLogin = async () => {
     // Perform login logic here
     const { error } = await supabase.auth.signInWithPassword({
-        email: 'user@example.com', // Replace with actual email input
-        password: 'password123', // Replace with actual password input
+      email: 'user@example.com', // Replace with actual email input
+      password: 'password123', // Replace with actual password input
     });
 
     if (error) {
-        console.error('Login failed:', error.message);
-        return;
+      console.error('Login failed:', error.message);
+      return;
     }
 
     // Fetch session and update user state immediately
     const { data: sessionData } = await supabase.auth.getSession();
     setUser(sessionData?.session?.user || null); // Update user state
     window.location.href = '/'; // Redirect to home page
-};
+  };
 
+  // const handleLogin = async () => {
+  //   const { error } = await supabase.auth.signInWithPassword({
+  //     email: 'user@example.com', // Replace with actual input
+  //     password: 'password123', // Replace with actual input
+  //   });
 
-// const handleLogin = async () => {
-//   const { error } = await supabase.auth.signInWithPassword({
-//     email: 'user@example.com', // Replace with actual input
-//     password: 'password123', // Replace with actual input
-//   });
+  //   if (error) {
+  //     console.error('Login failed:', error.message);
+  //     return;
+  //   }
 
-//   if (error) {
-//     console.error('Login failed:', error.message);
-//     return;
-//   }
-
-//   // Fetch session and update user state
-//   const { data: sessionData } = await supabase.auth.getSession();
-//   setUser(sessionData?.session?.user || null); // Update user state
-// };
-
+  //   // Fetch session and update user state
+  //   const { data: sessionData } = await supabase.auth.getSession();
+  //   setUser(sessionData?.session?.user || null); // Update user state
+  // };
 
   // const handleLogin = async () => {
   //   // await supabase.auth.signOut();
@@ -621,6 +618,12 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
       label: 'Home',
     },
     {
+      icon: Search,
+      href: '/discover',
+      active: segments.includes('discover'),
+      label: 'Explore',
+    },
+    {
       icon: BookOpenText,
       href: user && !user.is_anonymous ? '/library' : '/login', // If authenticated, go to library, else login
       active: segments.includes('library'),
@@ -634,6 +637,12 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
       href: '/',
       active: segments.length === 0 || segments.includes('c'),
       label: 'Home',
+    },
+    {
+      icon: Search,
+      href: '/explore',
+      active: segments.includes('explore'),
+      label: 'Explore',
     },
   ];
 
@@ -686,13 +695,20 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
           {!isCollapsed && (
             <Link
               href="/"
+              onClick={() => window.location.reload()}
               className="w-full px-4 py-2 mt-4 mb-2 border-2 border-grey-300 dark:border-black-700 rounded-full text-center text-sm text-black dark:text-white hover:border-[#2980b9]"
             >
               New Search
             </Link>
           )}
           {isCollapsed && (
-            <Link href="/">
+            <Link
+              href="/"
+              onClick={(e) => {
+                e.preventDefault(); // Prevent the default link behavior
+                window.location.reload(); // Force the page reload
+              }}
+            >
               <SquarePen className="cursor-pointer mb-2 mr-4" />
             </Link>
           )}
@@ -711,9 +727,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
               >
                 <link.icon />
                 {!isCollapsed && <span className="ml-3">{link.label}</span>}
-                {link.active && (
-                  <div className="absolute right-0 h-full w-1 rounded-l-lg bg-black dark:bg-white" />
-                )}
+                {link.active && <div className="absolute right-0" />}
               </Link>
             ))}
           </VerticalIconContainer>
@@ -833,7 +847,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
       </div>
       {/* Bottom navigation for small screens */}
 
-      <div className="fixed bottom-0 w-full z-50 flex justify-center gap-x-20 bg-light-primary dark:bg-dark-primary px-2 py-2 shadow-sm lg:hidden">
+      <div className="fixed bottom-0 w-full z-50 flex justify-center gap-x-10 bg-light-primary dark:bg-dark-primary px-2 py-2 shadow-sm lg:hidden">
         {mobileNavLinks.map((link, i) => (
           <Link
             href={link.href}
@@ -845,9 +859,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
                 : 'text-black dark:text-white/70',
             )}
           >
-            {link.active && (
-              <div className="absolute top-0 -mt-4 h-1 w-full rounded-b-lg bg-black dark:bg-white" />
-            )}
+            {link.active && <div className="absolute top-0 -mt-4 h-1" />}
             <link.icon />
             <p className="text-xs">{link.label}</p>
           </Link>
@@ -855,10 +867,15 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
         <Link
           href="/"
           className="flex flex-col items-center space-y-1 text-center"
+          onClick={(e) => {
+            e.preventDefault(); // Prevent default link behavior
+            window.location.reload(); // Force the page reload
+          }}
         >
           <SquarePen className="text-xl text-black dark:text-white" />
           <span className="text-xs text-black dark:text-white">New Search</span>
         </Link>
+
         <div className="flex flex-col items-center space-y-1">
           {user && !user.is_anonymous ? (
             // Show account info if user is logged in
@@ -889,8 +906,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
                     Profile
                   </span>
                 </div>
-              ) : 
-              (
+              ) : (
                 <Link
                   href="/login"
                   className="flex flex-col items-center space-y-1 text-center cursor-pointer"
@@ -1118,3 +1134,4 @@ export default Sidebar;
 //     </div>
 //   )}
 // </div>
+
