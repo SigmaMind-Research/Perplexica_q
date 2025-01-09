@@ -638,12 +638,12 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
       active: segments.length === 0 || segments.includes('c'),
       label: 'Home',
     },
-    {
-      icon: Search,
-      href: '/explore',
-      active: segments.includes('explore'),
-      label: 'Explore',
-    },
+    // {
+    //   icon: Search,
+    //   href: '/explore',
+    //   active: segments.includes('explore'),
+    //   label: 'Explore',
+    // },
   ];
 
   const handleLogout = async () => {
@@ -847,7 +847,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
       </div>
       {/* Bottom navigation for small screens */}
 
-      <div className="fixed bottom-0 w-full z-50 flex justify-center gap-x-10 bg-light-primary dark:bg-dark-primary px-2 py-2 shadow-sm lg:hidden">
+      <div className="fixed bottom-0 w-full z-50 flex justify-center gap-x-20 bg-light-primary dark:bg-dark-primary px-2 py-2 shadow-sm lg:hidden">
         {mobileNavLinks.map((link, i) => (
           <Link
             href={link.href}
