@@ -57,7 +57,7 @@ export default function RootLayout({
                 formId: "250071808308453",
                 buttonText: "Feedback",
                 buttonSide: "right",
-                buttonAlign: "bottom", // Moves button vertically centered
+                buttonAlign: "center", // Moves button vertically centered
                 base: "https://form.jotform.com/",
               }).componentID;
             `,
