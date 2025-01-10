@@ -3,7 +3,6 @@ import {
   ChevronDown,
   Globe,
   Pencil,
-  ScanEye,
   SwatchBook,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -35,36 +34,36 @@ const focusModes = [
     description: 'Chat without searching the web',
     icon: <Pencil size={16} />,
   },
-  {
-    key: 'wolframAlphaSearch',
-    title: 'Wolfram Alpha',
-    description: 'Computational knowledge engine',
-    icon: <BadgePercent size={20} />,
-  },
-  {
-    key: 'youtubeSearch',
-    title: 'Youtube',
-    description: 'Search and watch videos',
-    icon: (
-      <SiYoutube
-        className="h-5 w-auto mr-0.5"
-        onPointerEnterCapture={undefined}
-        onPointerLeaveCapture={undefined}
-      />
-    ),
-  },
-  {
-    key: 'redditSearch',
-    title: 'Reddit',
-    description: 'Search for discussions and opinions',
-    icon: (
-      <SiReddit
-        className="h-5 w-auto mr-0.5"
-        onPointerEnterCapture={undefined}
-        onPointerLeaveCapture={undefined}
-      />
-    ),
-  },
+  // {
+  //   key: 'wolframAlphaSearch',
+  //   title: 'Wolfram Alpha',
+  //   description: 'Computational knowledge engine',
+  //   icon: <BadgePercent size={20} />,
+  // },
+  // {
+  //   key: 'youtubeSearch',
+  //   title: 'Youtube',
+  //   description: 'Search and watch videos',
+  //   icon: (
+  //     <SiYoutube
+  //       className="h-5 w-auto mr-0.5"
+  //       onPointerEnterCapture={undefined}
+  //       onPointerLeaveCapture={undefined}
+  //     />
+  //   ),
+  // },
+  // {
+  //   key: 'redditSearch',
+  //   title: 'Reddit',
+  //   description: 'Search for discussions and opinions',
+  //   icon: (
+  //     <SiReddit
+  //       className="h-5 w-auto mr-0.5"
+  //       onPointerEnterCapture={undefined}
+  //       onPointerLeaveCapture={undefined}
+  //     />
+  //   ),
+  // },
 ];
 
 const Focus = ({
@@ -89,7 +88,12 @@ const Focus = ({
             <ChevronDown size={20} />
           </div>
         ) : (
-          <ScanEye />
+          // <ScanEye />
+          <img
+          src="/focusmode.png"
+          alt=""
+          className="w-6 h-6"
+        />
         )}
       </PopoverButton>
       <Transition
