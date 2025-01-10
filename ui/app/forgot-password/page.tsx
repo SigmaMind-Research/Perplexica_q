@@ -120,7 +120,7 @@ export default function ForgotPassword() {
             </Link>
           </div>
           <div className="text-muted-foreground text-sm">
-            Don't have an account?{" "}
+            Don't have an account?{" "} {/* eslint-disable-line react/no-unescaped-entities */}
             <Link href="/register" className="underline">
               Register
             </Link>

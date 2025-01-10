@@ -13,11 +13,11 @@ export default function RegistrationConfirmation() {
             <Mail className="h-16 w-16 text-blue-500" />
           </div>
           <p className="text-gray-600 mb-4">
-            We've sent a confirmation link to your email address. Please check
+            We've sent a confirmation link to your email address. Please check {/* eslint-disable-line react/no-unescaped-entities */}
             your inbox and click the link to activate your account.
           </p>
           <p className="text-sm text-gray-500">
-            If you don't see the email, please check your spam folder.
+            If you don't see the email, please check your spam folder. {/* eslint-disable-line react/no-unescaped-entities */}
           </p>
         </CardContent>
       </Card>

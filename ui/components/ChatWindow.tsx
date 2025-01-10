@@ -184,7 +184,7 @@ const useSocket = (
               }
             }, 5);
             clearTimeout(timeoutId);
-            console.log('[DEBUG] opened');
+            // console.log('[DEBUG] opened');
           }
           if (data.type === 'error') {
             toast.error(data.data);
@@ -200,7 +200,7 @@ const useSocket = (
         ws.onclose = () => {
           clearTimeout(timeoutId);
           setError(true);
-          console.log('[DEBUG] closed');
+          // console.log('[DEBUG] closed');
         };
 
         setWs(ws);
@@ -252,7 +252,7 @@ const loadMessages = async (
     return [msg.role, msg.content];
   }) as [string, string][];
 
-  console.log('[DEBUG] messages loaded');
+  // console.log('[DEBUG] messages loaded');
 
   document.title = messages[0].content;
 
@@ -333,7 +333,7 @@ const ChatWindow = ({ id }: { id?: string }) => {
   useEffect(() => {
     if (isMessagesLoaded && isWSReady) {
       setIsReady(true);
-      console.log('[DEBUG] ready');
+      // console.log('[DEBUG] ready');
     }
   }, [isMessagesLoaded, isWSReady]);
 
