@@ -32,7 +32,6 @@ router.get('/:id', async (req, res) => {
     const chatMessages = await db.query.messages.findMany({
       where: eq(messages.chatId, req.params.id),
     });
-
     return res.status(200).json({ chat: chatExists, messages: chatMessages });
   } catch (err) {
     res.status(500).json({ message: 'An error has occurred.' });
@@ -45,7 +44,7 @@ router.delete(`/:id`, async (req, res) => {
     const chatExists = await db.query.chats.findFirst({
       where: eq(chats.id, req.params.id),
     });
-
+    
     if (!chatExists) {
       return res.status(404).json({ message: 'Chat not found' });
     }

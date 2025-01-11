@@ -230,8 +230,8 @@ const loadMessages = async (
       },
     },
   );
-
   if (res.status === 404) {
+    console.log(res);
     setNotFound(true);
     setIsMessagesLoaded(true);
     return;
@@ -253,7 +253,6 @@ const loadMessages = async (
   }) as [string, string][];
 
   // console.log('[DEBUG] messages loaded');
-
   document.title = messages[0].content;
 
   setChatHistory(history);
