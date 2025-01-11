@@ -533,8 +533,6 @@ const MessageBox = ({
                 )}
             </div>
 
-            {/* <SearchImages message={message} />    
-            <SearchVideos message={message} /> */}
 
             {/* <div className="lg:sticky lg:top-20 flex flex-col items-center space-y-3 w-full lg:w-3/12 z-30 h-full pb-4">
               <SearchImages

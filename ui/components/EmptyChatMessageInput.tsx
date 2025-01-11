@@ -403,15 +403,15 @@ const EmptyChatMessageInput = ({
   const fetchSuggestions = async (query: string) => {
     if (query.trim()) {
       try {
-        const googleSuggestUrl = `http://suggestqueries.google.com/complete/search?output=firefox&q=${encodeURIComponent(query)}`;
-        const response = await fetch(googleSuggestUrl);
-        
+        // const googleSuggestUrl = `http://suggestqueries.google.com/complete/search?output=firefox&q=${encodeURIComponent(query)}`;
+        // const response = await fetch(googleSuggestUrl,{mode:'no-cors'});
+        const response = await fetch(`/api/suggestions?query=${encodeURIComponent(query)}`);
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error('No suggested query');
         }
 
         const data = await response.json();
-        console.log('Suggestions fetched:', data); // Log the suggestions
+        // console.log('Suggestions fetched:', data); // Log the suggestions
         
         // The suggestions are in the second element of the returned array
         if (Array.isArray(data[1])) {
@@ -477,13 +477,13 @@ const EmptyChatMessageInput = ({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
-    console.log('Input changed:', value); // Log input changes
+    // console.log('Input changed:', value); // Log input changes
     setMessage(value);
     fetchSuggestions(value); // Fetch suggestions as the user types
   };
 
   const handleSuggestionClick = (suggestion: string) => {
-    console.log('Suggestion clicked:', suggestion); // Log clicked suggestion
+    // console.log('Suggestion clicked:', suggestion); // Log clicked suggestion
     setMessage(suggestion);
     setSuggestions([]); // Clear suggestions after selecting one
     inputRef.current?.focus();
@@ -513,21 +513,6 @@ const EmptyChatMessageInput = ({
           placeholder="Ask anything..."
         />
 
-        {/* Suggestions Dropdown */}
-        {suggestions.length > 0 && (
-          <ul className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-md mt-2 max-h-48 overflow-y-auto">
-            {suggestions.map((suggestion, index) => (
-              <li
-                key={index}
-                onClick={() => handleSuggestionClick(suggestion)}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-              >
-                {suggestion}
-              </li>
-            ))}
-          </ul>
-        )}
-
         <div className="flex flex-row items-center justify-between mt-4">
           <div className="flex flex-row items-center space-x-4">
             <Focus focusMode={focusMode} setFocusMode={setFocusMode} />
@@ -545,6 +530,21 @@ const EmptyChatMessageInput = ({
             </button>
           </div>
         </div>
+        {/* Suggestions Dropdown */}
+        {suggestions.length > 0 && (
+          <ul className="relative flex flex-col bg-light-secondary dark:bg-dark-secondary px-5 pt-5 pb-2 rounded-lg w-full border border-light-200 dark:border-dark-200 w-full z-10">
+          {/* {suggestions.map((suggestion, index) => ( */}
+            {suggestions.slice(0, 6).map((suggestion, index) => (
+              <li
+                key={index}
+                className="px-4 py-2 hover:bg-gray-800 cursor-pointer text-white transition-all"
+                onClick={() => handleSuggestionClick(suggestion)}
+              >
+                {suggestion}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </form>
   );

@@ -492,7 +492,7 @@ const VerticalIconContainer = ({ children }: { children: ReactNode }) => {
 const Sidebar = ({ children }: { children: React.ReactNode }) => {
   const segments = useSelectedLayoutSegments();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false); // State to handle sidebar collapse/expand
+  const [isCollapsed, setIsCollapsed] = useState(true); // State to handle sidebar collapse/expand
   const [user, setUser] = useState<any>(null); // User state to store logged-in user
   const [isLogoutCardVisible, setIsLogoutCardVisible] = useState(false); // State for logout card visibility
   const isInitialized = useRef(false); // Prevent multiple initializations
