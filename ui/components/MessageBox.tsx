@@ -452,7 +452,7 @@ const MessageBox = ({
           <div className="flex flex-col space-y-9 lg:w-9/12">
             <div ref={dividerRef} className="flex flex-col space-y-6">
               <div className="flex flex-col space-y-2">
-                <div className="flex flex-row space-x-4 overflow-x-auto w-3/4 mx-auto ml-7">
+                {/*<div className="flex flex-row space-x-4 overflow-x-auto w-3/4 mx-auto ml-7">
                   <SearchImages
                     query={
                       messageIndex > 0 ? history[messageIndex - 1]?.content : ''
@@ -465,8 +465,21 @@ const MessageBox = ({
                       messageIndex > 0 ? history[messageIndex - 1]?.content : ''
                     }
                   />
+                </div>*/}
+                <div className="flex flex-col lg:grid lg:grid-cols-2 lg:gap-8 w-full lg:w-1/2 z-30 h-full pb-4">
+                  <div className="w-full">
+                    <SearchImages
+                      query={history[messageIndex - 1].content}
+                      chatHistory={history.slice(0, messageIndex - 1)}
+                    />
+                  </div>
+                  <div className="w-full">
+                    <SearchVideos
+                      chatHistory={history.slice(0, messageIndex - 1)}
+                      query={history[messageIndex - 1].content}
+                    />
+                  </div>
                 </div>
-
                 <div className="flex flex-row items-center space-x-2">
                   <Disc3
                     className={cn(
@@ -555,8 +568,8 @@ const MessageBox = ({
                   </div>
                 )}
             </div>
-
-            {/* <div className="lg:sticky lg:top-20 flex flex-col items-center space-y-3 w-full lg:w-3/12 z-30 h-full pb-4">
+          </div>
+          {/* <div className="lg:sticky lg:top-20 flex flex-col items-center space-y-3 w-full lg:w-3/12 z-30 h-full pb-4">
               <SearchImages
                 query={history[messageIndex - 1].content}
                 chatHistory={history.slice(0, messageIndex - 1)}
@@ -565,8 +578,7 @@ const MessageBox = ({
                 chatHistory={history.slice(0, messageIndex - 1)}
                 query={history[messageIndex - 1].content}
               />
-            </div>  */}
-          </div>
+          </div> */}
         </div>
       )}
     </div>
