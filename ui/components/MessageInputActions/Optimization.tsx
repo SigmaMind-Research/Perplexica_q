@@ -15,12 +15,12 @@ const OptimizationModes = [
     description: 'Prioritize speed and get the quickest possible answer.',
     icon: <Zap size={20} className="text-[#FF9800]" />,
   },
-  {
-    key: 'balanced',
-    title: 'Balanced',
-    description: 'Find the right balance between speed and accuracy',
-    icon: <Sliders size={20} className="text-[#4CAF50]" />,
-  },
+  // {
+    // key: 'balanced',
+    // title: 'Balanced',
+    // description: 'Find the right balance between speed and accuracy',
+    // icon: <Sliders size={20} className="text-[#4CAF50]" />,
+  // },
   // {
   //   key: 'quality',
   //   title: 'Quality (Soon)',
@@ -32,6 +32,17 @@ const OptimizationModes = [
   //     />
   //   ),
   // },
+  {
+      key: 'other modes',
+      title: 'Coming Soon',
+      description: 'Great answer required latest model',
+      icon: (
+        <Star
+          size={16}
+          className="text-[#2196F3] dark:text-[#BBDEFB] fill-[#BBDEFB] dark:fill-[#2196F3]"
+        />
+      ),
+    },
 ];
 
 const Optimization = ({
@@ -76,7 +87,8 @@ const Optimization = ({
               <PopoverButton
                 onClick={() => setOptimizationMode(mode.key)}
                 key={i}
-                disabled={mode.key === 'quality'}
+                // disabled={mode.key === 'quality'}
+                disabled={mode.key === 'other modes'}
                 className={cn(
                   'p-2 rounded-lg flex flex-col items-start justify-start text-start space-y-1 duration-200 cursor-pointer transition',
                   optimizationMode === mode.key
