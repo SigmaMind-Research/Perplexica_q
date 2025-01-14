@@ -219,6 +219,8 @@ import Markdown from 'markdown-to-jsx';
 import Copy from './MessageActions/Copy';
 import Rewrite from './MessageActions/Rewrite';
 import { useSpeech } from 'react-text-to-speech';
+import SearchImages from './SearchImages';
+import SearchVideos from './SearchVideos';
 
 const MessageBox = ({
   message,
@@ -270,7 +272,7 @@ const MessageBox = ({
     <div>
       {message.role === 'user' && (
         <div className={cn('w-full', messageIndex === 0 ? 'pt-16' : 'pt-8')}>
-          <h2 className="text-black dark:text-white font-medium text-3xl lg:w-9/12 mx-auto text-center">
+          <h2 className="text-black dark:text-white font-medium text-3xl lg:w-9/12 mx-auto text-center mr-2 break-words">
             {message.content}
           </h2>
         </div>
@@ -335,8 +337,10 @@ const MessageBox = ({
 
                 {/* Card wrapping the sources for large screens */}
                 <div className="hidden lg:flex flex-col space-y-1 p-3 rounded-lg bg-light-secondary dark:bg-dark-secondary shadow-md">
-                <h2 className="text-sm text-black dark:text-white mb-1">Resources</h2>
-                <hr className="border-t border-gray-500" />
+                  <h2 className="text-sm text-black dark:text-white mb-1">
+                    Resources
+                  </h2>
+                  <hr className="border-t border-gray-500" />
 
                   {message.sources.map((source, i) => (
                     <div
@@ -393,49 +397,53 @@ const MessageBox = ({
                 </button>
               </div>
               <div className="p-4">
-                {message.sources && message.sources.map((source, i) => (
-                  <div
-                    key={i}
-                    className="block p-2 mb-1 bg-light-secondary dark:bg-dark-secondary rounded-lg shadow-md"
-                  >
-                    <div className="flex flex-row items-center space-x-2 cursor-pointer">
-                      {/* Make the favicon clickable */}
-                      <a
-                        href={source.metadata.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <img
-                          src={`https://s2.googleusercontent.com/s2/favicons?domain_url=${source.metadata.url}`}
-                          width={20}
-                          height={20}
-                          alt="favicon"
-                          className="rounded-full"
-                        />
-                      </a>
-                      <div>
-                        {/* Make the title clickable */}
+                {message.sources &&
+                  message.sources.map((source, i) => (
+                    <div
+                      key={i}
+                      className="block p-2 mb-1 bg-light-secondary dark:bg-dark-secondary rounded-lg shadow-md"
+                    >
+                      <div className="flex flex-row items-center space-x-2 cursor-pointer">
+                        {/* Make the favicon clickable */}
                         <a
                           href={source.metadata.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-sm text-black dark:text-white truncate max-w-[200px] sm:max-w-[300px] block"
                         >
-                          {source.metadata.title}
+                          <img
+                            src={`https://s2.googleusercontent.com/s2/favicons?domain_url=${source.metadata.url}`}
+                            width={20}
+                            height={20}
+                            alt="favicon"
+                            className="rounded-full"
+                          />
                         </a>
-                        {/* Make the URL clickable */}
-                        <a
-                          href={source.metadata.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-black/50 dark:text-white/50 overflow-hidden whitespace-nowrap text-ellipsis block"
-                        >
-                          {source.metadata.url.replace(/.+\/\/|www.|\..+/g, '')}
-                        </a>
+                        <div>
+                          {/* Make the title clickable */}
+                          <a
+                            href={source.metadata.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-black dark:text-white truncate max-w-[200px] sm:max-w-[300px] block"
+                          >
+                            {source.metadata.title}
+                          </a>
+                          {/* Make the URL clickable */}
+                          <a
+                            href={source.metadata.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-black/50 dark:text-white/50 overflow-hidden whitespace-nowrap text-ellipsis block"
+                          >
+                            {source.metadata.url.replace(
+                              /.+\/\/|www.|\..+/g,
+                              '',
+                            )}
+                          </a>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </div>
           )}
@@ -444,6 +452,34 @@ const MessageBox = ({
           <div className="flex flex-col space-y-9 lg:w-9/12">
             <div ref={dividerRef} className="flex flex-col space-y-6">
               <div className="flex flex-col space-y-2">
+                {/*<div className="flex flex-row space-x-4 overflow-x-auto w-3/4 mx-auto ml-7">
+                  <SearchImages
+                    query={
+                      messageIndex > 0 ? history[messageIndex - 1]?.content : ''
+                    }
+                    chatHistory={history.slice(0, messageIndex - 1)}
+                  />
+                  <SearchVideos
+                    chatHistory={history.slice(0, messageIndex - 1)}
+                    query={
+                      messageIndex > 0 ? history[messageIndex - 1]?.content : ''
+                    }
+                  />
+                </div>*/}
+                <div className="flex flex-col lg:grid lg:grid-cols-2 lg:gap-8 w-full lg:w-1/2 z-30 h-full pb-4">
+                  <div className="w-full">
+                    <SearchImages
+                      query={history[messageIndex - 1].content}
+                      chatHistory={history.slice(0, messageIndex - 1)}
+                    />
+                  </div>
+                  <div className="w-full">
+                    <SearchVideos
+                      chatHistory={history.slice(0, messageIndex - 1)}
+                      query={history[messageIndex - 1].content}
+                    />
+                  </div>
+                </div>
                 <div className="flex flex-row items-center space-x-2">
                   <Disc3
                     className={cn(
@@ -452,10 +488,12 @@ const MessageBox = ({
                     )}
                     size={20}
                   />
+
                   <h3 className="text-black dark:text-white font-medium text-xl">
                     Answer
                   </h3>
                 </div>
+
                 <Markdown
                   className={cn(
                     'prose dark:prose-invert prose-p:leading-relaxed prose-pre:p-0',
@@ -530,11 +568,8 @@ const MessageBox = ({
                   </div>
                 )}
             </div>
-
-            {/* <SearchImages message={message} />    
-            <SearchVideos message={message} /> */}
-
-            {/* <div className="lg:sticky lg:top-20 flex flex-col items-center space-y-3 w-full lg:w-3/12 z-30 h-full pb-4">
+          </div>
+          {/* <div className="lg:sticky lg:top-20 flex flex-col items-center space-y-3 w-full lg:w-3/12 z-30 h-full pb-4">
               <SearchImages
                 query={history[messageIndex - 1].content}
                 chatHistory={history.slice(0, messageIndex - 1)}
@@ -543,8 +578,7 @@ const MessageBox = ({
                 chatHistory={history.slice(0, messageIndex - 1)}
                 query={history[messageIndex - 1].content}
               />
-            </div> */}
-          </div>
+          </div> */}
         </div>
       )}
     </div>

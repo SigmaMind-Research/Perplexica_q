@@ -396,7 +396,8 @@ const createBasicWebSearchAnsweringChain = (
     }
 
     if (query.toLocaleLowerCase() === 'summarize') {
-      return docs.slice(0, 15)
+      // return docs.slice(0, 15)
+      return docs.slice(0,6)
     }
     // console.log("Query being passed to rerankDocs:", query); // Log the query
     const docsWithContent = docs.filter(

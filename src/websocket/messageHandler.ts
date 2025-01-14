@@ -12,11 +12,12 @@ import logger from '../utils/logger';
 import db from '../db';
 import { chats, messages as messagesSchema } from '../db/schema';
 import { eq, asc, gt } from 'drizzle-orm';
-import crypto from 'crypto';
+import crypto, { UUID } from 'crypto';
 
 type Message = {
   messageId: string;
   chatId: string;
+  userId:string;
   content: string;
 };
 
@@ -106,8 +107,8 @@ export const handleMessage = async (
     const parsedWSMessage = JSON.parse(message) as WSMessage;
     const parsedMessage = parsedWSMessage.message;
 
-    const humanMessageId =
-      parsedMessage.messageId ?? crypto.randomBytes(7).toString('hex');
+    const humanMessageId = crypto.randomBytes(7).toString('hex');
+      // parsedMessage.messageId ?? crypto.randomBytes(7).toString('hex');
     const aiMessageId = crypto.randomBytes(7).toString('hex');
 
     if (!parsedMessage.content)
@@ -150,11 +151,13 @@ export const handleMessage = async (
         });
 
         if (!chat) {
+          // console.log(parsedMessage.userId);
           await db
             .insert(chats)
             .values({
               id: parsedMessage.chatId,
               title: parsedMessage.content,
+              userId:parsedMessage.userId,
               createdAt: new Date().toString(),
               focusMode: parsedWSMessage.focusMode,
             })

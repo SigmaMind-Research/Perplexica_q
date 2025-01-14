@@ -71,7 +71,7 @@ const Page = () => {
         <div className="flex flex-col pt-4">
           <div className="flex items-center">
             <Search />
-            <h1 className="text-3xl font-medium p-2">Discover</h1>
+            <h1 className="text-3xl font-medium p-2">Explore</h1>
           </div>
           <hr className="border-t border-[#2B2C2C] my-4 w-full" />
         </div>
@@ -83,7 +83,7 @@ const Page = () => {
                 href={`/?q=Summary: ${item.url}`}
                 key={i}
                 className="max-w-sm rounded-lg overflow-hidden bg-light-secondary dark:bg-dark-secondary hover:-translate-y-[1px] transition duration-200"
-                target="_blank"
+                // target="_blank"
               >
                 <img
                   className="object-cover w-full aspect-video"

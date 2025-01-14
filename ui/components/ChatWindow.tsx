@@ -10,10 +10,13 @@ import { toast } from 'sonner';
 import { useSearchParams } from 'next/navigation';
 import { getSuggestions } from '@/lib/actions';
 import Error from 'next/error';
+import { createClient } from '@/utils/supabase/client';
+
 
 export type Message = {
   messageId: string;
   chatId: string;
+  userId:string;
   createdAt: Date;
   content: string;
   role: 'user' | 'assistant';
@@ -181,7 +184,7 @@ const useSocket = (
               }
             }, 5);
             clearTimeout(timeoutId);
-            console.log('[DEBUG] opened');
+            // console.log('[DEBUG] opened');
           }
           if (data.type === 'error') {
             toast.error(data.data);
@@ -197,7 +200,7 @@ const useSocket = (
         ws.onclose = () => {
           clearTimeout(timeoutId);
           setError(true);
-          console.log('[DEBUG] closed');
+          // console.log('[DEBUG] closed');
         };
 
         setWs(ws);
@@ -227,8 +230,8 @@ const loadMessages = async (
       },
     },
   );
-
   if (res.status === 404) {
+    console.log(res);
     setNotFound(true);
     setIsMessagesLoaded(true);
     return;
@@ -249,8 +252,7 @@ const loadMessages = async (
     return [msg.role, msg.content];
   }) as [string, string][];
 
-  console.log('[DEBUG] messages loaded');
-
+  // console.log('[DEBUG] messages loaded');
   document.title = messages[0].content;
 
   setChatHistory(history);
@@ -315,7 +317,7 @@ const ChatWindow = ({ id }: { id?: string }) => {
     return () => {
       if (ws?.readyState === 1) {
         ws.close();
-        console.log('[DEBUG] closed');
+        // console.log('[DEBUG] closed');
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -330,11 +332,20 @@ const ChatWindow = ({ id }: { id?: string }) => {
   useEffect(() => {
     if (isMessagesLoaded && isWSReady) {
       setIsReady(true);
-      console.log('[DEBUG] ready');
+      // console.log('[DEBUG] ready');
     }
   }, [isMessagesLoaded, isWSReady]);
 
   const sendMessage = async (message: string, messageId?: string) => {
+    const supabase = createClient()
+      const { data, error } = await supabase.auth.getSession();
+
+      if (error || !data.session) {
+        console.error('Failed to fetch session:', error);
+        return;
+      }
+// 
+      const userId = data.session.user.id; // Get the user ID from session
     if (loading) return;
 
     setLoading(true);
@@ -352,6 +363,7 @@ const ChatWindow = ({ id }: { id?: string }) => {
         message: {
           messageId: messageId,
           chatId: chatId!,
+          userId: userId, // Include the userId here
           content: message,
         },
         focusMode: focusMode,
@@ -366,6 +378,7 @@ const ChatWindow = ({ id }: { id?: string }) => {
         content: message,
         messageId: messageId,
         chatId: chatId!,
+        userId:userId,
         role: 'user',
         createdAt: new Date(),
       },
@@ -389,6 +402,7 @@ const ChatWindow = ({ id }: { id?: string }) => {
               content: '',
               messageId: data.messageId,
               chatId: chatId!,
+              userId:userId,
               role: 'assistant',
               sources: sources,
               createdAt: new Date(),
@@ -407,6 +421,7 @@ const ChatWindow = ({ id }: { id?: string }) => {
               content: data.data,
               messageId: data.messageId,
               chatId: chatId!,
+              userId:userId,
               role: 'assistant',
               sources: sources,
               createdAt: new Date(),

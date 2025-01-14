@@ -18,7 +18,7 @@
   // focusMode: text('focusMode').notNull(),
 // });
 // 
-import { json,pgTable, serial, text, varchar, timestamp } from 'drizzle-orm/pg-core';
+import { json,pgTable, serial, text, varchar, timestamp,uuid } from 'drizzle-orm/pg-core';
 
 export const messages = pgTable('messages', {
   id: serial('id').primaryKey(), // Auto-incrementing ID
@@ -32,9 +32,22 @@ export const messages = pgTable('messages', {
 export const chats = pgTable('chats', {
   id: varchar('id', { length: 255 }).primaryKey(), // UUID or text ID
   title: text('title').notNull(), // Title column
+  userId: uuid('userId'), // Use UUID type for userId
+  // userId:varchar('userId', { length: 255 }),
   createdAt: text('createdAt').notNull(), // Timestamp with default
   focusMode: text('focusMode').notNull(), // Focus mode as text
 });
 
 // potatoai@123
-// postgresql://postgres:[YOUR-PASSWORD]@db.lqfncvigfsrmhownygra.supabase.co:5432/postgres
+// postgresql://postgres:[YOUR-PASSWORD]@db.lqfncvigfsrmhownygra.supabase.co:5432/postgres 
+
+
+
+
+
+
+
+
+
+
+
