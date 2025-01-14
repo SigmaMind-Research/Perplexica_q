@@ -137,6 +137,16 @@
     "@esbuild-kit/core-utils" "^3.3.2"
     get-tsconfig "^4.7.0"
 
+"@esbuild/linux-x64@0.18.20":
+  version "0.18.20"
+  resolved "https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.18.20.tgz"
+  integrity sha512-UYqiqemphJcNsFEskc73jQ7B9jgwjWrSayxawS6UVFZGWrAAtkzjxSqnoclCXxWtfwLdzU+vTpcNYhpn43uP1w==
+
+"@esbuild/linux-x64@0.19.12":
+  version "0.19.12"
+  resolved "https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.19.12.tgz"
+  integrity sha512-B71g1QpxfwBvNrfyJdVDexenDIt1CiDN1TIXLbhOw0KhJzE78KIFGX6OJ9MrtC0oOqMWf+0xop4qEU8JrJTwCg==
+
 "@huggingface/jinja@^0.2.2":
   version "0.2.2"
   resolved "https://registry.npmjs.org/@huggingface/jinja/-/jinja-0.2.2.tgz"
@@ -1300,7 +1310,12 @@ expr-eval@^2.0.2:
   resolved "https://registry.npmjs.org/expr-eval/-/expr-eval-2.0.2.tgz"
   integrity sha512-4EMSHGOPSwAfBiibw3ndnP0AvjDWLsMvGOvWEZ2F96IGk0bIVdjQisOHxReSkE13mHcfbuCiXw+G4y0zv6N8Eg==
 
-express@^4.19.2:
+express-rate-limit@^7.5.0:
+  version "7.5.0"
+  resolved "https://registry.npmjs.org/express-rate-limit/-/express-rate-limit-7.5.0.tgz"
+  integrity sha512-eB5zbQh5h+VenMPM3fh+nw1YExi5nMr6HUCR62ELSP11huvxm/Uir1H1QEyTkk5QX6A58pX6NmaTMceKZ0Eodg==
+
+"express@^4.11 || 5 || ^5.0.0-beta.1", express@^4.19.2:
   version "4.21.2"
   resolved "https://registry.npmjs.org/express/-/express-4.21.2.tgz"
   integrity sha512-28HqgMZAmih1Czt9ny7qr6ek2qddF4FclbMzwhCREB6OFfH+rXAnuNCwo1/wFvrtbgsQDb4kSbX9de9lFbrXnA==
