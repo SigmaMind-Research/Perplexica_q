@@ -248,6 +248,7 @@ const loadMessages = async (
 
   setMessages(messages);
 
+  
   const history = messages.map((msg) => {
     return [msg.role, msg.content];
   }) as [string, string][];

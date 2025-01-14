@@ -472,6 +472,7 @@ import {
   SquarePen,
   ArrowRightCircle,
   LogIn,
+  Plus,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useSelectedLayoutSegments } from 'next/navigation';
@@ -630,6 +631,13 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
       label: 'Library',
       disabled: !user || user.is_anonymous, // Disable the link if no user or if the user is anonymous
     },
+    {
+      icon: Plus,
+      href: '/project',
+      active: segments.includes('project'),
+      label: 'Project',
+    },
+    
   ];
   const mobileNavLinks = [
     {

@@ -267,6 +267,7 @@ const MessageBox = ({
   }, [message.content, message.sources, message.role]);
 
   const { speechStatus, start, stop } = useSpeech({ text: speechMessage });
+  
 
   return (
     <div>
@@ -455,14 +456,14 @@ const MessageBox = ({
                 <div className="flex flex-row space-x-4 overflow-x-auto w-3/4 mx-auto ml-7">
                   <SearchImages
                     query={
-                      messageIndex > 0 ? history[messageIndex - 1]?.content : ''
+                      messageIndex > 0 ? history[messageIndex - 1].content : ''
                     }
                     chatHistory={history.slice(0, messageIndex - 1)}
                   />
                   <SearchVideos
                     chatHistory={history.slice(0, messageIndex - 1)}
                     query={
-                      messageIndex > 0 ? history[messageIndex - 1]?.content : ''
+                      messageIndex > 0 ? history[messageIndex - 1].content : ''
                     }
                   />
                 </div>
