@@ -1,10 +1,10 @@
+
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 // Define a type for a project
 interface Project {
   id: string;
-  title: string;
-  heading: string; // Added heading property
+  heading: string;
   description: string;
   completed: boolean;
 }
@@ -26,7 +26,7 @@ const initialState = {
   isOpenModal: false,
   currentProject: {
     id: null as string | null, // Allow id to be null initially
-    title: "",
+    heading: "",
     description: "",
   },
   filterMode: "All",
@@ -43,12 +43,12 @@ const ProjectSlice = createSlice({
       setProjects(state.projects); // Persist changes to localStorage
     },
 
-    // Edit a project's title or description
-    editProject: (state, action: PayloadAction<{ id: string; title: string; description: string }>) => {
-      const { id, title, description } = action.payload;
+    // Edit a project's heading or description
+    editProject: (state, action: PayloadAction<{ id: string; heading: string; description: string }>) => {
+      const { id, heading, description } = action.payload;
       const project = state.projects.find((item) => item.id === id);
       if (project) {
-        project.title = title;
+        project.heading = heading;
         project.description = description;
         setProjects(state.projects); // Persist changes to localStorage
       }
@@ -87,13 +87,13 @@ const ProjectSlice = createSlice({
       state.isOpenModal = false;
     },
 
-    // Find a project by ID for editing or viewing
+    // Find a project by ID and populate currentProject (only heading and description)
     findProject: (state, action: PayloadAction<string>) => {
       const id = action.payload;
       const project = state.projects.find((item) => item.id === id);
       if (project) {
         state.currentProject.id = project.id;
-        state.currentProject.title = project.title;
+        state.currentProject.heading = project.heading;
         state.currentProject.description = project.description;
       }
     },
@@ -117,4 +117,4 @@ export const {
   filter,
 } = ProjectSlice.actions;
 
-export default ProjectSlice.reducer;
+export default ProjectSlice.reducer; 

@@ -1,29 +1,28 @@
+
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { closeModal, editProject } from "@/redux/slices/ProjectSlice";
 import { RootState } from "@/redux/store"; // Update the path based on your project structure
-
 const Modal = () => {
   const dispatch = useDispatch();
-
+      
   // Accessing the current project from Redux state
   const currentProject = useSelector((state: RootState) => state.project.currentProject);
 
-  // Ensure the `currentProject` has valid values
-  const { id, title, description } = currentProject || { id: "", title: "", description: "" };
-
+  const { id, heading, description } = currentProject || { id: "", heading: "", description: "" };
+  
   // Local state for the input fields
-  const [projectTitle, setProjectTitle] = useState(title || "");
+  const [projectHeading, setProjectHeading] = useState(heading || "");
   const [projectDescription, setProjectDescription] = useState(description || "");
 
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (projectTitle.trim() === "" || projectDescription.trim() === "") return;
+    if (projectHeading.trim() === "" || projectDescription.trim() === "") return;
 
     // Dispatch the editProject action with updated values
-    dispatch(editProject({ id: id || "", title: projectTitle, description: projectDescription }));
-    dispatch(closeModal());
+    dispatch(editProject({ id: id || "", heading: projectHeading, description: projectDescription }));
+    dispatch(closeModal());  // Close the modal after saving
   };
 
   return (
@@ -37,8 +36,8 @@ const Modal = () => {
             type="text"
             className="border-b-4 border-custom-blue rounded-lg px-3 py-2 outline-blue-500 w-full dark:text-custom-white dark:bg-slate-700 dark:border-custom-white"
             placeholder="Edit project title"
-            value={projectTitle}
-            onChange={(e) => setProjectTitle(e.target.value)}
+            value={projectHeading}
+            onChange={(e) => setProjectHeading(e.target.value)}
             autoFocus
           />
           <textarea
@@ -70,4 +69,4 @@ const Modal = () => {
   );
 };
 
-export default Modal;
+export default Modal;  

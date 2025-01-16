@@ -1,32 +1,32 @@
+
 import React, { useState } from "react"; 
 import { useDispatch } from "react-redux";
-import { addProject } from "@/redux/slices/ProjectSlice"; // Ensure this is correctly importing the action
+import { addProject } from "@/redux/slices/ProjectSlice";
 
 const ProjectForm = () => {
   const dispatch = useDispatch();
-  const [title, setTitle] = useState(""); // Renamed 'project' to 'title'
-  const [heading, setHeading] = useState(""); // Project title
-  const [description, setDescription] = useState(""); // New state for description
+  const [heading, setHeading] = useState(""); // Project heading
+  const [description, setDescription] = useState(""); // Project description
   const [isFormVisible, setIsFormVisible] = useState(false); // Toggle form visibility
 
-  const handleSubmit = (e: React.FormEvent) => { // Explicitly typed event
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (title.trim() === "" || heading.trim() === "") return;
+    if (heading.trim() === "" || description.trim() === "") return;
 
-    // Dispatch action with 'heading', 'title', 'description', and other properties
-    dispatch(addProject({
-      heading,
-      title,
-      description, // Include description here
-      id: Date.now().toString(),
-      completed: false
-    }));
+    // Dispatch action with 'heading' and 'description'
+    dispatch(
+      addProject({
+        heading,
+        description,
+        id: Date.now().toString(),
+        completed: false,
+      })
+    );
 
     // Clear inputs after submission
-    setTitle(""); // Clear 'title' state
-    setHeading(""); // Clear 'heading' state
-    setDescription(""); // Clear 'description' state
+    setHeading("");
+    setDescription("");
   };
 
   return (
@@ -48,23 +48,16 @@ const ProjectForm = () => {
           <input
             type="text"
             className="border-b-4 border-custom-blue rounded-lg px-3 py-2 outline-blue-500 w-full dark:text-custom-white dark:bg-slate-700 dark:border-custom-white"
-            placeholder="Add a heading (title)"
+            placeholder="Add a heading"
             value={heading}
             onChange={(e) => setHeading(e.target.value)}
           />
-          <input
-            type="text"
-            className="border-b-4 border-custom-blue rounded-lg px-3 py-2 outline-blue-500 w-full dark:text-custom-white dark:bg-slate-700 dark:border-custom-white"
-            placeholder="Add a new project"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-          <input
-            type="text"
+          <textarea
             className="border-b-4 border-custom-blue rounded-lg px-3 py-2 outline-blue-500 w-full dark:text-custom-white dark:bg-slate-700 dark:border-custom-white"
             placeholder="Add a description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            rows={2}
           />
           <button
             type="submit"
