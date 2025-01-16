@@ -381,6 +381,9 @@ import TextareaAutosize from 'react-textarea-autosize';
 import Focus from './MessageInputActions/Focus';
 import Optimization from './MessageInputActions/Optimization';
 import { createClient } from '@/utils/supabase/client';
+import Attach from './MessageInputActions/Attach';
+import { File } from './ChatWindow';
+
 
 const EmptyChatMessageInput = ({
   sendMessage,
@@ -388,12 +391,20 @@ const EmptyChatMessageInput = ({
   setFocusMode,
   optimizationMode,
   setOptimizationMode,
+  fileIds,
+  setFileIds,
+  files,
+  setFiles,
 }: {
   sendMessage: (message: string, userId: string) => void;
   focusMode: string;
   setFocusMode: (mode: string) => void;
   optimizationMode: string;
   setOptimizationMode: (mode: string) => void;
+  fileIds: string[];
+  setFileIds: (fileIds: string[]) => void;
+  files: File[];
+  setFiles: (files: File[]) => void;
 }) => {
   const [message, setMessage] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]); // For search suggestions
@@ -516,6 +527,14 @@ const EmptyChatMessageInput = ({
         <div className="flex flex-row items-center justify-between mt-4">
           <div className="flex flex-row items-center space-x-4">
             <Focus focusMode={focusMode} setFocusMode={setFocusMode} />
+            <Attach
+              fileIds={fileIds}
+              setFileIds={setFileIds}
+              files={files}
+              setFiles={setFiles}
+              showText
+            />
+            
           </div>
           <div className="flex flex-row items-center space-x-1 sm:space-x-4">
             <Optimization
