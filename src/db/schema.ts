@@ -18,7 +18,8 @@
   // focusMode: text('focusMode').notNull(),
 // });
 // 
-import { json,pgTable, serial, text, varchar, timestamp,uuid } from 'drizzle-orm/pg-core';
+import { json,pgTable, jsonb,serial, text, varchar, timestamp,uuid } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 
 export const messages = pgTable('messages', {
   id: serial('id').primaryKey(), // Auto-incrementing ID
@@ -28,7 +29,10 @@ export const messages = pgTable('messages', {
   role: text('role', { enum: ['assistant', 'user'] }), // Role column with enum
   metadata:json('metadata'), // Use json type for metadata  , // Uncomment if metadata is required and supported in your schema
 });
-
+interface File {
+  name: string;
+  fileId: string;
+}
 export const chats = pgTable('chats', {
   id: varchar('id', { length: 255 }).primaryKey(), // UUID or text ID
   title: text('title').notNull(), // Title column
@@ -36,6 +40,10 @@ export const chats = pgTable('chats', {
   // userId:varchar('userId', { length: 255 }),
   createdAt: text('createdAt').notNull(), // Timestamp with default
   focusMode: text('focusMode').notNull(), // Focus mode as text
+  files: jsonb('files')
+  .$type<File[]>()
+  .default(sql`'[]'::jsonb`),
+
 });
 
 // potatoai@123

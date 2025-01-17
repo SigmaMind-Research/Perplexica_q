@@ -25,6 +25,8 @@ import LineOutputParser from '../lib/outputParsers/lineOutputParser';
 import { IterableReadableStream } from '@langchain/core/utils/stream';
 // import { ChatOpenAI } from '@langchain/openai';
 import { AzureChatOpenAI} from '@langchain/openai';
+import path from 'path';
+import fs from 'fs';
 
 
 const basicSearchRetrieverPrompt = `
@@ -375,6 +377,7 @@ const createBasicWebSearchAnsweringChain = (
   llm: BaseChatModel,
   embeddings: Embeddings,
   optimizationMode: 'speed' | 'balanced' | 'quality',
+  fileIds: string[],
 ) => {
   const basicWebSearchRetrieverChain = createBasicWebSearchRetrieverChain(llm);
 
@@ -394,10 +397,31 @@ const createBasicWebSearchAnsweringChain = (
     if (docs.length === 0) {
       return docs;
     }
+    const filesData = fileIds
+      .map((file) => {
+        const filePath = path.join(process.cwd(), 'uploads', file);
 
+        const contentPath = filePath + '-extracted.json';
+        const embeddingsPath = filePath + '-embeddings.json';
+
+        const content = JSON.parse(fs.readFileSync(contentPath, 'utf8'));
+        const embeddings = JSON.parse(fs.readFileSync(embeddingsPath, 'utf8'));
+
+        const fileSimilaritySearchObject = content.contents.map(
+          (c: string, i) => {
+            return {
+              fileName: content.title,
+              content: c,
+              embeddings: embeddings.embeddings[i],
+            };
+          },
+        );
+
+        return fileSimilaritySearchObject;
+      })
+      .flat();
     if (query.toLocaleLowerCase() === 'summarize') {
-      // return docs.slice(0, 15)
-      return docs.slice(0,6)
+      return docs.slice(0, 15);
     }
     // console.log("Query being passed to rerankDocs:", query); // Log the query
     const docsWithContent = docs.filter(
@@ -405,7 +429,43 @@ const createBasicWebSearchAnsweringChain = (
     );
 
     if (optimizationMode === 'speed') {
-      return docsWithContent.slice(0, 15);
+      if (filesData.length > 0) {
+        const [queryEmbedding] = await Promise.all([
+          embeddings.embedQuery(query),
+        ]);
+
+        const fileDocs = filesData.map((fileData) => {
+          return new Document({
+            pageContent: fileData.content,
+            metadata: {
+              title: fileData.fileName,
+              url: `File`,
+            },
+          });
+        });
+
+        const similarity = filesData.map((fileData, i) => {
+          const sim = computeSimilarity(queryEmbedding, fileData.embeddings);
+
+          return {
+            index: i,
+            similarity: sim,
+          };
+        });
+
+        const sortedDocs = similarity
+          .filter((sim) => sim.similarity > 0.3)
+          .sort((a, b) => b.similarity - a.similarity)
+          .slice(0, 8)
+          .map((sim) => fileDocs[sim.index]);
+
+        return [
+          ...sortedDocs,
+          ...docsWithContent.slice(0, 15 - sortedDocs.length),
+        ];
+      } else {
+        return docsWithContent.slice(0, 15);
+      }
     } else if (optimizationMode === 'balanced') {
       const [docEmbeddings, queryEmbedding] = await Promise.all([
         embeddings.embedDocuments(
@@ -413,6 +473,19 @@ const createBasicWebSearchAnsweringChain = (
         ),
         embeddings.embedQuery(query),
       ]);
+      docsWithContent.push(
+        ...filesData.map((fileData) => {
+          return new Document({
+            pageContent: fileData.content,
+            metadata: {
+              title: fileData.fileName,
+              url: `File`,
+            },
+          });
+        }),
+      );
+
+      docEmbeddings.push(...filesData.map((fileData) => fileData.embeddings));
 
       const similarity = docEmbeddings.map((docEmbedding, i) => {
         const sim = computeSimilarity(queryEmbedding, docEmbedding);
@@ -468,6 +541,7 @@ const basicWebSearch = (
   llm: BaseChatModel,
   embeddings: Embeddings,
   optimizationMode: 'speed' | 'balanced' | 'quality',
+  fileIds: string[],
 ) => {
   const emitter = new eventEmitter();
 
@@ -476,6 +550,7 @@ const basicWebSearch = (
       llm,
       embeddings,
       optimizationMode,
+      fileIds,
     );
 
     const stream = basicWebSearchAnsweringChain.streamEvents(
@@ -505,6 +580,7 @@ const handleWebSearch = (
   llm: BaseChatModel,
   embeddings: Embeddings,
   optimizationMode: 'speed' | 'balanced' | 'quality',
+  fileIds: string[],
 ): EventEmitter => {
 
   const emitter = new EventEmitter();
@@ -515,6 +591,7 @@ const handleWebSearch = (
       llm,
       embeddings,
       optimizationMode,
+      fileIds,
     );
 
     // Relay events from the basicWebSearch emitter to the returned emitter
