@@ -24,6 +24,12 @@ export type Message = {
   sources?: Document[];
 };
 
+export interface File {
+  fileName: string;
+  fileExtension: string;
+  fileId: string;
+}
+
 const useSocket = (
   url: string,
   setIsWSReady: (ready: boolean) => void,
@@ -220,6 +226,8 @@ const loadMessages = async (
   setChatHistory: (history: [string, string][]) => void,
   setFocusMode: (mode: string) => void,
   setNotFound: (notFound: boolean) => void,
+  setFiles: (files: File[]) => void,
+  setFileIds: (fileIds: string[]) => void,
 ) => {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/chats/${chatId}`,
@@ -248,12 +256,25 @@ const loadMessages = async (
 
   setMessages(messages);
 
+  
   const history = messages.map((msg) => {
     return [msg.role, msg.content];
   }) as [string, string][];
 
   // console.log('[DEBUG] messages loaded');
   document.title = messages[0].content;
+
+  const files = data.chat.files.map((file: any) => {
+    return {
+      fileName: file.name,
+      fileExtension: file.name.split('.').pop(),
+      fileId: file.fileId,
+    };
+  });
+
+  setFiles(files);
+  setFileIds(files.map((file: File) => file.fileId));
+
 
   setChatHistory(history);
   setFocusMode(data.chat.focusMode);
@@ -283,6 +304,10 @@ const ChatWindow = ({ id }: { id?: string }) => {
   const [chatHistory, setChatHistory] = useState<[string, string][]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
 
+  const [files, setFiles] = useState<File[]>([]);
+  const [fileIds, setFileIds] = useState<string[]>([]);
+
+
   const [focusMode, setFocusMode] = useState('webSearch');
   const [optimizationMode, setOptimizationMode] = useState('speed');
 
@@ -304,6 +329,9 @@ const ChatWindow = ({ id }: { id?: string }) => {
         setChatHistory,
         setFocusMode,
         setNotFound,
+        setFiles,
+        setFileIds,
+
       );
     } else if (!chatId) {
       setNewChatCreated(true);
@@ -366,6 +394,7 @@ const ChatWindow = ({ id }: { id?: string }) => {
           userId: userId, // Include the userId here
           content: message,
         },
+        files: fileIds,
         focusMode: focusMode,
         optimizationMode: optimizationMode,
         history: [...chatHistory, ['human', message]],
@@ -526,6 +555,10 @@ const ChatWindow = ({ id }: { id?: string }) => {
               sendMessage={sendMessage}
               messageAppeared={messageAppeared}
               rewrite={rewrite}
+              fileIds={fileIds}
+              setFileIds={setFileIds}
+              files={files}
+              setFiles={setFiles}
             />
           </>
         ) : (
@@ -535,6 +568,10 @@ const ChatWindow = ({ id }: { id?: string }) => {
             setFocusMode={setFocusMode}
             optimizationMode={optimizationMode}
             setOptimizationMode={setOptimizationMode}
+            fileIds={fileIds}
+            setFileIds={setFileIds}
+            files={files}
+            setFiles={setFiles}
           />
         )}
       </div>

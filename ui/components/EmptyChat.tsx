@@ -68,6 +68,7 @@ import EmptyChatMessageInput from './EmptyChatMessageInput';
 import SettingsDialog from './SettingsDialog';
 import { useState, useEffect, useCallback } from 'react';
 import { getSessionAndUser } from '@/lib/sessionService'; // Import the session check service
+import { File } from './ChatWindow';
 
 const EmptyChat = ({
   sendMessage,
@@ -75,12 +76,20 @@ const EmptyChat = ({
   setFocusMode,
   optimizationMode,
   setOptimizationMode,
+  fileIds,
+  setFileIds,
+  files,
+  setFiles,
 }: {
   sendMessage: (message: string, userId: string) => void;
   focusMode: string;
   setFocusMode: (mode: string) => void;
   optimizationMode: string;
   setOptimizationMode: (mode: string) => void;
+  fileIds: string[];
+  setFileIds: (fileIds: string[]) => void;
+  files: File[];
+  setFiles: (files: File[]) => void;
 }) => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false); // State to track mounting of component
@@ -176,6 +185,10 @@ const EmptyChat = ({
           setFocusMode={setFocusMode}
           optimizationMode={optimizationMode}
           setOptimizationMode={setOptimizationMode}
+          fileIds={fileIds}
+          setFileIds={setFileIds}
+          files={files}
+          setFiles={setFiles}
         />
 
         {/* Trending Questions Section */}
