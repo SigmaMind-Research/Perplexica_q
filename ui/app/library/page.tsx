@@ -428,7 +428,7 @@ const Page = () => {
             className="flex items-center justify-between cursor-pointer"
             onClick={() => handleToggleDate(date)}
           >
-            <h2 className="text-xl font-medium flex-1">
+            <h2 className="text-xl truncate font-medium flex-1">
               {groupedChats[date].firstChat}
             </h2>
             <span className="text-sm text-black/70 dark:text-white/70 ml-4">{date}</span>
