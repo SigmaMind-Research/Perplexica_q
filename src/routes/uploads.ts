@@ -118,7 +118,6 @@ router.post(
           const embeddings = await embeddingsModel.embedDocuments(
             splitted.map((doc) => doc.pageContent),
           );
-
           const embeddingsJSON = JSON.stringify({
             title: file.originalname,
             embeddings: embeddings,
