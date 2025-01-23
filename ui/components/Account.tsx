@@ -185,11 +185,30 @@ const Account = () => {
               Sign Out
             </button>
           </div>
+           {/* Subscription Section (Below Sign Out Button) */}
+           <div className="w-full mt-8 bg-[#252729] shadow-2xl rounded-lg p-8 max-w-4xl">
+            <h2 className="text-lg font-semibold text-white mb-4">Subscription</h2>
+            <p className="text-sm text-[#e0e0e0] mb-4">
+              Explore our subscription plans to unlock exclusive features and benefits.
+            </p>
+            <div className="text-center">
+              <button
+                onClick={() => router.push("/subscription")}
+                className="bg-green-500 hover:bg-green-600 text-white text-sm font-medium py-2 px-6 rounded-lg shadow-lg transform hover:scale-110 transition-transform duration-200"
+              >
+                View Plans
+              </button>
+            </div>
+          </div>
         </div>
+       
       ) : (
         <p className="text-[#e0e0e0]">No user data found or session expired.</p>
       )}
+
+      
     </div>
+    
   );
 };
 
