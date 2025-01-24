@@ -466,20 +466,21 @@ const MessageBox = ({
                     }
                   />
                 </div>*/}
-                <div className="flex flex-col lg:grid lg:grid-cols-2 lg:gap-8 w-full lg:w-1/2 z-30 h-full pb-4">
-                  <div className="w-full">
+                <div className="flex flex-col lg:grid lg:grid-cols-2 lg:gap-8 w-full lg:w-3/4 z-30 h-full pb-4">
+                  <div className="w-full lg:w-full mb-4 lg:mb-0">
                     <SearchImages
                       query={history[messageIndex - 1].content}
                       chatHistory={history.slice(0, messageIndex - 1)}
                     />
                   </div>
-                  <div className="w-full">
+                  <div className="w-full lg:w-full">
                     <SearchVideos
                       chatHistory={history.slice(0, messageIndex - 1)}
                       query={history[messageIndex - 1].content}
                     />
                   </div>
                 </div>
+
                 <div className="flex flex-row items-center space-x-2">
                   <Disc3
                     className={cn(
