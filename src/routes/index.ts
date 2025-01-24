@@ -7,7 +7,6 @@ import suggestionsRouter from './suggestions';
 import chatsRouter from './chats';
 import searchRouter from './search';
 import discoverRouter from './discover';
-// import subscriptionsRouter from './subscription';
 
 const router = express.Router();
 
@@ -19,6 +18,5 @@ router.use('/suggestions', suggestionsRouter);
 router.use('/chats', chatsRouter);
 router.use('/search', searchRouter);
 router.use('/discover', discoverRouter);
-// router.use('/subscription',subscriptionsRouter)
 
 export default router;
