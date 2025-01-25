@@ -477,6 +477,7 @@ import Link from 'next/link';
 import { useSelectedLayoutSegments } from 'next/navigation';
 import React, { useState, useEffect, useRef, type ReactNode } from 'react';
 import Layout from './Layout';
+import Account from './Account';
 
 import SettingsDialog from './SettingsDialog';
 
@@ -496,8 +497,12 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<any>(null); // User state to store logged-in user
   const [isLogoutCardVisible, setIsLogoutCardVisible] = useState(false); // State for logout card visibility
   const isInitialized = useRef(false); // Prevent multiple initializations
+
   // const BottomNavigation = ({ mobileNavLinks, user }) => {
   const [showLogin, setShowLogin] = useState(false);
+
+   const [isAccountOpen, setIsAccountOpen] = useState(false);
+
 
   const handleProfileClick = () => {
     setShowLogin(true);
