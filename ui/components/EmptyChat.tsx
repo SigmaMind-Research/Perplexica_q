@@ -170,9 +170,13 @@ const EmptyChat = ({
         </div>
       </div>
       <div className="flex flex-col items-center justify-center min-h-screen max-w-screen-sm mx-auto p-2 space-y-8">
-        <h2 className="text-black/70 dark:text-white/70 text-3xl font-medium -mt-8">
+        {/* <h2 className="text-black/70 dark:text-white/70 text-3xl font-medium -mt-8"> */}
+          {/* PotatoAI */}
+        {/* </h2> */}
+        {/* Styled H5 */}
+        <h5 className="text-2xl text-white tracking-wide">
           PotatoAI
-        </h2>
+        </h5>
         <EmptyChatMessageInput
           sendMessage={sendMessage}
           focusMode={focusMode}
