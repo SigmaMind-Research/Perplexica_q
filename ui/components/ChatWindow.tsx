@@ -62,9 +62,9 @@ const useSocket = (
             chatModelProvider = Object.keys(chatModelProviders)[0];
 
             if (chatModelProvider === 'custom_openai') {
-              toast.error(
-                'Seems like you are using the custom OpenAI provider, please open the settings and configure the API key and base URL',
-              );
+              // toast.error(
+                // 'Seems like you are using the custom OpenAI provider, please open the settings and configure the API key and base URL',
+              // );
               setError(true);
               return;
             } else {
