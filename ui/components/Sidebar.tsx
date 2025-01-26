@@ -465,8 +465,10 @@
 import { cn } from '@/lib/utils';
 import {
   BookOpenText,
+  CircleDot,
   Home,
   Search,
+  Library,
   User,
   LogOut,
   SquarePen,
@@ -573,27 +575,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
     window.location.href = '/'; // Redirect to home page
   };
 
-  // const handleLogin = async () => {
-  //   const { error } = await supabase.auth.signInWithPassword({
-  //     email: 'user@example.com', // Replace with actual input
-  //     password: 'password123', // Replace with actual input
-  //   });
-
-  //   if (error) {
-  //     console.error('Login failed:', error.message);
-  //     return;
-  //   }
-
-  //   // Fetch session and update user state
-  //   const { data: sessionData } = await supabase.auth.getSession();
-  //   setUser(sessionData?.session?.user || null); // Update user state
-  // };
-
-  // const handleLogin = async () => {
-  //   // await supabase.auth.signOut();
-  //   // setUser(null);
-  //   window.location.href = '/login';
-  // };
+  
 
   // const navLinks = [
   //   {
@@ -612,19 +594,19 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
 
   const navLinks = [
     {
-      icon: Home,
+      icon: CircleDot,
       href: '/',
-      active: segments.length === 0 || segments.includes('c'),
+      active: segments.length === 0 || segments.includes('search'),
       label: 'Home',
     },
     {
       icon: Search,
-      href: '/discover',
+      href: '/explore',
       active: segments.includes('discover'),
       label: 'Explore',
     },
     {
-      icon: BookOpenText,
+      icon: Library,
       href: user && !user.is_anonymous ? '/library' : '/login', // If authenticated, go to library, else login
       active: segments.includes('library'),
       label: 'Library',
@@ -633,14 +615,14 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
   ];
   const mobileNavLinks = [
     {
-      icon: Home,
+      icon: CircleDot,
       href: '/',
-      active: segments.length === 0 || segments.includes('c'),
+      active: segments.length === 0 || segments.includes('search'),
       label: 'Home',
     },
     {
       icon: Search,
-      href: '/discover',
+      href: '/explore',
       active: segments.includes('discover'),
       label: 'Explore',
     },
