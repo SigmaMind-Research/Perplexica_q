@@ -170,16 +170,9 @@ const EmptyChat = ({
         {/* <h2 className="text-black/70 dark:text-white/70 text-3xl font-medium -mt-8"> */}
           {/* PotatoAI */}
         {/* </h2> */}
-        {/* Image */}
-        <img
-          src="/26.png"
-          alt="Republic Day"
-          className="w-20 h-20 object-contain -mt-8"
-        />
-
-        {/* Styled H3 */}
+        {/* Styled H5 */}
         <h5 className="text-2xl text-white tracking-wide">
-          Happy Republic Day
+          PotatoAI
         </h5>
         <EmptyChatMessageInput
           sendMessage={sendMessage}
