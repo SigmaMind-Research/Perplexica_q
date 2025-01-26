@@ -205,8 +205,6 @@
 
 // export default Account;
 
-
-
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useEffect, useState } from 'react';
 import { X } from 'lucide-react';
@@ -232,7 +230,8 @@ const Account = ({
     const fetchUser = async () => {
       try {
         const supabase = createClient();
-        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        const { data: sessionData, error: sessionError } =
+          await supabase.auth.getSession();
 
         if (sessionError) {
           setError(sessionError.message);
@@ -272,14 +271,18 @@ const Account = ({
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={() => setIsOpen(false)}>
+      <Dialog
+        as="div"
+        className="relative z-50"
+        onClose={() => setIsOpen(false)}
+      >
         {/* Background Overlay */}
         <div className="fixed inset-0 bg-black/50" />
 
         {/* Modal Content */}
         <div className="fixed inset-0 overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-6 text-center">
-          <Dialog.Panel className="w-full max-w-full sm:max-w-3xl h-auto sm:h-[550px] p-6 -mt-2 sm:p-10 rounded-2xl">
+            <Dialog.Panel className="w-full max-w-full sm:max-w-3xl h-auto sm:h-[550px] p-6 -mt-2 sm:p-10 rounded-2xl">
               {/* Close Button */}
               <button
                 onClick={() => setIsOpen(false)}
@@ -289,8 +292,6 @@ const Account = ({
                 <X className="w-8 h-8" />
               </button>
 
-              
-
               {/* Navbar */}
               {/* <Navbar chatId="12345" messages={[]} /> */}
 
@@ -298,13 +299,12 @@ const Account = ({
 
               {user ? (
                 <div className="account-card bg-[#202020] shadow-2xl rounded-lg p-8 w-full max-w-3xl">
-                  
                   {/* Avatar and Account Information */}
                   <div className="flex flex-col sm:flex-row items-center justify-between mb-6">
                     <div className="avatar flex items-center justify-center w-20 h-20 bg-gradient-to-r from-[#252729] to-[#1c1c1c] text-white font-bold text-3xl rounded-full shadow-lg">
                       {user?.email?.charAt(0).toUpperCase()}
                     </div>
-                    <span className="mt-4 sm:mt-0 sm:ml-4 font-semibold text-white text-center sm:text-left">
+                    <span className="mt-3 sm:mt-0 sm:ml-4 font-semibold text-white text-center sm:text-left">
                       {user?.email.split('@')[0]}
                     </span>
                   </div>
@@ -312,7 +312,7 @@ const Account = ({
                   <hr className="border-t border-[#252729] mb-6" />
 
                   {/* Email Section */}
-                  <div className="mb-6 flex flex-col sm:flex-row justify-between items-center">
+                  <div className="mb-3 flex flex-col sm:flex-row justify-between items-center">
                     <p className="text-md font-medium text-[#e0e0e0]">Email</p>
                     <span className="mt-2 sm:mt-0 font-semibold text-sm text-white text-center sm:text-right sm:flex-1">
                       {user?.email}
@@ -321,8 +321,10 @@ const Account = ({
 
                   <hr className="border-t border-[#252729] mb-6" />
 
-                  <div className="mb-6 flex flex-col sm:flex-row justify-between items-center">
-                    <h3 className="text-md font-semibold text-[#e0e0e0]">Active Account</h3>
+                  <div className="mb-3 flex flex-col sm:flex-row justify-between items-center">
+                    <h3 className="text-md font-semibold text-[#e0e0e0]">
+                      Active Account
+                    </h3>
                     <p className="mt-2 sm:mt-0 text-[#e0e0e0] text-center sm:text-right sm:flex-1">
                       You are signed in as{' '}
                       <span className="font-semibold text-sm text-white">
@@ -331,7 +333,7 @@ const Account = ({
                     </p>
                   </div>
 
-                  <hr className="border-t border-[#252729] mb-6" />
+                  {/* <hr className="border-t border-[#252729] mb-6" />
                   <div
                     onClick={() => setIsChatModelOpen(!isChatModelOpen)}
                     className="cursor-pointer text-blue-500 dark:text-white text-lg font-medium text-center sm:text-left sm:ml-auto sm:mr-0 mb-4 sm:mb-0"
@@ -341,7 +343,23 @@ const Account = ({
 
                   <ChatModel isOpen={isChatModelOpen} setIsOpen={setIsChatModelOpen} />
 
-                  <hr className="border-t border-[#252729] mb-6" />
+                  <hr className="border-t border-[#252729] mb-6" /> 
+                  
+                    */}
+
+                  <hr className="border-t border-[#252729] mb-3" />
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-0 sm:space-y-0 sm:justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-center space-x-2">
+                      <p className="text-md font-medium text-black dark:text-white">
+                        AI Model
+                      </p>
+                    </div>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:ml-auto space-x-2">
+                      <ChatModel setIsChatModelOpen={setIsChatModelOpen} />
+                    </div>
+                  </div>
+ 
+                 <div className='mb-7'></div>
 
                   {/* Sign Out Button */}
                   <div className="text-center">
@@ -354,7 +372,9 @@ const Account = ({
                   </div>
                 </div>
               ) : (
-                <p className="text-[#e0e0e0]">No user data found or session expired.</p>
+                <p className="text-[#e0e0e0]">
+                  No user data found or session expired.
+                </p>
               )}
             </Dialog.Panel>
           </div>
