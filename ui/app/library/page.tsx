@@ -301,7 +301,7 @@
 
 import { useEffect, useState } from 'react';
 import { cn, formatTimeDifference } from '@/lib/utils';
-import { BookOpenText, ClockIcon } from 'lucide-react';
+import { Library,BookOpenText, ClockIcon } from 'lucide-react';
 import Link from 'next/link';
 import DeleteChat from '@/components/DeleteChat';
 import { createClient } from '@/utils/supabase/client'; // Import the Supabase client
@@ -401,7 +401,7 @@ const Page = () => {
     <div className="space-y-2">
       <div className="card p-4 shadow-md bg-white dark:bg-[#1c1c1c] mt-6">
         <div className="flex items-center">
-          <BookOpenText />
+          <Library/>
           <h1 className="text-3xl font-medium p-2">Library</h1>
         </div>
         <hr className="border-t border-[#2B2C2C] my-4 w-full" />
@@ -423,6 +423,7 @@ const Page = () => {
       )}
 
       {Object.keys(groupedChats).map((date) => (
+
         <div key={date} className="card p-4 shadow-md bg-white dark:bg-[#1c1c1c]">
           <div
             className="flex items-center justify-between cursor-pointer"
@@ -447,8 +448,8 @@ const Page = () => {
                   )}
                   key={i}
                 >
-                  <Link
-                    href={`/c/${chat.id}`}
+                  <Link prefetch
+                    href={`/search/${chat.id}`}
                     className="text-black dark:text-white lg:text-xl font-medium truncate transition duration-200 hover:text-[#24A0ED] dark:hover:text-[#24A0ED] cursor-pointer"
                   >
                     {truncateTitle(chat.title, 30)}
