@@ -167,9 +167,20 @@ const EmptyChat = ({
         </div>
       </div>
       <div className="flex flex-col items-center justify-center min-h-screen max-w-screen-sm mx-auto p-2 space-y-8">
-        <h2 className="text-black/70 dark:text-white/70 text-3xl font-medium -mt-8">
-          PotatoAI
-        </h2>
+        {/* <h2 className="text-black/70 dark:text-white/70 text-3xl font-medium -mt-8"> */}
+          {/* PotatoAI */}
+        {/* </h2> */}
+        {/* Image */}
+        <img
+          src="/26.png"
+          alt="Republic Day"
+          className="w-20 h-20 object-contain -mt-8"
+        />
+
+        {/* Styled H3 */}
+        <h5 className="text-2xl text-white tracking-wide">
+          Happy Republic Day
+        </h5>
         <EmptyChatMessageInput
           sendMessage={sendMessage}
           focusMode={focusMode}
