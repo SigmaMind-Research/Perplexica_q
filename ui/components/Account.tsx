@@ -293,8 +293,6 @@ const Account = ({
               </button>
 
               {/* Navbar */}
-              {/* <Navbar chatId="12345" messages={[]} /> */}
-
               {error && <p className="text-red-500">{error}</p>}
 
               {user ? (
@@ -348,6 +346,7 @@ const Account = ({
                     */}
 
                   <hr className="border-t border-[#252729] mb-3" />
+                  {/* Model Section */}
                   <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-0 sm:space-y-0 sm:justify-between">
                     <div className="flex flex-col sm:flex-row sm:items-center space-x-2">
                       <p className="text-md font-medium text-black dark:text-white">
