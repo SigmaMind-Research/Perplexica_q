@@ -382,6 +382,7 @@ import Focus from './MessageInputActions/Focus';
 import Optimization from './MessageInputActions/Optimization';
 import { createClient } from '@/utils/supabase/client';
 
+
 const EmptyChatMessageInput = ({
   sendMessage,
   focusMode,

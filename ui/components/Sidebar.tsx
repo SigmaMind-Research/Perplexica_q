@@ -479,6 +479,7 @@ import Link from 'next/link';
 import { useSelectedLayoutSegments } from 'next/navigation';
 import React, { useState, useEffect, useRef, type ReactNode } from 'react';
 import Layout from './Layout';
+import Account from './Account';
 
 import SettingsDialog from './SettingsDialog';
 
@@ -498,8 +499,13 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<any>(null); // User state to store logged-in user
   const [isLogoutCardVisible, setIsLogoutCardVisible] = useState(false); // State for logout card visibility
   const isInitialized = useRef(false); // Prevent multiple initializations
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
+
   // const BottomNavigation = ({ mobileNavLinks, user }) => {
   const [showLogin, setShowLogin] = useState(false);
+
+   
+
 
   const handleProfileClick = () => {
     setShowLogin(true);
@@ -752,38 +758,54 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
                   <div className="w-full flex items-center justify-center gap-3">
                     {/* Expanded state: Show email in pill-shaped button */}
                     {!isCollapsed ? (
+                      // <div className="flex flex-col items-center relative">
+                      //   <Link href="/account">
+                      //     <button className="text-black dark:text-white mb-2 px-2 py-2 bg-[#212122] rounded-full text-xs flex items-center space-x-1">
+                      //       <div className="w-8 h-8 bg-[#343434] text-white rounded-full flex items-center justify-center">
+                      //         {user?.email?.charAt(0).toUpperCase()}{' '}
+                      //         {/* Display first letter */}
+                      //       </div>
+                      //       <span>
+                      //         {user?.email?.length > 9
+                      //           ? `${user?.email.slice(0, 9)}...`
+                      //           : user?.email}
+                      //       </span>
+                      //       <ArrowRightCircle
+                      //         className="text-white"
+                      //         size={15}
+                      //       />
+                      //     </button>
+                      //   </Link>
+                      // </div>
                       <div className="flex flex-col items-center relative">
-                        <Link href="/account">
-                          <button className="text-black dark:text-white mb-2 px-2 py-2 bg-[#212122] rounded-full text-xs flex items-center space-x-1">
-                            <div className="w-8 h-8 bg-[#343434] text-white rounded-full flex items-center justify-center">
-                              {user?.email?.charAt(0).toUpperCase()}{' '}
-                              {/* Display first letter */}
-                            </div>
-                            <span>
-                              {user?.email?.length > 9
-                                ? `${user?.email.slice(0, 9)}...`
-                                : user?.email}
-                            </span>
-                            <ArrowRightCircle
-                              className="text-white"
-                              size={15}
-                            />
-                          </button>
-                        </Link>
-                      </div>
+                      <button
+                        onClick={() => setIsAccountOpen(prevState => !prevState)} // toggle the state
+                        className="text-black dark:text-white mb-2 px-2 py-2 bg-[#212122] rounded-full text-xs flex items-center space-x-1"
+                      >
+                        <div className="w-8 h-8 bg-[#343434] text-white rounded-full flex items-center justify-center">
+                          {user?.email?.charAt(0).toUpperCase()}
+                        </div>
+                        <span>
+                          {user?.email?.length > 9 ? `${user?.email.slice(0, 9)}...` : user?.email}
+                        </span>
+                        <ArrowRightCircle className="text-white" size={15} />
+                      </button>
+                
+                      <Account isOpen={isAccountOpen} setIsOpen={setIsAccountOpen} />
+                    </div>
+
                     ) : (
                       // Collapsed state: Show first letter of email
                       <div className="relative">
-                        <Link href="/account">
-                          <div
-                            className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center cursor-pointer"
-                            title={user.email}
-                          >
-                            {user.email[0]?.toUpperCase()}{' '}
-                            {/* Display first letter */}
-                          </div>
-                        </Link>
-                      </div>
+              <button
+                onClick={() => setIsAccountOpen(prevState => !prevState)} // toggle the state
+                className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center cursor-pointer"
+                title={user.email}
+              >
+                {user.email[0]?.toUpperCase()}
+              </button>
+              <Account isOpen={isAccountOpen} setIsOpen={setIsAccountOpen} />
+            </div>
                     )}
                   </div>
                 ) : (
@@ -869,11 +891,11 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
         <div className="flex flex-col items-center space-y-1">
           {user && !user.is_anonymous ? (
             // Show account info if user is logged in
-            <Link href="/account">
-              <div
-                className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center cursor-pointer"
-                title={user?.email || 'User'}
-              >
+            <div
+          onClick={() => setIsAccountOpen(prevState => !prevState)} // toggle the state
+          className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center cursor-pointer"
+          title={user?.email || 'User'}
+        >
                 {user.email ? (
                   <div className="user-email" title={user.email}>
                     {user.email[0]?.toUpperCase()}
@@ -882,7 +904,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
                   <div className="profile-icon">Profile</div>
                 )}
               </div>
-            </Link>
+           
           // ) : (
             // Show "Profile" or "Login" based on state
             
