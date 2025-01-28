@@ -76,7 +76,8 @@ const EmptyChat = ({
   optimizationMode,
   setOptimizationMode,
 }: {
-  sendMessage: (message: string, userId: string) => void;
+  // sendMessage: (message: string, userId: string) => void;
+  sendMessage: (message: string) => void;
   focusMode: string;
   setFocusMode: (mode: string) => void;
   optimizationMode: string;
@@ -138,7 +139,9 @@ const EmptyChat = ({
 
   // Function to handle clicking on a trending question
   const handleTrendingQuestionClick = (question: string) => {
-    sendMessage(question, 'userId'); // Trigger the sendMessage function with the question
+    // sendMessage(question, 'userId'); // Trigger the sendMessage function with the question
+    sendMessage(question); // Trigger the sendMessage function with the question
+
   };
 
   return (

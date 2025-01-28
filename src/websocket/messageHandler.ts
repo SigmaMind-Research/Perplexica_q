@@ -13,6 +13,9 @@ import db from '../db';
 import { chats, messages as messagesSchema } from '../db/schema';
 import { eq, asc, gt } from 'drizzle-orm';
 import crypto, { UUID } from 'crypto';
+import { RateLimiterMemory } from 'rate-limiter-flexible';
+
+
 
 type Message = {
   messageId: string;
@@ -28,7 +31,11 @@ type WSMessage = {
   focusMode: string;
   history: Array<[string, string]>;
 };
-
+// Create a rate limiter instance
+const rateLimiter = new RateLimiterMemory({
+  points: 10, // Allow 10 messages
+  duration: 15, // Per 60 seconds
+});
 export const searchHandlers = {
   webSearch: handleWebSearch,
   academicSearch: handleAcademicSearch,
@@ -106,8 +113,22 @@ export const handleMessage = async (
   try {
     const parsedWSMessage = JSON.parse(message) as WSMessage;
     const parsedMessage = parsedWSMessage.message;
+    rateLimiter.consume(parsedMessage.userId, 1)
+          .then(async (rateLimiterRes) => {
+            console.log('user defined');
+          })
+          .catch((err) => {
+            console.log(err.consumedPoints);
+            ws.send(JSON.stringify({
+              type: 'error',
+              data: 'Too many messages. Please wait before sending more.',
+              key: 'RATE_LIMIT_EXCEEDED',
+            }),)
+          });  
 
-    const humanMessageId = crypto.randomBytes(7).toString('hex');
+    const humanMessageId = parsedMessage.messageId ?? crypto.randomBytes(7).toString('hex');
+    // console.log(parsedMessage.messageId);
+    // crypto.randomBytes(7).toString('hex');
       // parsedMessage.messageId ?? crypto.randomBytes(7).toString('hex');
     const aiMessageId = crypto.randomBytes(7).toString('hex');
 
@@ -149,9 +170,9 @@ export const handleMessage = async (
         const chat = await db.query.chats.findFirst({
           where: eq(chats.id, parsedMessage.chatId),
         });
-
+        
         if (!chat) {
-          // console.log(parsedMessage.userId);
+          console.log(parsedMessage.userId);
           await db
             .insert(chats)
             .values({
