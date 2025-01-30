@@ -602,6 +602,7 @@ import {
   Plus,
   X,
   Link,
+  Link2Icon,
 } from 'lucide-react';
 import Markdown from 'markdown-to-jsx';
 import Copy from './MessageActions/Copy';
@@ -632,6 +633,8 @@ const MessageBox = ({
   const [parsedMessage, setParsedMessage] = useState(message.content);
   const [speechMessage, setSpeechMessage] = useState(message.content);
   const [showPanel, setShowPanel] = useState(false);
+  const [showMore, setShowMore] = useState(false);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     const regex = /\[(\d+)\]/g;
@@ -724,61 +727,208 @@ const MessageBox = ({
                 </div>
 
                 {/* Card wrapping the sources for large screens */}
+
                 <div className="hidden lg:flex flex-col space-y-1 p-3 rounded-lg bg-light-secondary dark:bg-dark-secondary shadow-md">
-                  <h2 className="text-sm text-black dark:text-white mb-1">
+                  {/* <h2 className="text-sm text-black dark:text-white mb-1">
                     Resources
                   </h2>
-                  <hr className="border-t border-gray-500" />
 
-                  {message.sources.map((source, i) => (
-                    <div
-                      key={i}
-                      className="source-card flex flex-col space-y-1 p-2 mb-1 rounded-lg bg-light-secondary dark:bg-dark-secondary shadow-md w-full lg:w-12/12 mx-auto"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm text-black/70 dark:text-white/70">
-                          {i + 1}.
-                        </span>
-                        <a
-                          href={source.metadata.url}
-                          target="_blank"
-                          className="text-xs text-black/70 dark:text-white/70 font-medium overflow-hidden whitespace-nowrap text-ellipsis"
-                        >
-                          {source.metadata.title}
-                        </a>
-                      </div>
+                  <hr className="border-t border-gray-500" /> */}
 
-                      <div className="flex flex-row items-center justify-between mt-1">
-                        <div className="flex flex-row items-center space-x-1">
-                          <img
-                            src={`https://s2.googleusercontent.com/s2/favicons?domain_url=${source.metadata.url}`}
-                            width={20}
-                            height={20}
-                            alt="favicon"
-                            className="rounded-lg h-4 w-4"
-                          />
-                          <p className="text-xs text-black/50 dark:text-white/50 overflow-hidden whitespace-nowrap text-ellipsis">
-                            {source.metadata.url.replace(
-                              /.+\/\/|www.|\..+/g,
-                              '',
+                  {/* {message.sources.map((source, i) => ( */}
+
+                  {message.sources && message.sources.length > 0 && (
+                    <div>
+                      {!showAll ? (
+                        <div className="flex flex-col space-y-2 p-1 rounded-lg bg-light-secondary dark:bg-dark-secondary shadow-md">
+                          {/* First source in large size */}
+                          <div className="flex flex-col space-y-2 text-lg">
+                            <div className="flex items-center space-x-2">
+                              <img
+                                src={`https://s2.googleusercontent.com/s2/favicons?domain_url=${message.sources[0].metadata.url}`}
+                                width={95}
+                                height={95}
+                                alt="favicon"
+                                className="rounded-full"
+                              />
+                              <a
+                                href={message.sources[0].metadata.url}
+                                target="_blank"
+                                className="font-semibold text-sm text-gray-200  break-words"
+                              >
+                                {message.sources[0].metadata.title.slice(0, 50)}
+                              </a>
+                            </div>
+
+                            <p className="text-sm text-black/50 dark:text-white/50 overflow-hidden whitespace-nowrap text-ellipsis">
+                              {message.sources[0].metadata.url.replace(
+                                /.+\/\/|www.|\..+/g,
+                                '',
+                              )}
+                            </p>
+                            <p className="text-gray-300 text-sm">
+                              {message.sources[0].pageContent.slice(0, 120)}
+                              ...
+                            </p>
+                          </div>
+                          <div className="grid grid-cols-2 gap-1">
+                            {message.sources.slice(1, 5).map(
+                              (
+                                source,
+                                i, // Updated to slice(1, 5) to include two more containers
+                              ) => (
+                                <div
+                                  key={i}
+                                  className="p-2 bg-[#1c1c1c] rounded-lg flex flex-col items-start space-y-0"
+                                >
+                                  <div className="flex flex-row items-center space-x-1">
+                                    <img
+                                      src={`https://s2.googleusercontent.com/s2/favicons?domain_url=${source.metadata.url}`}
+                                      width={13}
+                                      height={13}
+                                      alt="favicon"
+                                      className="rounded-full"
+                                    />
+                                    <p className="text-[11px] text-black/50 dark:text-white/50 max-w-[120px] overflow-hidden whitespace-nowrap text-ellipsis">
+                                      {source.metadata.url
+                                        ? source.metadata.url
+                                            .replace(/.+\/\/|www.|\..+/g, '')
+                                            .slice(0, 12) // Truncate to 20 characters
+                                        : 'No URL Available'}
+                                    </p>
+                                  </div>
+                                  <a
+                                    href={source.metadata.url}
+                                    target="_blank"
+                                    className="text-[11px] text-gray-300 font-medium break-words"
+                                  >
+                                    {source.metadata.title.slice(0, 10)}
+                                    {/* Show only first 20 characters */}
+                                  </a>
+                                </div>
+                              ),
                             )}
-                          </p>
+                          </div>
+
+                          {/* Grouped favicon list */}
+
+                          <div className="flex flex-wrap items-center mt-2 gap-2">
+                            <button
+                              className="flex flex-wrap items-center hover:bg-black p-2 rounded transition-all duration-200"
+                              onClick={() => setShowAll(true)}
+                            >
+                              {message.sources.slice(3, 10).map((source, i) => (
+                                <img
+                                  key={i}
+                                  src={`https://s2.googleusercontent.com/s2/favicons?domain_url=${source.metadata.url}`}
+                                  width={16}
+                                  height={16}
+                                  alt="favicon"
+                                  className="m-1 rounded-full transition-transform transform hover:scale-110"
+                                />
+                              ))}
+                              {message.sources.length > 10 && (
+                                <span className="text-xs text-gray-500">
+                                  +more..
+                                </span>
+                              )}
+                            </button>
+
+                            <button
+                              className=" hover:text-black transition-all duration-200"
+                              onClick={() => setShowAll(true)}
+                            >
+                              <div className="text-blue-500 hover:underline ">
+                                {' '}
+                                See All
+                              </div>
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                      {/* Content Section for each source */}
-                      {source.pageContent ? (
-                        <a
-                          href={source.metadata.url} // Links to the URL
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-[11px] text-black/70 dark:text-white/70 leading-relaxed break-words block"
-                        >
-                          {source.pageContent.slice(0, 100)}
-                          {source.pageContent.length > 100 ? '...' : ''}
-                        </a>
-                      ) : null}
+                      ) : (
+                        <div className="p-0 bg-light-secondary dark:bg-dark-secondary shadow-md rounded-lg">
+                          <div className="flex justify-between items-center mb-2">
+                            <h3 className="text-lg font-semi-bold">
+                              All Sources
+                            </h3>
+
+                            <button
+                              onClick={() => setShowAll(false)}
+                              className="border-2 border-gray-500 rounded-full text-gray-500 hover:text-gray-100 flex items-center justify-center hover:border-gray-700"
+                            >
+                              <X size={16} />
+                            </button>
+                          </div>
+                          <hr className="border-t border-gray-500" />
+                          {/* Render message sources with "Show More"/"Show Less" */}
+                          {(showMore
+                            ? message.sources
+                            : message.sources.slice(0, 7)
+                          ).map((source, i) => (
+                            <div
+                              key={i}
+                              className="source-card flex flex-col space-y-1 p-2 mb-2 rounded-lg bg-light-secondary dark:bg-dark-secondary shadow-md w-full lg:w-12/12 mx-auto"
+                            >
+                              <div className="flex items-center space-x-2">
+                                <span className="text-sm text-black/70 dark:text-white/70">
+                                  {i + 1}.
+                                </span>
+                                <a
+                                  href={source.metadata.url}
+                                  target="_blank"
+                                  className="text-xs text-gray-200 font-medium overflow-hidden whitespace-nowrap text-ellipsis"
+                                >
+                                  {source.metadata.title}
+                                </a>
+                              </div>
+
+                              <div className="flex flex-row items-center justify-between mt-1">
+                                <div className="flex flex-row items-center space-x-1">
+                                  <img
+                                    src={`https://s2.googleusercontent.com/s2/favicons?domain_url=${source.metadata.url}`}
+                                    width={20}
+                                    height={20}
+                                    alt="favicon"
+                                    className="rounded-lg h-4 w-4"
+                                  />
+                                  <p className="text-xs text-black/50 dark:text-white/50 overflow-hidden whitespace-nowrap text-ellipsis">
+                                    {source.metadata.url.replace(
+                                      /.+\/\/|www.|\..+/g,
+                                      '',
+                                    )}
+                                  </p>
+                                </div>
+                              </div>
+
+                              {/* Content Section for each source */}
+                              {source.pageContent && (
+                                <a
+                                  href={source.metadata.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-[11px] text-black/70 dark:text-white/70 leading-relaxed break-words block"
+                                >
+                                  {source.pageContent.slice(0, 100)}
+                                  {source.pageContent.length > 100 ? '...' : ''}
+                                </a>
+                              )}
+                            </div>
+                          ))}
+                          {/* "Show More" button moved to the bottom */}
+                          {message.sources.length > 7 && (
+                            <div className="flex justify-center mt-2">
+                              <button
+                                onClick={() => setShowMore(!showMore)}
+                                className="text-xs text-blue-500 mt-2 hover:text-blue-700 transition-colors"
+                              >
+                                {showMore ? 'Show Less' : 'Show More...'}
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             )}
@@ -788,12 +938,15 @@ const MessageBox = ({
           {showPanel && (
             <div className="fixed top-0 right-0 h-full w-3/4 sm:w-3/3 lg:hidden bg-white dark:bg-black shadow-lg z-50 overflow-y-auto">
               <div className="flex justify-between items-center p-3 border-b border-light-secondary dark:border-dark-secondary">
-                <h3 className="text-xl font-medium text-black dark:text-white">
-                  Links
-                </h3>
+                <div className="flex items-center space-x-2">
+                  <Link2Icon size={20} className="text-black dark:text-white" />
+                  <h3 className="text-xl font-medium text-black dark:text-white">
+                    Links
+                  </h3>
+                </div>
                 <button
                   onClick={() => setShowPanel(false)}
-                  className="text-black dark:text-white"
+                  className="text-black dark:text-white border border-gray-500 rounded-full"
                 >
                   <X size={20} />
                 </button>
@@ -1002,3 +1155,78 @@ const MessageBox = ({
 };
 
 export default MessageBox;
+
+// old sources
+
+// <div className="hidden lg:flex flex-col space-y-1 p-3 rounded-lg bg-light-secondary dark:bg-dark-secondary shadow-md">
+//                   <h2 className="text-sm text-black dark:text-white mb-1">
+//                     Resources
+//                   </h2>
+
+//                   <hr className="border-t border-gray-500" />
+
+//                   {/* {message.sources.map((source, i) => ( */}
+//                   {(showMore
+//                     ? message.sources
+//                     : message.sources.slice(0, 7)
+//                   ).map((source, i) => (
+//                     <div
+//                       key={i}
+//                       className="source-card flex flex-col space-y-1 p-2 mb-1 rounded-lg bg-light-secondary dark:bg-dark-secondary shadow-md w-full lg:w-12/12 mx-auto"
+//                     >
+//                       <div className="flex items-center space-x-2">
+//                         <span className="text-sm text-black/70 dark:text-white/70">
+//                           {i + 1}.
+//                         </span>
+//                         <a
+//                           href={source.metadata.url}
+//                           target="_blank"
+//                           className="text-xs text-black/70 dark:text-white/70 font-medium overflow-hidden whitespace-nowrap text-ellipsis"
+//                         >
+//                           {source.metadata.title}
+//                         </a>
+//                       </div>
+
+//                       <div className="flex flex-row items-center justify-between mt-1">
+//                         <div className="flex flex-row items-center space-x-1">
+//                           <img
+//                             src={`https://s2.googleusercontent.com/s2/favicons?domain_url=${source.metadata.url}`}
+//                             width={20}
+//                             height={20}
+//                             alt="favicon"
+//                             className="rounded-lg h-4 w-4"
+//                           />
+//                           <p className="text-xs text-black/50 dark:text-white/50 overflow-hidden whitespace-nowrap text-ellipsis">
+//                             {source.metadata.url.replace(
+//                               /.+\/\/|www.|\..+/g,
+//                               '',
+//                             )}
+//                           </p>
+//                         </div>
+//                       </div>
+//                       {/* Content Section for each source */}
+//                       {source.pageContent ? (
+//                         <a
+//                           href={source.metadata.url} // Links to the URL
+//                           target="_blank"
+//                           rel="noopener noreferrer"
+//                           className="text-[11px] text-black/70 dark:text-white/70 leading-relaxed break-words block"
+//                         >
+//                           {source.pageContent.slice(0, 100)}
+//                           {source.pageContent.length > 100 ? '...' : ''}
+//                         </a>
+//                       ) : null}
+//                     </div>
+//                   ))}
+//                   {/* "Show More" button moved to the bottom */}
+//                   {message.sources.length > 7 && (
+//                     <div className="flex justify-center mt-2">
+//                       <button
+//                         onClick={() => setShowMore(!showMore)}
+//                         className="text-xs text-blue-500 mt-2 hover:text-blue-700 transition-colors"
+//                       >
+//                         {showMore ? 'Show Less' : `Show More...`}
+//                       </button>
+//                     </div>
+//                   )}
+//                 </div>
