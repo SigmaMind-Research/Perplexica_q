@@ -4,10 +4,11 @@ import { AzureChatOpenAI,OpenAIEmbeddings } from "@langchain/openai";
 import { ChatOpenAI } from '@langchain/openai';
 // import { AzureOpenAIEmbeddings } from '@langchain/azure-openai';
 
-import { getAzureOpenaiApiKey, getAzureEndpoint } from '../../config';
+import { getAzureOpenaiApiKey,getAzureOpenaiNewKey, getAzureEndpoint } from '../../config';
 import logger from '../../utils/logger';
 
 const azureApiKey = getAzureOpenaiApiKey();
+const azurenewkey = getAzureOpenaiNewKey();
 const azureEndpoint = getAzureEndpoint();
 
 export const loadAzureOpenAIChatModels = async () => {
@@ -38,19 +39,19 @@ export const loadAzureOpenAIChatModels = async () => {
           openAIBasePath:azureEndpoint
         })
       },
-      //  'Phi-4-potato': {
-      //           displayName: 'Phi4',
-      //           model: new ChatOpenAI(
-      //             {
-      //               openAIApiKey:'YxKocelKPm03lI466KdMXuKWMfsqGbZG',
-      //               modelName: 'Phi-4-potato',
-      //               temperature: 0.7,
-      //             },
-      //             {
-      //               baseURL: 'https://Phi-4-potato.eastus2.models.ai.azure.com',
-      //             },
-      //           ),
-      //         },
+       'DeepSeek-R1': {
+                displayName: 'DeepSeek R1',
+                model: new ChatOpenAI(
+                  {
+                    openAIApiKey:azurenewkey,
+                    modelName: 'DeepSeek-R1-tdeub',
+                    // temperature: 0.7,
+                  },
+                  {
+                    baseURL: 'https://DeepSeek-R1-tdeub.eastus2.models.ai.azure.com',
+                  },
+                ),
+              },
       
       // Add more models if available
     };

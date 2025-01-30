@@ -37,10 +37,11 @@ router.post('/', async (req, res) => {
 
     const chatModelProvider =
       body.chatModel?.provider || Object.keys(chatModelProviders)[0];
-    const chatModel =
-      body.chatModel?.model ||
-      Object.keys(chatModelProviders[chatModelProvider])[0];
-
+    // const chatModel =
+      // body.chatModel?.model ||
+      // Object.keys(chatModelProviders[chatModelProvider])[0];
+    const chatModel = "gpt-4o-mini";  // Hardcoded to gpt-4o-mini
+    
     let llm: BaseChatModel | undefined;
 
     if (body.chatModel?.provider === 'custom_openai') {
