@@ -15,6 +15,7 @@ interface Config {
     GROQ: string;
     ANTHROPIC: string;
     AZURE_OPENAI_API_KEY:string;
+    AZURE_OPENAI_NEW_KEY:string;
   };
   API_ENDPOINTS: {
     SEARXNG: string;
@@ -45,6 +46,7 @@ export const getKeepAlive = () => loadConfig().GENERAL.KEEP_ALIVE;
 export const getOpenaiApiKey = () => loadConfig().API_KEYS.OPENAI;
 
 export const getAzureOpenaiApiKey = () => loadConfig().API_KEYS.AZURE_OPENAI_API_KEY;
+export const getAzureOpenaiNewKey = () => loadConfig().API_KEYS.AZURE_OPENAI_NEW_KEY;
 export const getAzureEndpoint = () => loadConfig().API_ENDPOINTS.AZURE_ENDPOINT;
 
 export const getGroqApiKey = () => loadConfig().API_KEYS.GROQ;
