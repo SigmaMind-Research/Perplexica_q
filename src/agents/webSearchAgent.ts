@@ -25,6 +25,10 @@ import LineOutputParser from '../lib/outputParsers/lineOutputParser';
 import { IterableReadableStream } from '@langchain/core/utils/stream';
 // import { ChatOpenAI } from '@langchain/openai';
 import { AzureChatOpenAI} from '@langchain/openai';
+import {
+  getAvailableChatModelProviders,
+} from '../lib/providers';
+
 
 
 const basicSearchRetrieverPrompt = `
@@ -469,8 +473,8 @@ const basicWebSearch = (
   embeddings: Embeddings,
   optimizationMode: 'speed' | 'balanced' | 'quality',
 ) => {
-  const emitter = new eventEmitter();
-
+  const emitter = new eventEmitter();    
+    
   try {
     const basicWebSearchAnsweringChain = createBasicWebSearchAnsweringChain(
       llm,

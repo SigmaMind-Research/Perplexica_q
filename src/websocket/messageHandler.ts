@@ -2,7 +2,8 @@ import { EventEmitter, WebSocket } from 'ws';
 import { BaseMessage, AIMessage, HumanMessage } from '@langchain/core/messages';
 import handleWebSearch from '../agents/webSearchAgent';
 import handleAcademicSearch from '../agents/academicSearchAgent';
-import handleWritingAssistant from '../agents/writingAssistant';
+// import handleWritingAssistant from '../agents/writingAssistant';
+import handleReasoningAgent from '../agents/writingAssistant';
 import handleWolframAlphaSearch from '../agents/wolframAlphaSearchAgent';
 import handleYoutubeSearch from '../agents/youtubeSearchAgent';
 import handleRedditSearch from '../agents/redditSearchAgent';
@@ -32,7 +33,8 @@ type WSMessage = {
 export const searchHandlers = {
   webSearch: handleWebSearch,
   academicSearch: handleAcademicSearch,
-  writingAssistant: handleWritingAssistant,
+  writingAssistant: handleReasoningAgent,
+  // handleWritingAssistant,
   wolframAlphaSearch: handleWolframAlphaSearch,
   youtubeSearch: handleYoutubeSearch,
   redditSearch: handleRedditSearch,

@@ -39,19 +39,47 @@ export const loadAzureOpenAIChatModels = async () => {
           openAIBasePath:azureEndpoint
         })
       },
-       'DeepSeek-R1': {
-                displayName: 'DeepSeek R1',
-                model: new ChatOpenAI(
-                  {
-                    openAIApiKey:azurenewkey,
-                    modelName: 'DeepSeek-R1-tdeub',
-                    // temperature: 0.7,
-                  },
-                  {
-                    baseURL: 'https://DeepSeek-R1-tdeub.eastus2.models.ai.azure.com',
-                  },
-                ),
-              },
+      'o1-mini': {
+        displayName: 'o1-mini',
+
+        model: new AzureChatOpenAI({
+          modelName:'o1-mini',
+          openAIApiKey:azureApiKey,
+          azureOpenAIApiInstanceName: "sigmamind-vision",
+          openAIApiVersion:"2024-08-01-preview",
+          deploymentName:'o1-mini',
+          openAIBasePath:azureEndpoint,
+          temperature:1,
+          streaming:false
+        })
+      },
+      'DeepSeek-R1': {
+        displayName: 'DeepSeek R1',
+        model: new ChatOpenAI(
+          {
+            openAIApiKey: azurenewkey,
+            modelName: 'DeepSeek-R1-tdeub',
+            // temperature: 0.7,
+            streaming:false,
+            maxTokens:4000
+          },
+          {
+            baseURL: 'https://DeepSeek-R1-tdeub.eastus2.models.ai.azure.com',
+          },
+        ),
+      },
+      // 'DeepSeek R1': {
+      //   displayName: 'DeepSeek R1',
+
+      //   model: new AzureChatOpenAI({
+      //     modelName:'gpt-4o',
+      //     openAIApiKey:azureApiKey,
+      //     azureOpenAIApiInstanceName: "sigmamind-vision",
+      //     openAIApiVersion:"2024-08-01-preview",
+      //     deploymentName:'gpt-4o',
+      //     openAIBasePath:azureEndpoint
+      //   })
+      // },
       
       // Add more models if available
     };
