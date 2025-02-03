@@ -17,6 +17,7 @@ export type Message = {
   messageId: string;
   chatId: string;
   userId:string;
+  is_anonymous:boolean;
   createdAt: Date;
   content: string;
   role: 'user' | 'assistant';
@@ -346,6 +347,8 @@ const ChatWindow = ({ id }: { id?: string }) => {
       }
 // 
       const userId = data.session.user.id; // Get the user ID from session
+      const is_anonymous = data.session.user.is_anonymous;
+      console.log(is_anonymous);
     if (loading) return;
 
     setLoading(true);
@@ -364,6 +367,7 @@ const ChatWindow = ({ id }: { id?: string }) => {
           messageId: messageId,
           chatId: chatId!,
           userId: userId, // Include the userId here
+          is_anonymous:is_anonymous,
           content: message,
         },
         focusMode: focusMode,
@@ -379,6 +383,7 @@ const ChatWindow = ({ id }: { id?: string }) => {
         messageId: messageId,
         chatId: chatId!,
         userId:userId,
+        is_anonymous:!!is_anonymous,
         role: 'user',
         createdAt: new Date(),
       },
@@ -403,6 +408,7 @@ const ChatWindow = ({ id }: { id?: string }) => {
               messageId: data.messageId,
               chatId: chatId!,
               userId:userId,
+              is_anonymous:!!is_anonymous,
               role: 'assistant',
               sources: sources,
               createdAt: new Date(),
@@ -422,6 +428,7 @@ const ChatWindow = ({ id }: { id?: string }) => {
               messageId: data.messageId,
               chatId: chatId!,
               userId:userId,
+              is_anonymous:!is_anonymous,
               role: 'assistant',
               sources: sources,
               createdAt: new Date(),

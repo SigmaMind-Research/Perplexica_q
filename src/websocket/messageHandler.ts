@@ -21,6 +21,7 @@ type Message = {
   messageId: string;
   chatId: string;
   userId:string;
+  is_anonymous:boolean;
   content: string;
 };
 
@@ -31,11 +32,17 @@ type WSMessage = {
   focusMode: string;
   history: Array<[string, string]>;
 };
-// Create a rate limiter instance
-const rateLimiter = new RateLimiterMemory({
-  points: 10, // Allow 10 messages
-  duration: 15, // Per 60 seconds
+// Define two separate rate limiters
+const rateLimiterAnonymous = new RateLimiterMemory({
+  points: 5, // Lower limit for anonymous users
+  duration: 10*60, // Time window in seconds
 });
+
+const rateLimiterLoggedIn = new RateLimiterMemory({
+  points: 10, // Higher limit for logged-in users
+  duration: 15, // Time window in seconds
+});
+
 export const searchHandlers = {
   webSearch: handleWebSearch,
   academicSearch: handleAcademicSearch,
@@ -113,7 +120,10 @@ export const handleMessage = async (
   try {
     const parsedWSMessage = JSON.parse(message) as WSMessage;
     const parsedMessage = parsedWSMessage.message;
-    rateLimiter.consume(parsedMessage.userId, 1)
+     // Select the appropriate rate limiter based on anonymity
+     const rateLimiter = parsedMessage.is_anonymous ? rateLimiterAnonymous : rateLimiterLoggedIn;
+
+     rateLimiter.consume(parsedMessage.userId, 1)
           .then(async (rateLimiterRes) => {
             console.log('user defined');
           })
@@ -127,7 +137,6 @@ export const handleMessage = async (
           });  
 
     const humanMessageId = parsedMessage.messageId ?? crypto.randomBytes(7).toString('hex');
-    // console.log(parsedMessage.messageId);
     // crypto.randomBytes(7).toString('hex');
       // parsedMessage.messageId ?? crypto.randomBytes(7).toString('hex');
     const aiMessageId = crypto.randomBytes(7).toString('hex');
@@ -172,7 +181,6 @@ export const handleMessage = async (
         });
         
         if (!chat) {
-          console.log(parsedMessage.userId);
           await db
             .insert(chats)
             .values({
