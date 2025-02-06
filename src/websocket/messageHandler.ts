@@ -15,13 +15,11 @@ import { eq, asc, gt } from 'drizzle-orm';
 import crypto, { UUID } from 'crypto';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 
-
-
 type Message = {
   messageId: string;
   chatId: string;
-  userId:string;
-  is_anonymous:boolean;
+  userId: string;
+  is_anonymous: boolean;
   content: string;
 };
 
@@ -35,7 +33,7 @@ type WSMessage = {
 // Define two separate rate limiters
 const rateLimiterAnonymous = new RateLimiterMemory({
   points: 5, // Lower limit for anonymous users
-  duration: 10*60, // Time window in seconds
+  duration: 10 * 60, // Time window in seconds
 });
 
 const rateLimiterLoggedIn = new RateLimiterMemory({
@@ -120,25 +118,43 @@ export const handleMessage = async (
   try {
     const parsedWSMessage = JSON.parse(message) as WSMessage;
     const parsedMessage = parsedWSMessage.message;
-     // Select the appropriate rate limiter based on anonymity
-     const rateLimiter = parsedMessage.is_anonymous ? rateLimiterAnonymous : rateLimiterLoggedIn;
 
-     rateLimiter.consume(parsedMessage.userId, 1)
-          .then(async (rateLimiterRes) => {
-            console.log('user defined');
-          })
-          .catch((err) => {
-            console.log(err.consumedPoints);
-            ws.send(JSON.stringify({
-              type: 'error',
-              data: 'Too many messages. Please wait before sending more.',
-              key: 'RATE_LIMIT_EXCEEDED',
-            }),)
-          });  
+    // Notify anonymous users with a popup message
+    if (parsedMessage.is_anonymous) {
+      console.log('Sending anonymous user notification');
+      ws.send(
+        JSON.stringify({
+          type: 'notification',
+          data: 'You are currently anonymous. Log in for a better experience!',
+          key: 'ANONYMOUS_WARNING',
+        }),
+      );
+    }
+    // Select the appropriate rate limiter based on anonymity
+    const rateLimiter = parsedMessage.is_anonymous
+      ? rateLimiterAnonymous
+      : rateLimiterLoggedIn;
 
-    const humanMessageId = parsedMessage.messageId ?? crypto.randomBytes(7).toString('hex');
+    rateLimiter
+      .consume(parsedMessage.userId, 1)
+      .then(async (rateLimiterRes) => {
+        console.log('user defined');
+      })
+      .catch((err) => {
+        console.log(err.consumedPoints);
+        ws.send(
+          JSON.stringify({
+            type: 'error',
+            data: 'Too many messages. Please wait before sending more.',
+            key: 'RATE_LIMIT_EXCEEDED',
+          }),
+        );
+      });
+
+    const humanMessageId =
+      parsedMessage.messageId ?? crypto.randomBytes(7).toString('hex');
     // crypto.randomBytes(7).toString('hex');
-      // parsedMessage.messageId ?? crypto.randomBytes(7).toString('hex');
+    // parsedMessage.messageId ?? crypto.randomBytes(7).toString('hex');
     const aiMessageId = crypto.randomBytes(7).toString('hex');
 
     if (!parsedMessage.content)
@@ -179,14 +195,14 @@ export const handleMessage = async (
         const chat = await db.query.chats.findFirst({
           where: eq(chats.id, parsedMessage.chatId),
         });
-        
+
         if (!chat) {
           await db
             .insert(chats)
             .values({
               id: parsedMessage.chatId,
               title: parsedMessage.content,
-              userId:parsedMessage.userId,
+              userId: parsedMessage.userId,
               createdAt: new Date().toString(),
               focusMode: parsedWSMessage.focusMode,
             })

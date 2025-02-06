@@ -13,6 +13,7 @@ import Error from 'next/error';
 import { createClient } from '@/utils/supabase/client';
 
 
+
 export type Message = {
   messageId: string;
   chatId: string;
@@ -349,6 +350,20 @@ const ChatWindow = ({ id }: { id?: string }) => {
       const userId = data.session.user.id; // Get the user ID from session
       const is_anonymous = data.session.user.is_anonymous;
       console.log(is_anonymous);
+
+      // Display a popup if the user is anonymous
+  // if (is_anonymous) {
+  //   toast('You are using the service as an anonymous user. Some features may be limited.', {
+  //     style: {
+  //       background: '#f44336',  // Red color for attention
+  //       color: 'white',
+  //     },
+  //   });
+  // }
+
+
+
+
     if (loading) return;
 
     setLoading(true);
@@ -391,6 +406,18 @@ const ChatWindow = ({ id }: { id?: string }) => {
 
     const messageHandler = async (e: MessageEvent) => {
       const data = JSON.parse(e.data);
+
+       // Handle notification messages from the backend (e.g., for anonymous users)
+  if (data.type === 'notification') {
+    toast(data.data, {
+      style: {
+        background: '#f44336', // Red color for attention
+        color: 'white',
+      },
+    });
+    return; // Return early if it's just a notification
+  }
+
 
       if (data.type === 'error') {
         toast.error(data.data);
