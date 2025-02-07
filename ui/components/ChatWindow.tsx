@@ -11,14 +11,15 @@ import { useSearchParams } from 'next/navigation';
 import { getSuggestions } from '@/lib/actions';
 import Error from 'next/error';
 import { createClient } from '@/utils/supabase/client';
+import { useRouter } from 'next/router';
 
 
 
 export type Message = {
   messageId: string;
   chatId: string;
-  userId:string;
-  is_anonymous:boolean;
+  userId: string;
+  is_anonymous: boolean;
   createdAt: Date;
   content: string;
   role: 'user' | 'assistant';
@@ -64,9 +65,9 @@ const useSocket = (
             chatModelProvider = Object.keys(chatModelProviders)[0];
 
             if (chatModelProvider === 'custom_openai') {
-              toast.error(
-                'Seems like you are using the custom OpenAI provider, please open the settings and configure the API key and base URL',
-              );
+              // toast.error(
+              //   'Seems like you are using the custom OpenAI provider, please open the settings and configure the API key and base URL',
+              // );
               setError(true);
               return;
             } else {
@@ -340,26 +341,25 @@ const ChatWindow = ({ id }: { id?: string }) => {
 
   const sendMessage = async (message: string, messageId?: string) => {
     const supabase = createClient()
-      const { data, error } = await supabase.auth.getSession();
+    const { data, error } = await supabase.auth.getSession();
 
-      if (error || !data.session) {
-        console.error('Failed to fetch session:', error);
-        return;
-      }
-// 
-      const userId = data.session.user.id; // Get the user ID from session
-      const is_anonymous = data.session.user.is_anonymous;
-      console.log(is_anonymous);
+    if (error || !data.session) {
+      console.error('Failed to fetch session:', error);
+      return;
+    }
+    // 
+    const userId = data.session.user.id; // Get the user ID from session
+    const is_anonymous = data.session.user.is_anonymous;
 
-      // Display a popup if the user is anonymous
-  // if (is_anonymous) {
-  //   toast('You are using the service as an anonymous user. Some features may be limited.', {
-  //     style: {
-  //       background: '#f44336',  // Red color for attention
-  //       color: 'white',
-  //     },
-  //   });
-  // }
+    // Display a popup if the user is anonymous
+    // if (is_anonymous) {
+    //   toast('You are using the service as an anonymous user. Some features may be limited.', {
+    //     style: {
+    //       background: '#f44336',  // Red color for attention
+    //       color: 'white',
+    //     },
+    //   });
+    // }
 
 
 
@@ -382,7 +382,7 @@ const ChatWindow = ({ id }: { id?: string }) => {
           messageId: messageId,
           chatId: chatId!,
           userId: userId, // Include the userId here
-          is_anonymous:is_anonymous,
+          is_anonymous: is_anonymous,
           content: message,
         },
         focusMode: focusMode,
@@ -397,8 +397,8 @@ const ChatWindow = ({ id }: { id?: string }) => {
         content: message,
         messageId: messageId,
         chatId: chatId!,
-        userId:userId,
-        is_anonymous:!!is_anonymous,
+        userId: userId,
+        is_anonymous: !!is_anonymous,
         role: 'user',
         createdAt: new Date(),
       },
@@ -407,17 +407,14 @@ const ChatWindow = ({ id }: { id?: string }) => {
     const messageHandler = async (e: MessageEvent) => {
       const data = JSON.parse(e.data);
 
-       // Handle notification messages from the backend (e.g., for anonymous users)
-  if (data.type === 'notification') {
-    toast(data.data, {
-      style: {
-        background: '#f44336', // Red color for attention
-        color: 'white',
-      },
-    });
-    return; // Return early if it's just a notification
-  }
-
+      // Handle notification messages from the backend (e.g., for anonymous users)
+      if (data.key === 'ANONYMOUS_WARNING') {
+        toast.error(data.data);
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
+        return; // Return early if it's just a notification
+      }
 
       if (data.type === 'error') {
         toast.error(data.data);
@@ -434,8 +431,8 @@ const ChatWindow = ({ id }: { id?: string }) => {
               content: '',
               messageId: data.messageId,
               chatId: chatId!,
-              userId:userId,
-              is_anonymous:!!is_anonymous,
+              userId: userId,
+              is_anonymous: !!is_anonymous,
               role: 'assistant',
               sources: sources,
               createdAt: new Date(),
@@ -454,8 +451,8 @@ const ChatWindow = ({ id }: { id?: string }) => {
               content: data.data,
               messageId: data.messageId,
               chatId: chatId!,
-              userId:userId,
-              is_anonymous:!is_anonymous,
+              userId: userId,
+              is_anonymous: !is_anonymous,
               role: 'assistant',
               sources: sources,
               createdAt: new Date(),

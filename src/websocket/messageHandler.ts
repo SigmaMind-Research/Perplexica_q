@@ -32,13 +32,13 @@ type WSMessage = {
 };
 // Define two separate rate limiters
 const rateLimiterAnonymous = new RateLimiterMemory({
-  points: 5, // Lower limit for anonymous users
-  duration: 10 * 60, // Time window in seconds
+  points: 2, // Lower limit for anonymous users
+  duration: 15, // Time window in seconds
 });
 
 const rateLimiterLoggedIn = new RateLimiterMemory({
-  points: 10, // Higher limit for logged-in users
-  duration: 15, // Time window in seconds
+  points: 100, // Higher limit for logged-in users
+  duration: 60*60*24, // Time window in seconds
 });
 
 export const searchHandlers = {
@@ -119,17 +119,6 @@ export const handleMessage = async (
     const parsedWSMessage = JSON.parse(message) as WSMessage;
     const parsedMessage = parsedWSMessage.message;
 
-    // Notify anonymous users with a popup message
-    if (parsedMessage.is_anonymous) {
-      console.log('Sending anonymous user notification');
-      ws.send(
-        JSON.stringify({
-          type: 'notification',
-          data: 'You are currently anonymous. Log in for a better experience!',
-          key: 'ANONYMOUS_WARNING',
-        }),
-      );
-    }
     // Select the appropriate rate limiter based on anonymity
     const rateLimiter = parsedMessage.is_anonymous
       ? rateLimiterAnonymous
@@ -138,110 +127,115 @@ export const handleMessage = async (
     rateLimiter
       .consume(parsedMessage.userId, 1)
       .then(async (rateLimiterRes) => {
-        console.log('user defined');
+        const humanMessageId = parsedMessage.messageId ?? crypto.randomBytes(7).toString('hex');
+        const aiMessageId = crypto.randomBytes(7).toString('hex');
+
+        if (!parsedMessage.content)
+          return ws.send(
+            JSON.stringify({
+              type: 'error',
+              data: 'Invalid message format',
+              key: 'INVALID_FORMAT',
+            }),
+          );
+
+        const history: BaseMessage[] = parsedWSMessage.history.map((msg) => {
+          if (msg[0] === 'human') {
+            return new HumanMessage({
+              content: msg[1],
+            });
+          } else {
+            return new AIMessage({
+              content: msg[1],
+            });
+          }
+        });
+
+        if (parsedWSMessage.type === 'message') {
+          const handler = searchHandlers[parsedWSMessage.focusMode];
+
+          if (handler) {
+            const emitter = handler(
+              parsedMessage.content,
+              history,
+              llm,
+              embeddings,
+              parsedWSMessage.optimizationMode,
+            );
+
+            handleEmitterEvents(emitter, ws, aiMessageId, parsedMessage.chatId);
+
+            const chat = await db.query.chats.findFirst({
+              where: eq(chats.id, parsedMessage.chatId),
+            });
+
+            if (!chat) {
+              await db
+                .insert(chats)
+                .values({
+                  id: parsedMessage.chatId,
+                  title: parsedMessage.content,
+                  userId: parsedMessage.userId,
+                  createdAt: new Date().toString(),
+                  focusMode: parsedWSMessage.focusMode,
+                })
+                .execute();
+            }
+
+            const messageExists = await db.query.messages.findFirst({
+              where: eq(messagesSchema.messageId, humanMessageId),
+            });
+
+            if (!messageExists) {
+              await db
+                .insert(messagesSchema)
+                .values({
+                  content: parsedMessage.content,
+                  chatId: parsedMessage.chatId,
+                  messageId: humanMessageId,
+                  role: 'user',
+                  metadata: JSON.stringify({
+                    createdAt: new Date(),
+                  }),
+                })
+                .execute();
+            } else {
+              await db
+                .delete(messagesSchema)
+                .where(gt(messagesSchema.id, messageExists.id))
+                .execute();
+            }
+          } else {
+            ws.send(
+              JSON.stringify({
+                type: 'error',
+                data: 'Invalid focus mode',
+                key: 'INVALID_FOCUS_MODE',
+              }),
+            );
+          }
+        }
       })
       .catch((err) => {
-        console.log(err.consumedPoints);
-        ws.send(
-          JSON.stringify({
-            type: 'error',
-            data: 'Too many messages. Please wait before sending more.',
-            key: 'RATE_LIMIT_EXCEEDED',
-          }),
-        );
+        // Notify anonymous users with a popup message
+        if (parsedMessage.is_anonymous) {
+          ws.send(
+            JSON.stringify({
+              type: 'notification',
+              data: 'Log in for a more Chats',
+              key: 'ANONYMOUS_WARNING',
+            }),
+          );
+        }
+        // ws.send(
+        //   JSON.stringify({
+        //     type: 'error',
+        //     data: 'Too many messages. Please wait before sending more.',
+        //     key: 'RATE_LIMIT_EXCEEDED',
+        //   }),
+        // );
       });
 
-    const humanMessageId =
-      parsedMessage.messageId ?? crypto.randomBytes(7).toString('hex');
-    // crypto.randomBytes(7).toString('hex');
-    // parsedMessage.messageId ?? crypto.randomBytes(7).toString('hex');
-    const aiMessageId = crypto.randomBytes(7).toString('hex');
-
-    if (!parsedMessage.content)
-      return ws.send(
-        JSON.stringify({
-          type: 'error',
-          data: 'Invalid message format',
-          key: 'INVALID_FORMAT',
-        }),
-      );
-
-    const history: BaseMessage[] = parsedWSMessage.history.map((msg) => {
-      if (msg[0] === 'human') {
-        return new HumanMessage({
-          content: msg[1],
-        });
-      } else {
-        return new AIMessage({
-          content: msg[1],
-        });
-      }
-    });
-
-    if (parsedWSMessage.type === 'message') {
-      const handler = searchHandlers[parsedWSMessage.focusMode];
-
-      if (handler) {
-        const emitter = handler(
-          parsedMessage.content,
-          history,
-          llm,
-          embeddings,
-          parsedWSMessage.optimizationMode,
-        );
-
-        handleEmitterEvents(emitter, ws, aiMessageId, parsedMessage.chatId);
-
-        const chat = await db.query.chats.findFirst({
-          where: eq(chats.id, parsedMessage.chatId),
-        });
-
-        if (!chat) {
-          await db
-            .insert(chats)
-            .values({
-              id: parsedMessage.chatId,
-              title: parsedMessage.content,
-              userId: parsedMessage.userId,
-              createdAt: new Date().toString(),
-              focusMode: parsedWSMessage.focusMode,
-            })
-            .execute();
-        }
-
-        const messageExists = await db.query.messages.findFirst({
-          where: eq(messagesSchema.messageId, humanMessageId),
-        });
-
-        if (!messageExists) {
-          await db
-            .insert(messagesSchema)
-            .values({
-              content: parsedMessage.content,
-              chatId: parsedMessage.chatId,
-              messageId: humanMessageId,
-              role: 'user',
-              metadata: JSON.stringify({
-                createdAt: new Date(),
-              }),
-            })
-            .execute();
-        } else {
-          await db
-            .delete(messagesSchema)
-            .where(gt(messagesSchema.id, messageExists.id))
-            .execute();
-        }
-      } else {
-        ws.send(
-          JSON.stringify({
-            type: 'error',
-            data: 'Invalid focus mode',
-            key: 'INVALID_FOCUS_MODE',
-          }),
-        );
-      }
-    }
   } catch (err) {
     ws.send(
       JSON.stringify({
