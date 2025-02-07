@@ -382,6 +382,7 @@ import Focus from './MessageInputActions/Focus';
 import Optimization from './MessageInputActions/Optimization';
 import { createClient } from '@/utils/supabase/client';
 
+
 const EmptyChatMessageInput = ({
   sendMessage,
   focusMode,
@@ -513,7 +514,7 @@ const EmptyChatMessageInput = ({
           placeholder="Ask anything..."
         />
 
-        <div className="flex flex-row items-center justify-between mt-4">
+        <div className="flex flex-row items-center justify-between mt-4 relative z-20">
           <div className="flex flex-row items-center space-x-4">
             <Focus focusMode={focusMode} setFocusMode={setFocusMode} />
           </div>
@@ -532,8 +533,8 @@ const EmptyChatMessageInput = ({
         </div>
         {/* Suggestions Dropdown */}
         {suggestions.length > 0 && (
-          <ul className="relative flex flex-col bg-light-secondary dark:bg-dark-secondary px-5 pt-5 pb-2 rounded-lg w-full border border-light-200 dark:border-dark-200 w-full z-10">
-          {/* {suggestions.map((suggestion, index) => ( */}
+          <ul className="relative flex flex-col bg-light-secondary dark:bg-dark-secondary px-5 pt-5 pb-2 rounded-lg w-full border border-light-200 dark:border-dark-200 w-full z-10 mt-2  ">
+       
             {suggestions.slice(0, 6).map((suggestion, index) => (
               <li
                 key={index}

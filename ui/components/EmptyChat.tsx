@@ -63,12 +63,14 @@
 
 // export default EmptyChat;
 
-import { Settings, Library, History } from 'lucide-react';
+import { Settings, Library, History,ArrowRight } from 'lucide-react';
+
 import EmptyChatMessageInput from './EmptyChatMessageInput';
 import SettingsDialog from './SettingsDialog';
 import { useState, useEffect, useCallback } from 'react';
 import { getSessionAndUser } from '@/lib/sessionService'; // Import the session check service
 
+// import Test from './Test'; 
 const EmptyChat = ({
   sendMessage,
   focusMode,
@@ -84,6 +86,7 @@ const EmptyChat = ({
   setOptimizationMode: (mode: string) => void;
 }) => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isTestOpen, setIsTestOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false); // State to track mounting of component
 
   // Predefined trending questions
@@ -170,9 +173,13 @@ const EmptyChat = ({
         </div>
       </div>
       <div className="flex flex-col items-center justify-center min-h-screen max-w-screen-sm mx-auto p-2 space-y-8">
-        <h2 className="text-black/70 dark:text-white/70 text-3xl font-medium -mt-8">
+        {/* <h2 className="text-black/70 dark:text-white/70 text-3xl font-medium -mt-8"> */}
+          {/* PotatoAI */}
+        {/* </h2> */}
+        {/* Styled H5 */}
+        <h5 className="text-2xl text-white tracking-wide">
           PotatoAI
-        </h2>
+        </h5>
         <EmptyChatMessageInput
           sendMessage={sendMessage}
           focusMode={focusMode}
@@ -193,6 +200,15 @@ const EmptyChat = ({
               {question}
             </button>
           ))}
+
+{/* <ArrowRight
+        onClick={() => setIsTestOpen(!isTestOpen)}
+        className="cursor-pointer text-gray-800 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
+        aria-label="Open Test Modal"
+      />
+
+     
+      <Test isOpen={isTestOpen} setIsOpen={setIsTestOpen} /> */}
         </div>
         <div className="mt-6 text-center">
           <p className="text-sm font-medium text-gray-600">Backed by</p>

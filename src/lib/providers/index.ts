@@ -10,7 +10,7 @@ const chatModelProviders = {
   groq: loadGroqChatModels,
   ollama: loadOllamaChatModels,
   anthropic: loadAnthropicChatModels,
-  azure:loadAzureOpenAIChatModels
+  azure:loadAzureOpenAIChatModels,
 };
 
 const embeddingModelProviders = {
@@ -29,7 +29,6 @@ export const getAvailableChatModelProviders = async () => {
       models[provider] = providerModels;
     }
   }
-
   models['custom_openai'] = {};
   // console.log(models);
   return models;

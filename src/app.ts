@@ -12,10 +12,11 @@ const app = express();
 const server = http.createServer(app);
 
 const corsOptions = {
-  origin: '*',
+  origin: ['https://thepotatoai.com', 'http://localhost:3000'],
 };
 
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Handle preflight
 app.use(express.json());
 
 app.use('/api', routes);

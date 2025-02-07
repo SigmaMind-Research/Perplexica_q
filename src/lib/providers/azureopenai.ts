@@ -1,12 +1,14 @@
 // azureopenai.ts
-// import { AzureChatOpenAI,OpenAIEmbeddings } from "@langchain/openai";
+import type { BaseChatModel } from '@langchain/core/language_models/chat_models';
 import { AzureChatOpenAI,OpenAIEmbeddings } from "@langchain/openai";
+import { ChatOpenAI } from '@langchain/openai';
 // import { AzureOpenAIEmbeddings } from '@langchain/azure-openai';
 
-import { getAzureOpenaiApiKey, getAzureEndpoint } from '../../config';
+import { getAzureOpenaiApiKey,getAzureOpenaiNewKey, getAzureEndpoint } from '../../config';
 import logger from '../../utils/logger';
 
 const azureApiKey = getAzureOpenaiApiKey();
+const azurenewkey = getAzureOpenaiNewKey();
 const azureEndpoint = getAzureEndpoint();
 
 export const loadAzureOpenAIChatModels = async () => {
@@ -24,19 +26,33 @@ export const loadAzureOpenAIChatModels = async () => {
           deploymentName:'gpt-4o-mini',
           openAIBasePath:azureEndpoint
         })
-        /*new AzureChatOpenAI({
-          model:"gpt-4o-mini",
-          openAIApiKey:azureApiKey,
-          // azureOpenAIApiKey:azureApiKey,
-          // azureOpenAIApiInstanceName:azureEndpoint,
-          azureOpenAIApiDeploymentName: "gpt-4o-mini",
-          azureOpenAIEndpoint:azureEndpoint,
-          // azureEndpoint,
-          // azureOpenAIBasePath:"https://sigmamind-vision.openai.azure.com/openai/deployments/",
-          azureOpenAIApiVersion:"2024-08-01-preview",
-          temperature: 0.7,
-        }),*/
       },
+      'gpt-4o': {
+        displayName: 'Gpt-4o',
+
+        model: new AzureChatOpenAI({
+          modelName:'gpt-4o',
+          openAIApiKey:azureApiKey,
+          azureOpenAIApiInstanceName: "sigmamind-vision",
+          openAIApiVersion:"2024-08-01-preview",
+          deploymentName:'gpt-4o',
+          openAIBasePath:azureEndpoint
+        })
+      },
+      //  'DeepSeek-R1': {
+      //           displayName: 'DeepSeek R1',
+      //           model: new ChatOpenAI(
+      //             {
+      //               openAIApiKey:azurenewkey,
+      //               modelName: 'DeepSeek-R1-tdeub',
+      //               // temperature: 0.7,
+      //             },
+      //             {
+      //               baseURL: 'https://DeepSeek-R1-tdeub.eastus2.models.ai.azure.com',
+      //             },
+      //           ),
+      //         },
+      
       // Add more models if available
     };
     // console.log(chatModels);
