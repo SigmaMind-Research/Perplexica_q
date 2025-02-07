@@ -144,7 +144,7 @@ const Page = () => {
   );
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 4;
+  const itemsPerPage = 6;
 
   const groupChatsByDate = (chats: Chat[]) => {
     return chats.reduce(
