@@ -6,6 +6,7 @@ import handleWritingAssistant from '../agents/writingAssistant';
 import handleWolframAlphaSearch from '../agents/wolframAlphaSearchAgent';
 import handleYoutubeSearch from '../agents/youtubeSearchAgent';
 import handleRedditSearch from '../agents/redditSearchAgent';
+import handleFileChatAgent from '../agents/fileagent';
 import type { BaseChatModel } from '@langchain/core/language_models/chat_models';
 import type { Embeddings } from '@langchain/core/embeddings';
 import logger from '../utils/logger';
@@ -39,6 +40,7 @@ export const searchHandlers = {
   wolframAlphaSearch: handleWolframAlphaSearch,
   youtubeSearch: handleYoutubeSearch,
   redditSearch: handleRedditSearch,
+  filesearch:handleFileChatAgent,
 };
 
 const handleEmitterEvents = (

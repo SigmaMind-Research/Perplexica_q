@@ -409,6 +409,14 @@ const EmptyChatMessageInput = ({
   const [message, setMessage] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]); // For search suggestions
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
+   // Automatically set focus mode to 'filesearch' if any files have been uploaded
+  useEffect(() => {
+    if (fileIds.length > 0 && focusMode !== 'filesearch') {
+      setFocusMode('filesearch');
+      // Optionally: If you want to automatically trigger a file search query,
+      // you could call sendMessage() here if message is non-empty or set a default query.
+    }
+  }, [fileIds, focusMode, setFocusMode]);
 
   // Fetch suggestions from the Google Suggest API
   const fetchSuggestions = async (query: string) => {
@@ -456,7 +464,7 @@ const EmptyChatMessageInput = ({
     };
 
     document.addEventListener('keydown', handleKeyDown);
-
+    
     inputRef.current?.focus();
 
     return () => {

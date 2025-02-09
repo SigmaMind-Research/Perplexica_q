@@ -114,7 +114,7 @@ router.post('/', async (req, res) => {
     if (!llm || !embeddings) {
       return res.status(400).json({ message: 'Invalid model selected' });
     }
-
+    body.focusMode = 'filesearch';
     const searchHandler = searchHandlers[body.focusMode];
 
     if (!searchHandler) {
@@ -140,7 +140,7 @@ router.post('/', async (req, res) => {
         sources = parsedData.data;
       }
     });
-
+    console.log(sources);
     emitter.on('end', () => {
       res.status(200).json({ message, sources });
     });
