@@ -4,7 +4,7 @@
   "license": "MIT",
   "author": "ItzCrazyKns",
   "scripts": {
-    "start": "npm run db:push && node dist/app.js",
+    "start": "node dist/app.js",
     "build": "tsc",
     "dev": "nodemon src/app.ts",
     "db:push": "drizzle-kit push",
@@ -12,6 +12,7 @@
     "format:write": "prettier . --write"
   },
   "devDependencies": {
+    "@next/swc-linux-x64-gnu": "^15.1.6",
     "@types/better-sqlite3": "^7.6.10",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
@@ -50,7 +51,6 @@
     "pdf-parse": "^1.1.1",
     "postgres": "^3.4.5",
     "rate-limiter-flexible": "^5.0.5",
-
     "razorpay": "^2.9.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
