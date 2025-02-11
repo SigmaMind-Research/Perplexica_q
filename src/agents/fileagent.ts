@@ -11,6 +11,11 @@ import fs from "fs";
 import path from "path";
 import logger from "../utils/logger";
 
+
+function truncateString(text: string, maxLength: number): string {
+  return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+}
+
 // --- Helper: Load File Data (Extracted Text and Embeddings) ---
 async function loadFileData(fileId: string): Promise<{
     fileName: string;
@@ -45,45 +50,106 @@ async function loadFileData(fileId: string): Promise<{
     };
 }
 
-// --- Helper: Given a query and an array of file IDs, select relevant chunks ---
-function getRelevantFileContext(
-    query: string,
-    fileIds: string[],
-    embeddingModel: Embeddings
-): Promise<string> {
-    return Promise.all(fileIds.map((id) => loadFileData(id))).then((filesDataArr) => {
-        // Flatten the data: for each file, map its chunks into an object array
-        const filesData = filesDataArr
-            .map((fileData) =>
-                fileData.contents.map((chunk: string, i: number) => ({
-                    fileName: fileData.title,
-                    content: chunk,
-                    embeddings: fileData.embeddings[i],
-                }))
-            )
-            .flat();
 
-        // Embed the query using the embedding model
-        return embeddingModel.embedQuery(query).then((queryEmbedding) => {
-            // Compute similarity for each chunk
-            const similarityResults = filesData.map((data, index) => {
-                const sim = computeSimilarity(queryEmbedding, data.embeddings);
-                return { index, similarity: sim };
-            });
-
-            // Filter, sort, and select top chunks
-            const threshold = 0.3;
-            const sortedResults = similarityResults
-                .filter((r) => r.similarity > threshold)
-                .sort((a, b) => b.similarity - a.similarity)
-                .slice(0, 8);
-
-            // Get the corresponding text chunks
-            const relevantChunks = sortedResults.map((r) => filesData[r.index].content);
-            return relevantChunks.join("\n\n");
-        });
-    });
+function processSourceChunks(chunks: Array<{ content: string; fileName: string; index: number }>) {
+    return chunks
+        .map((chunk, idx) => `${idx + 1}. ${chunk.content}`)
+        .join('\n\n');
 }
+
+// // --- Helper: Given a query and an array of file IDs, select relevant chunks ---
+// function getRelevantFileContext(
+//     query: string,
+//     fileIds: string[],
+//     embeddingModel: Embeddings
+// ): Promise<string> {
+//     return Promise.all(fileIds.map((id) => loadFileData(id))).then((filesDataArr) => {
+//         // Flatten the data: for each file, map its chunks into an object array
+//         const filesData = filesDataArr
+//             .map((fileData) =>
+//                 fileData.contents.map((chunk: string, i: number) => ({
+//                     fileName: fileData.title,
+//                     content: chunk,
+//                     embeddings: fileData.embeddings[i],
+//                 }))
+//             )
+//             .flat();
+
+//         // Embed the query using the embedding model
+//         return embeddingModel.embedQuery(query).then((queryEmbedding) => {
+//             // Compute similarity for each chunk
+//             const similarityResults = filesData.map((data, index) => {
+//                 const sim = computeSimilarity(queryEmbedding, data.embeddings);
+//                 return { index, similarity: sim };
+//             });
+
+//             // Filter, sort, and select top chunks
+//             const threshold = 0.3;
+//             const sortedResults = similarityResults
+//                 .filter((r) => r.similarity > threshold)
+//                 .sort((a, b) => b.similarity - a.similarity)
+//                 .slice(0, 8);
+
+//             // Get the corresponding text chunks
+//             const relevantChunks = sortedResults.map((r) => filesData[r.index].content);
+//             return relevantChunks.join("\n\n");
+//         });
+//     });
+// }
+
+
+// updated one
+// --- Helper: Get Relevant File Context with Source Information ---
+async function getRelevantFileContext(
+  query: string,
+  fileIds: string[],
+  embeddingModel: Embeddings
+): Promise<{ formattedContext: string; source: { content: string; fileName: string } }> {
+  const filesDataArr = await Promise.all(fileIds.map((id) => loadFileData(id)));
+  
+  const filesData = filesDataArr
+      .map((fileData) =>
+          fileData.contents.map((chunk: string, i: number) => ({
+              fileName: fileData.title,
+              content: chunk,
+              embeddings: fileData.embeddings[i],
+          }))
+      )
+      .flat();
+
+  const queryEmbedding = await embeddingModel.embedQuery(query);
+  
+  const similarityResults = filesData.map((data, index) => ({
+      index,
+      similarity: computeSimilarity(queryEmbedding, data.embeddings),
+      content: data.content,
+      fileName: data.fileName
+  }));
+
+  const threshold = 0.3;
+  const sortedResults = similarityResults
+      .filter((r) => r.similarity > threshold)
+      .sort((a, b) => b.similarity - a.similarity)
+      .slice(0, 8);
+
+  const relevantChunks = sortedResults.map((r, idx) => ({
+      content: r.content,
+      fileName: r.fileName,
+      index: idx + 1
+  }));
+
+  // Get the first file as the primary source
+  const primarySource = {
+      fileName: relevantChunks[0].fileName,
+      content: "Source Document"
+  };
+
+  return {
+      formattedContext: processSourceChunks(relevantChunks),
+      source: primarySource
+  };
+}
+
 
 // --- Create a File-Only Chain ---
 const createFileOnlyChain = (llm: BaseChatModel) => {
@@ -132,18 +198,53 @@ const handleFileOnlyChatAgent = (
 ): EventEmitter => {
     const emitter = new EventEmitter();
 
+   
     // Chain the asynchronous operations
+    // getRelevantFileContext(query, fileIds, embeddingModel)
+    //     .then((fileContext) => {
+    //         // console.log("Resolved file context:", fileContext);
+    //         const fileChain = createFileOnlyChain(llm);
+    //         const chainInput = {
+    //             chat_history: history,
+    //             query: query,
+    //             file_context: fileContext,
+    //         };
+
     getRelevantFileContext(query, fileIds, embeddingModel)
-        .then((fileContext) => {
-            // console.log("Resolved file context:", fileContext);
+        .then(({ formattedContext, source }) => {
             const fileChain = createFileOnlyChain(llm);
             const chainInput = {
                 chat_history: history,
                 query: query,
-                file_context: fileContext,
+                file_context: formattedContext,
             };
+
+             // Define a maximum allowed length for the file title
+            const MAX_TITLE_LENGTH = 20;
+            const safeFileName = truncateString(source.fileName, MAX_TITLE_LENGTH);
             // console.log("Chain Input:", chainInput);
-            return fileChain.invoke(chainInput);
+            // return fileChain.invoke(chainInput);
+
+            // updated one
+             // Emit only one source
+             emitter.emit(
+              "data",
+              JSON.stringify({ 
+                  type: "sources", 
+                  data: [{
+                      pageContent: source.content,
+                      metadata: { 
+                        title: safeFileName,
+                        url: `File: ${safeFileName}`
+                       
+                      }
+                  }]
+              })
+          );
+          
+
+          return fileChain.invoke(chainInput);
+
         })
         .then((result) => {
             let finalResponse: string | undefined;
@@ -172,6 +273,12 @@ const handleFileOnlyChatAgent = (
 };
 
 export default handleFileOnlyChatAgent;
+
+
+
+
+
+
 
 
 // ... (previous code remains the same until after loadFileData function)
