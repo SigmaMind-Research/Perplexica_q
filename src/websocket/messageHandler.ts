@@ -32,7 +32,7 @@ type WSMessage = {
 };
 // Define two separate rate limiters
 const rateLimiterAnonymous = new RateLimiterMemory({
-  points: 2, // Lower limit for anonymous users
+  points: 1, // Lower limit for anonymous users
   duration: 15, // Time window in seconds
 });
 
@@ -127,7 +127,8 @@ export const handleMessage = async (
     rateLimiter
       .consume(parsedMessage.userId, 1)
       .then(async (rateLimiterRes) => {
-        const humanMessageId = parsedMessage.messageId ?? crypto.randomBytes(7).toString('hex');
+        const humanMessageId = crypto.randomBytes(7).toString('hex');
+        // parsedMessage.messageId ?? crypto.randomBytes(7).toString('hex');
         const aiMessageId = crypto.randomBytes(7).toString('hex');
 
         if (!parsedMessage.content)
