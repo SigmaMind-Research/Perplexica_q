@@ -1,1 +1,0 @@
-{"title":"21.+Tower+of+Hanoi.pdf","contents":["Tower of Hanoi \n#include <stdio.h>\nvoid TOH(int n,int A,int B,int C)\n{\n    if(n>0)\n    {\n        TOH(n-1,A,C,B);\n        printf(\"(%d,%d)\\n\",A,C);\n        TOH(n-1,B,A,C);\n    }\n}\nint main()\n{\n    TOH(4,1,2,3);\n    return 0;\n}"]}

@@ -1,1 +1,0 @@
-{"title":"17.+Taylor+Series.pdf","contents":["Taylor Series using Static variables  \ndouble e(int x, int n)\n{\n    static double p=1,f=1;\n    double r;\n    \n    if(n==0)\n        return 1;\n    r=e(x,n-1);\n    p=p*x;\n    f=f*n;\n    return r+p/f;\n}\nint main()\n{\n    printf(\"%lf \\n\",e(4,15));\n    return 0;\n}"]}
