@@ -53,21 +53,21 @@ export const loadAzureOpenAIChatModels = async () => {
           streaming:false
         })
       },
-      'DeepSeek-R1': {
-        displayName: 'DeepSeek R1',
-        model: new ChatOpenAI(
-          {
-            openAIApiKey: azurenewkey,
-            modelName: 'DeepSeek-R1-tdeub',
-            // temperature: 0.7,
-            streaming:false,
-            maxTokens:4000
-          },
-          {
-            baseURL: 'https://DeepSeek-R1-tdeub.eastus2.models.ai.azure.com',
-          },
-        ),
-      },
+      // 'DeepSeek-R1': {
+      //   displayName: 'DeepSeek R1',
+      //   model: new ChatOpenAI(
+      //     {
+      //       openAIApiKey: azurenewkey,
+      //       modelName: 'DeepSeek-R1-tdeub',
+      //       // temperature: 0.7,
+      //       streaming:false,
+      //       maxTokens:4000
+      //     },
+      //     {
+      //       baseURL: 'https://DeepSeek-R1-tdeub.eastus2.models.ai.azure.com',
+      //     },
+      //   ),
+      // },
       // 'DeepSeek R1': {
       //   displayName: 'DeepSeek R1',
 

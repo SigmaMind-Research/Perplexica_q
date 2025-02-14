@@ -34,6 +34,13 @@ const focusModes = [
     description: 'Chat without searching the web',
     icon: <Pencil size={16} />,
   },
+  {
+    key: 'r1Mode',
+    title: 'Reasoning with R1',
+    description: 'Advanced logical reasoning and problem-solving',
+    icon: <BadgePercent size={20} />, 
+    isR1Mode: true,
+  },
   // {
   //   key: 'wolframAlphaSearch',
   //   title: 'Wolfram Alpha',
@@ -69,21 +76,30 @@ const focusModes = [
 const Focus = ({
   focusMode,
   setFocusMode,
+  r1Mode,
 }: {
   focusMode: string;
   setFocusMode: (mode: string) => void;
+  r1Mode: boolean;
 }) => {
+  // const currentMode = r1Mode 
+  //   ? focusModes.find(mode => mode.isR1Mode)
+  //   : focusModes.find(mode => mode.key === focusMode && !mode.isR1Mode);
+  const currentMode = focusModes.find(mode => mode.key === focusMode);
+
   return (
     <Popover className="relative w-full max-w-[15rem] md:max-w-md lg:max-w-lg">
       <PopoverButton
         type="button"
         className=" text-black/50 dark:text-white/50 rounded-xl hover:bg-light-secondary dark:hover:bg-dark-secondary active:scale-95 transition duration-200 hover:text-black dark:hover:text-white"
       >
-        {focusMode !== 'webSearch' ? (
+       {focusMode !== 'webSearch' ? (
           <div className="flex flex-row items-center space-x-1">
-            {focusModes.find((mode) => mode.key === focusMode)?.icon}
+            {/* {focusModes.find((mode) => mode.key === focusMode)?.icon} */}
+            {currentMode?.icon}
             <p className="text-xs font-medium">
-              {focusModes.find((mode) => mode.key === focusMode)?.title}
+              {/* {focusModes.find((mode) => mode.key === focusMode)?.title} */}
+              {currentMode?.title}
             </p>
             <ChevronDown size={20} />
           </div>
@@ -142,3 +158,34 @@ const Focus = ({
 };
 
 export default Focus;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
