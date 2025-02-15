@@ -35,8 +35,8 @@ const focusModes = [
     icon: <Pencil size={16} />,
   },
   {
-    key: 'r1Mode',
-    title: 'Reasoning with R1',
+    key: 'reasoning',
+    title: 'reasoning',
     description: 'Advanced logical reasoning and problem-solving',
     icon: <BadgePercent size={20} />, 
     isR1Mode: true,

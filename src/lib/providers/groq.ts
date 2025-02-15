@@ -17,9 +17,9 @@ export const loadGroqChatModels = async () => {
             modelName: 'llama-3.2-3b-preview',
             temperature: 0.7,
           },
-          {
-            baseURL: 'https://api.groq.com/openai/v1',
-          },
+          // {
+          //   baseURL: 'https://api.groq.com/openai/v1',
+          // },
         ),
       },
       'llama-3.2-11b-vision-preview': {
@@ -30,9 +30,9 @@ export const loadGroqChatModels = async () => {
             modelName: 'llama-3.2-11b-vision-preview',
             temperature: 0.7,
           },
-          {
-            baseURL: 'https://api.groq.com/openai/v1',
-          },
+          // {
+          //   baseURL: 'https://api.groq.com/openai/v1',
+          // },
         ),
       },
       'llama-3.2-90b-vision-preview': {
@@ -43,9 +43,9 @@ export const loadGroqChatModels = async () => {
             modelName: 'llama-3.2-90b-vision-preview',
             temperature: 0.7,
           },
-          {
-            baseURL: 'https://api.groq.com/openai/v1',
-          },
+          // {
+          //   baseURL: 'https://api.groq.com/openai/v1',
+          // },
         ),
       },
       'llama-3.1-70b-versatile': {
@@ -56,9 +56,9 @@ export const loadGroqChatModels = async () => {
             modelName: 'llama-3.1-70b-versatile',
             temperature: 0.7,
           },
-          {
-            baseURL: 'https://api.groq.com/openai/v1',
-          },
+          // {
+          //   baseURL: 'https://api.groq.com/openai/v1',
+          // },
         ),
       },
       'llama-3.1-8b-instant': {
@@ -69,9 +69,9 @@ export const loadGroqChatModels = async () => {
             modelName: 'llama-3.1-8b-instant',
             temperature: 0.7,
           },
-          {
-            baseURL: 'https://api.groq.com/openai/v1',
-          },
+          // {
+          //   baseURL: 'https://api.groq.com/openai/v1',
+          // },
         ),
       },
       'llama3-8b-8192': {
@@ -82,9 +82,9 @@ export const loadGroqChatModels = async () => {
             modelName: 'llama3-8b-8192',
             temperature: 0.7,
           },
-          {
-            baseURL: 'https://api.groq.com/openai/v1',
-          },
+          // {
+          //   baseURL: 'https://api.groq.com/openai/v1',
+          // },
         ),
       },
       'llama3-70b-8192': {
@@ -95,9 +95,9 @@ export const loadGroqChatModels = async () => {
             modelName: 'llama3-70b-8192',
             temperature: 0.7,
           },
-          {
-            baseURL: 'https://api.groq.com/openai/v1',
-          },
+          // {
+          //   baseURL: 'https://api.groq.com/openai/v1',
+          // },
         ),
       },
       'mixtral-8x7b-32768': {
@@ -108,9 +108,9 @@ export const loadGroqChatModels = async () => {
             modelName: 'mixtral-8x7b-32768',
             temperature: 0.7,
           },
-          {
-            baseURL: 'https://api.groq.com/openai/v1',
-          },
+          // {
+          //   baseURL: 'https://api.groq.com/openai/v1',
+          // },
         ),
       },
       'gemma-7b-it': {
@@ -121,9 +121,9 @@ export const loadGroqChatModels = async () => {
             modelName: 'gemma-7b-it',
             temperature: 0.7,
           },
-          {
-            baseURL: 'https://api.groq.com/openai/v1',
-          },
+          // {
+          //   baseURL: 'https://api.groq.com/openai/v1',
+          // },
         ),
       },
       'gemma2-9b-it': {
@@ -134,9 +134,9 @@ export const loadGroqChatModels = async () => {
             modelName: 'gemma2-9b-it',
             temperature: 0.7,
           },
-          {
-            baseURL: 'https://api.groq.com/openai/v1',
-          },
+          // {
+          //   baseURL: 'https://api.groq.com/openai/v1',
+          // },
         ),
       },
     };

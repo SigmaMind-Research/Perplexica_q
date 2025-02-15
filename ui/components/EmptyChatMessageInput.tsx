@@ -467,7 +467,7 @@ const EmptyChatMessageInput = ({
       }
 
       const userId = data.session.user.id; // Get the user ID from session
-      const formattedMessage = r1Mode ? `[R1] ${message}` : message; // Get the user ID from session for r1 mode
+      const formattedMessage = r1Mode ? `${message}` : message; // Get the user ID from session for r1 mode
 
       // Send message with userId
       sendMessage(formattedMessage,userId);
@@ -513,7 +513,9 @@ const EmptyChatMessageInput = ({
           onChange={handleInputChange}
           minRows={2}
           className="bg-transparent placeholder:text-black/50 dark:placeholder:text-white/50 text-sm text-black dark:text-white resize-none focus:outline-none w-full max-h-24 lg:max-h-36 xl:max-h-48"
-          placeholder={r1Mode ? "Ask R1 anything..." : "Ask anything..."}
+          // placeholder={r1Mode ? "Ask R1 anything..." : "Ask anything..."}
+          placeholder={"Ask anything..."}
+
         />
 
         <div className="flex flex-row items-center justify-between mt-4 relative z-20">
@@ -527,7 +529,7 @@ const EmptyChatMessageInput = ({
                 setR1Mode((prev) => {
                   const newR1Mode = !prev;
                   if (newR1Mode) {
-                    setFocusMode('r1Mode');
+                    setFocusMode('reasoning');
                   } else {
                     setFocusMode('webSearch');
                   }
