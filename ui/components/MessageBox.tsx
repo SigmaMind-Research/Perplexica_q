@@ -603,6 +603,9 @@ import {
   X,
   Link,
   Link2Icon,
+  Brain,
+  BrainCircuit,
+  ChevronDown,
 } from 'lucide-react';
 import Markdown from 'markdown-to-jsx';
 import Copy from './MessageActions/Copy';
@@ -635,26 +638,57 @@ const MessageBox = ({
   const [showPanel, setShowPanel] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const [showAll, setShowAll] = useState(false);
+  const [thinking, setThinking] = useState<string>('');
+  const [answer, setAnswer] = useState<string>('');
+  const [isThinkingExpanded, setIsThinkingExpanded] = useState(false);
 
   useEffect(() => {
     const regex = /\[(\d+)\]/g;
+    const thinkRegex = /<think>(.*?)(?:<\/think>|$)(.*)/s;
 
-    if (
-      message.role === 'assistant' &&
-      message?.sources &&
-      message.sources.length > 0
-    ) {
-      return setParsedMessage(
-        message.content.replace(
-          regex,
-          (_, number) =>
-            `<a href="${message.sources?.[number - 1]?.metadata?.url}" target="_blank" className="bg-light-secondary dark:bg-dark-secondary px-1 rounded ml-1 no-underline text-xs text-black/70 dark:text-white/70 relative">${number}</a>`,
-        ),
-      );
+    // Check for thinking content, including partial tags
+    const match = message.content.match(thinkRegex);
+    if (match) {
+      const [_, thinkingContent, answerContent] = match;
+
+      // Set thinking content even if </think> hasn't appeared yet
+      if (thinkingContent) {
+        setThinking(thinkingContent.trim());
+        setIsThinkingExpanded(true); // Auto-expand when thinking starts
+      }
+
+      if (answerContent) {
+        setAnswer(answerContent.trim());
+
+        // Process the answer part for sources if needed
+        if (message.role === 'assistant' && message?.sources && message.sources.length > 0) {
+          setParsedMessage(
+            answerContent.trim().replace(
+              regex,
+              (_, number) =>
+                `<a href="${message.sources?.[number - 1]?.metadata?.url}" target="_blank" className="bg-light-secondary dark:bg-dark-secondary px-1 rounded ml-1 no-underline text-xs text-black/70 dark:text-white/70 relative">${number}</a>`,
+            ),
+          );
+        } else {
+          setParsedMessage(answerContent.trim());
+        }
+        setSpeechMessage(answerContent.trim().replace(regex, ''));
+      }
+    } else {
+      // No thinking content - process as before
+      if (message.role === 'assistant' && message?.sources && message.sources.length > 0) {
+        setParsedMessage(
+          message.content.replace(
+            regex,
+            (_, number) =>
+              `<a href="${message.sources?.[number - 1]?.metadata?.url}" target="_blank" className="bg-light-secondary dark:bg-dark-secondary px-1 rounded ml-1 no-underline text-xs text-black/70 dark:text-white/70 relative">${number}</a>`,
+          ),
+        );
+      } else {
+        setParsedMessage(message.content);
+      }
+      setSpeechMessage(message.content.replace(regex, ''));
     }
-
-    setSpeechMessage(message.content.replace(regex, ''));
-    setParsedMessage(message.content);
   }, [message.content, message.sources, message.role]);
 
   const { speechStatus, start, stop } = useSpeech({ text: speechMessage });
@@ -792,8 +826,8 @@ const MessageBox = ({
                                     <p className="text-[11px] text-black/50 dark:text-white/50 max-w-[120px] overflow-hidden whitespace-nowrap text-ellipsis">
                                       {source.metadata.url
                                         ? source.metadata.url
-                                            .replace(/.+\/\/|www.|\..+/g, '')
-                                            .slice(0, 12) // Truncate to 20 characters
+                                          .replace(/.+\/\/|www.|\..+/g, '')
+                                          .slice(0, 12) // Truncate to 20 characters
                                         : 'No URL Available'}
                                     </p>
                                   </div>
@@ -1049,42 +1083,85 @@ const MessageBox = ({
                   </div>
                 </div>
 
-                <div className="flex flex-row items-center space-x-2">
-                  <Disc3
-                    className={cn(
-                      'text-black dark:text-white',
-                      isLast && loading ? 'animate-spin' : 'animate-none',
-                    )}
-                    size={20}
-                  />
+                <div className="flex flex-col space-y-4">
+                  {thinking && (
+                    <div className="flex flex-col space-y-2 mb-4">
+                      <button
+                        onClick={() => setIsThinkingExpanded(!isThinkingExpanded)}
+                        className="flex flex-row items-center space-x-2 group text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white transition duration-200"
+                      >
+                        <BrainCircuit size={20} />
+                        <h5 className="font-medium">Reasoning</h5>
+                        <ChevronDown
+                          size={16}
+                          className={cn(
+                            "transition-transform duration-200",
+                            isThinkingExpanded ? "rotate-180" : ""
+                          )}
+                        />
+                      </button>
 
-                  <h3 className="text-black dark:text-white font-medium text-xl">
-                    Answer
-                  </h3>
-                </div>
+                      {isThinkingExpanded && (
+                        <div className="rounded-lg bg-light-secondary/50 dark:bg-dark-secondary/50 p-4">
+                          {thinking.split('\n\n').map((paragraph, index) => {
+                            if (!paragraph.trim()) return null;
 
-                <Markdown
-                  className={cn(
-                    'prose dark:prose-invert prose-p:leading-relaxed prose-pre:p-0',
-                    'max-w-none break-words text-black dark:text-white text-sm md:text-base font-medium',
-                  )}
-                >
-                  {parsedMessage}
-                </Markdown>
-                {loading && isLast ? null : (
-                  <div className="flex flex-row items-center justify-between w-full text-black dark:text-white py-4 -mx-2">
-                    <div className="flex flex-row items-center space-x-1">
-                      <Rewrite
-                        rewrite={rewrite}
-                        messageId={message.messageId}
-                      />
+                            const content = paragraph.replace(/^[•\-\d.]\s*/, '');
+
+                            return (
+                              <div key={index} className="mb-2 last:mb-0">
+                                <details className="group [&_summary::-webkit-details-marker]:hidden">
+                                  <summary className="flex items-center cursor-pointer list-none text-sm text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white">
+                                    <span className="arrow mr-2 inline-block transition-transform duration-200 group-open:rotate-90 group-open:self-start group-open:mt-1">▸</span>
+                                    <p className="relative whitespace-normal line-clamp-1 group-open:line-clamp-none after:content-['...'] after:inline group-open:after:hidden transition-all duration-200 text-ellipsis overflow-hidden group-open:overflow-visible">
+                                      {content}
+                                    </p>
+                                  </summary>
+                                </details>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
-                    <div className="flex flex-row items-center space-x-1">
-                      <Copy
-                        initialMessage={message.content}
-                        message={message}
+                  )}
+                  </div> 
+                  <div className="flex flex-col space-y-2">
+                    <div className="flex flex-row items-center space-x-2">
+                      <Disc3
+                        className={cn(
+                          'text-black dark:text-white',
+                          isLast && loading ? 'animate-spin' : 'animate-none',
+                        )}
+                        size={20}
                       />
-                      {/* <button
+                      <h3 className="text-black dark:text-white font-medium text-xl">
+                        Answer
+                      </h3>
+                    </div>
+
+                    <Markdown
+                      className={cn(
+                        'prose prose-h1:mb-3 prose-h2:mb-2 prose-h2:mt-6 prose-h2:font-[800] prose-h3:mt-4 prose-h3:mb-1.5 prose-h3:font-[600] dark:prose-invert prose-p:leading-relaxed prose-pre:p-0 font-[400]',
+                        'max-w-none break-words text-black dark:text-white',
+                      )}
+                    >
+                      {parsedMessage}
+                    </Markdown>
+                    {loading && isLast ? null : (
+                      <div className="flex flex-row items-center justify-between w-full text-black dark:text-white py-4 -mx-2">
+                        <div className="flex flex-row items-center space-x-1">
+                          <Rewrite
+                            rewrite={rewrite}
+                            messageId={message.messageId}
+                          />
+                        </div>
+                        <div className="flex flex-row items-center space-x-1">
+                          <Copy
+                            initialMessage={message.content}
+                            message={message}
+                          />
+                          {/* <button
                           onClick={() => {
                             if (speechStatus === 'started') {
                               stop();
@@ -1100,45 +1177,45 @@ const MessageBox = ({
                             <Volume2 size={18} />
                           )}
                         </button> */}
-                    </div>
-                  </div>
-                )}
-              </div>
-              <hr className="border-light-secondary dark:border-dark-secondary my-6" />
-              {/* Related Suggestions */}
-              {isLast &&
-                message.suggestions &&
-                message.suggestions.length > 0 &&
-                message.role === 'assistant' &&
-                !loading && (
-                  <div className="flex flex-col space-y-3">
-                    <div className="flex flex-row items-center space-x-2">
-                      <Layers3 />
-                      <h3 className="text-xl font-medium">Related</h3>
-                    </div>
-                    <div className="flex flex-col space-y-3">
-                      {message.suggestions.map((suggestion, i) => (
-                        <div
-                          className="flex flex-col space-y-3 text-sm"
-                          key={i}
-                        >
-                          <div className="h-px w-full bg-light-secondary dark:bg-dark-secondary" />
-                          <div
-                            onClick={() => sendMessage(suggestion)}
-                            className="flex flex-row items-center justify-between cursor-pointer hover:bg-light-secondary dark:hover:bg-dark-secondary transition-all duration-200 p-2 space-x-2"
-                          >
-                            <span>{suggestion}</span>
-                            <Plus size={14} />
-                          </div>
-                          <div className="h-px w-full bg-light-secondary dark:bg-dark-secondary" />
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    )}
                   </div>
-                )}
-            </div>
-          </div>
-          {/* <div className="lg:sticky lg:top-20 flex flex-col items-center space-y-3 w-full lg:w-3/12 z-30 h-full pb-4">
+                  <hr className="border-light-secondary dark:border-dark-secondary my-6" />
+                  {/* Related Suggestions */}
+                  {isLast &&
+                    message.suggestions &&
+                    message.suggestions.length > 0 &&
+                    message.role === 'assistant' &&
+                    !loading && (
+                      <div className="flex flex-col space-y-3">
+                        <div className="flex flex-row items-center space-x-2">
+                          <Layers3 />
+                          <h3 className="text-xl font-medium">Related</h3>
+                        </div>
+                        <div className="flex flex-col space-y-3">
+                          {message.suggestions.map((suggestion, i) => (
+                            <div
+                              className="flex flex-col space-y-3 text-sm"
+                              key={i}
+                            >
+                              <div className="h-px w-full bg-light-secondary dark:bg-dark-secondary" />
+                              <div
+                                onClick={() => sendMessage(suggestion)}
+                                className="flex flex-row items-center justify-between cursor-pointer hover:bg-light-secondary dark:hover:bg-dark-secondary transition-all duration-200 p-2 space-x-2"
+                              >
+                                <span>{suggestion}</span>
+                                <Plus size={14} />
+                              </div>
+                              <div className="h-px w-full bg-light-secondary dark:bg-dark-secondary" />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                </div>
+              </div>
+              {/* <div className="lg:sticky lg:top-20 flex flex-col items-center space-y-3 w-full lg:w-3/12 z-30 h-full pb-4">
                 <SearchImages
                   query={history[messageIndex - 1].content}
                   chatHistory={history.slice(0, messageIndex - 1)}
@@ -1148,9 +1225,10 @@ const MessageBox = ({
                   query={history[messageIndex - 1].content}
                 />
             </div> */}
-        </div>
-      )}
-    </div>
+            </div>
+          </div>
+  )}
+  </div>
   );
 };
 

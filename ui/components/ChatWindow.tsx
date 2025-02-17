@@ -526,6 +526,7 @@ const ChatWindow = ({ id }: { id?: string }) => {
               sendMessage={sendMessage}
               messageAppeared={messageAppeared}
               rewrite={rewrite}
+              focusMode={focusMode}
             />
           </>
         ) : (
