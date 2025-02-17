@@ -592,6 +592,7 @@
 
 import React, { MutableRefObject, useEffect, useState } from 'react';
 import { Message } from './ChatWindow';
+import { AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   BookCopy,

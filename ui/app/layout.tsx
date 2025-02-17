@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Montserrat } from 'next/font/google';
+// import { Montserrat } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import Sidebar from '@/components/Sidebar';
@@ -14,9 +14,24 @@ import ThemeProvider from '@/components/theme/Provider';
 // });
 
 export const metadata: Metadata = {
-  title: 'PotatoAI - Chat with the internet',
-  description:
-    'PotatoAI is an AI powered chatbot that is connected to the internet.',
+  title: 'PotatoAI - Chat with the Internet',
+  description: 'PotatoAI is an AI-powered community based search enigne. Ask questions, chat, and explore with ease.',
+  openGraph: {
+    title: 'PotatoAI - Chat with the Internet',
+    description:
+      'PotatoAI is an AI-powered community based search enigne. Ask questions, chat, and explore with ease.',
+    url: 'https://potatoai.com',
+    siteName: 'PotatoAI',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    // site: '@PotatoAI', // Adjust with your Twitter handle
+    // creator: '@PotatoAI', // Adjust with your Twitter handle
+    title: 'PotatoAI - Chat with the Internet',
+    description:
+      'PotatoAI is an AI-powered community based search enigne. Ask questions, chat, and explore with ease.',
+    // images: ['https://potatoai.com/twit'],
+  },
 };
 
 export default function RootLayout({
@@ -26,6 +41,9 @@ export default function RootLayout({
 }>) {
   return (
     <html className="h-full" lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+      </head>
       <body className={cn('h-full font-montserrat')}>
       <ThemeProvider>
           <Sidebar>{children}</Sidebar>

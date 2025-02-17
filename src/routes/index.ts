@@ -7,6 +7,7 @@ import suggestionsRouter from './suggestions';
 import chatsRouter from './chats';
 import searchRouter from './search';
 import discoverRouter from './discover';
+import rateLimiter from '../utils/rateLimit';
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ router.use('/config', configRouter);
 router.use('/models', modelsRouter);
 router.use('/suggestions', suggestionsRouter);
 router.use('/chats', chatsRouter);
-router.use('/search', searchRouter);
+router.use('/search', rateLimiter,searchRouter);
 router.use('/discover', discoverRouter);
 
 export default router;

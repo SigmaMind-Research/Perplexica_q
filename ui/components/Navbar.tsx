@@ -71,8 +71,6 @@
 //   />
 // </Link>
 
-
-
 //        {/* upload and delete */}
 //       {/* <div className="hidden lg:flex flex-row items-center justify-center space-x-2">
 //         <Clock size={17} />
@@ -93,11 +91,6 @@
 
 // export default Navbar;
 
-
-
-
-
-
 import { History, Clock, Edit, Share, Trash } from 'lucide-react';
 import { Message } from './ChatWindow';
 import { useEffect, useState } from 'react';
@@ -113,6 +106,7 @@ const Navbar = ({
 }) => {
   const [title, setTitle] = useState<string>('');
   const [timeAgo, setTimeAgo] = useState<string>('');
+  const [copied, setCopied] = useState<boolean>(false);
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -156,8 +150,21 @@ const Navbar = ({
     }
   };
 
+  // Copy to Clipboard Function
+  const handleCopyLink = async () => {
+    const chatUrl = `https://thepotatoai.com/search/${chatId}`;
+
+    try {
+      await navigator.clipboard.writeText(chatUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
+    } catch (error) {
+      console.error('Failed to copy:', error);
+    }
+  };
+
   return (
-    <div className="fixed z-40 top-0   left-0 right-0 px-2 lg:pl-[104px] lg:pr-6 lg:px-8 flex flex-row items-center justify-between w-full py-0 text-sm text-black dark:text-white/70 border-b bg-light-primary dark:bg-dark-primary border-light-100 dark:border-dark-200">
+    <div className="fixed z-40 top-0 left-0 right-0 px-2 lg:pl-[104px] lg:pr-6 lg:px-8 flex flex-row items-center justify-between w-full py-0 text-sm text-black dark:text-white/70 border-b bg-light-primary dark:bg-dark-primary border-light-100 dark:border-dark-100">
       {/* Logo */}
       <a href="/" className="lg:hidden">
         <img src="/plogo.png" alt="" className="h-14 w-auto mb-0 -ml-2" />
@@ -175,21 +182,63 @@ const Navbar = ({
       </div>
 
       {/* Additional navbar items */}
-      {/* Uncomment and use these if needed */}
+
       {/* <div className="hidden lg:flex flex-row items-center justify-center space-x-2">
         <Clock size={17} />
         <p className="text-xs">{timeAgo} ago</p>
       </div> */}
-      {/* <p className="hidden lg:flex">{title}</p> */}
-      {/* <div className="flex flex-row items-center space-x-4">
+
+      <div className="hidden lg:flex w-full h-10 items-center justify-center">
+        <p>{title}</p>
+      </div>
+      <div className="hidden lg:flex flex-row items-center space-x-4 h-10">
+      <div className="relative">
         <Share
           size={17}
           className="active:scale-95 transition duration-100 cursor-pointer"
+          onClick={handleCopyLink}
         />
-        <DeleteChat redirect chatId={chatId} chats={[]} setChats={() => {}} />
-      </div> */}
+      {copied && (
+  <span className="absolute -top-3 right-2 bg-gray-900 text-white text-[10px] rounded-md px-1 py-1 shadow-md flex items-center gap-1 mt-2 mr-3">
+    <span>✅</span> <span>Copied!</span>
+  </span>
+)}
+
+      </div> 
+      </div>
     </div>
   );
 };
 
 export default Navbar;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

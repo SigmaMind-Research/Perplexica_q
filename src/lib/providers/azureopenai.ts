@@ -101,7 +101,19 @@ export const loadAzureOpenAIChatModels = async () => {
       //     openAIBasePath:azureEndpoint
       //   })
       // },
-      
+      //  'DeepSeek-R1': {
+      //           displayName: 'DeepSeek R1',
+      //           model: new ChatOpenAI(
+      //             {
+      //               openAIApiKey:azurenewkey,
+      //               modelName: 'DeepSeek-R1-tdeub',
+      //               // temperature: 0.7,
+      //             },
+      //             {
+      //               baseURL: 'https://DeepSeek-R1-tdeub.eastus2.models.ai.azure.com',
+      //             },
+      //           ),
+      //         },      
       // Add more models if available
     };
     // console.log(chatModels);
