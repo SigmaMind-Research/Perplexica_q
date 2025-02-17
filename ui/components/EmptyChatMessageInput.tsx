@@ -380,6 +380,7 @@ import Focus from './MessageInputActions/Focus';
 import Optimization from './MessageInputActions/Optimization';
 import { createClient } from '@/utils/supabase/client';
 import { Lightbulb } from 'lucide-react';
+import { getSessionAndUser } from '@/lib/sessionService';
 
 const EmptyChatMessageInput = ({
   sendMessage,
@@ -398,6 +399,18 @@ const EmptyChatMessageInput = ({
   const [suggestions, setSuggestions] = useState<string[]>([]); // For search suggestions
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const [r1Mode, setR1Mode] = useState(false);
+
+  // New: store authenticated user (or null if not authenticated)
+  const [user, setUser] = useState<any>(undefined);
+
+  // Fetch the current user session on mount using centralized session handling.
+  useEffect(() => {
+    async function fetchUser() {
+      const { user } = await getSessionAndUser();
+      setUser(user);
+    }
+    fetchUser();
+  }, []);
 
   // Fetch suggestions from the Google Suggest API
   const fetchSuggestions = async (query: string) => {
@@ -458,19 +471,26 @@ const EmptyChatMessageInput = ({
   const handleSendMessage = async () => {
     try {
       // Fetch user session
-      const supabase = createClient();
-      const { data, error } = await supabase.auth.getSession();
+      // const supabase = createClient();
+      // const { data, error } = await supabase.auth.getSession();
 
-      if (error || !data.session) {
-        console.error('Failed to fetch session:', error);
+      // if (error || !data.session) {
+      //   console.error('Failed to fetch session:', error);
+      //   return;
+      // }
+
+      const { user } = await getSessionAndUser();
+      if (!user) {
+        console.error('User is not authenticated');
         return;
       }
+      const userId = user.id;
 
-      const userId = data.session.user.id; // Get the user ID from session
+      // const userId = data.session.user.id; // Get the user ID from session
       const formattedMessage = r1Mode ? `${message}` : message; // Get the user ID from session for r1 mode
 
       // Send message with userId
-      sendMessage(formattedMessage,userId);
+      sendMessage(formattedMessage, userId);
       setMessage('');
       setSuggestions([]); // Clear suggestions after sending the message
     } catch (err) {
@@ -514,18 +534,27 @@ const EmptyChatMessageInput = ({
           minRows={2}
           className="bg-transparent placeholder:text-black/50 dark:placeholder:text-white/50 text-sm text-black dark:text-white resize-none focus:outline-none w-full max-h-24 lg:max-h-36 xl:max-h-48"
           // placeholder={r1Mode ? "Ask R1 anything..." : "Ask anything..."}
-          placeholder={"Ask anything..."}
-
+          placeholder={'Ask anything...'}
         />
 
         <div className="flex flex-row items-center justify-between mt-4 relative z-20">
           <div className="flex flex-row items-center space-x-4">
-            <Focus focusMode={focusMode} setFocusMode={setFocusMode} r1Mode={r1Mode} />
+            <Focus
+              focusMode={focusMode}
+              setFocusMode={setFocusMode}
+              r1Mode={r1Mode}
+            />
 
             <button
               type="button"
               onClick={(e) => {
                 e.preventDefault();
+                // Redirect to login if not authenticated.
+                if (!user || user.is_anonymous) {
+                  window.location.href = '/login';
+                  return;
+                }
+                // Toggle R1 mode and adjust focus mode.
                 setR1Mode((prev) => {
                   const newR1Mode = !prev;
                   if (newR1Mode) {
@@ -536,7 +565,7 @@ const EmptyChatMessageInput = ({
                   return newR1Mode;
                 });
               }}
-              className={`group flex items-center space-x-0 px-2 py-1 -mt-2 rounded-full border-2 transition duration-200 ${
+              className={`group flex items-center space-x-0 px-2 py-1 -mt-2 rounded-full border transition duration-200 ${
                 r1Mode
                   ? 'bg-light-secondary dark:bg-dark-secondary text-[#24A0ED] border-[#24A0ED]'
                   : 'text-black/50 dark:text-white/50 hover:bg-light-secondary dark:hover:bg-dark-secondary active:bg-light-secondary dark:active:bg-dark-secondary focus:bg-light-secondary dark:focus:bg-dark-secondary border-black/50 dark:border-white/50'
@@ -544,7 +573,9 @@ const EmptyChatMessageInput = ({
             >
               <Lightbulb
                 size={15}
-                className="fill-current text-inherit group-hover:text-yellow-400 group-focus:text-yellow-400 group-active:text-yellow-400"
+                className={`fill-current text-inherit ${
+                  r1Mode ? 'text-yellow-400 animate-pulse' : ''
+                } group-hover:text-yellow-400 group-focus:text-yellow-400 group-active:text-yellow-400`}
               />
               <span className="font-medium text-xs">R1</span>
             </button>
@@ -582,59 +613,3 @@ const EmptyChatMessageInput = ({
 };
 
 export default EmptyChatMessageInput;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

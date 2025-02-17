@@ -13,6 +13,7 @@ import Error from 'next/error';
 import { createClient } from '@/utils/supabase/client';
 
 
+
 export type Message = {
   messageId: string;
   chatId: string;
@@ -526,6 +527,7 @@ const ChatWindow = ({ id }: { id?: string }) => {
               sendMessage={sendMessage}
               messageAppeared={messageAppeared}
               rewrite={rewrite}
+              r1Mode={focusMode === 'reasoning'}
             />
           </>
         ) : (
@@ -562,3 +564,24 @@ const ChatWindow = ({ id }: { id?: string }) => {
 };
 
 export default ChatWindow;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

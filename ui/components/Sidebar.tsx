@@ -504,9 +504,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
   // const BottomNavigation = ({ mobileNavLinks, user }) => {
   const [showLogin, setShowLogin] = useState(false);
 
-   
-
-
+  
   const handleProfileClick = () => {
     setShowLogin(true);
   };

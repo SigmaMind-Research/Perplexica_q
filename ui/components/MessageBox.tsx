@@ -610,6 +610,7 @@ import Rewrite from './MessageActions/Rewrite';
 import { useSpeech } from 'react-text-to-speech';
 import SearchImages from './SearchImages';
 import SearchVideos from './SearchVideos';
+import MessageBoxLoading from './MessageBoxLoading';
 
 const MessageBox = ({
   message,
@@ -620,6 +621,7 @@ const MessageBox = ({
   isLast,
   rewrite,
   sendMessage,
+  r1Mode,
 }: {
   message: Message;
   messageIndex: number;
@@ -629,6 +631,7 @@ const MessageBox = ({
   isLast: boolean;
   rewrite: (messageId: string) => void;
   sendMessage: (message: string) => void;
+  r1Mode?: boolean;
 }) => {
   const [parsedMessage, setParsedMessage] = useState(message.content);
   const [speechMessage, setSpeechMessage] = useState(message.content);
@@ -1020,6 +1023,7 @@ const MessageBox = ({
           <div className="flex flex-col space-y-9 lg:w-9/12">
             <div ref={dividerRef} className="flex flex-col space-y-6">
               <div className="flex flex-col space-y-2">
+                
                 {/*<div className="flex flex-row space-x-4 overflow-x-auto w-3/4 mx-auto ml-7">
                     <SearchImages
                       query={
@@ -1048,6 +1052,7 @@ const MessageBox = ({
                     />
                   </div>
                 </div>
+                
 
                 <div className="flex flex-row items-center space-x-2">
                   <Disc3
@@ -1103,6 +1108,9 @@ const MessageBox = ({
                     </div>
                   </div>
                 )}
+                {isLast && loading && message.role === 'assistant' && (
+  <MessageBoxLoading r1Mode={r1Mode ?? false} />
+)}
               </div>
               <hr className="border-light-secondary dark:border-dark-secondary my-6" />
               {/* Related Suggestions */}

@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss';
 import type { DefaultColors } from 'tailwindcss/types/generated/colors';
 
+
 const themeDark = (colors: DefaultColors) => ({
   50: '#0a0a0a',
   100: '#111111',

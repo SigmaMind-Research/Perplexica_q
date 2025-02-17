@@ -12,12 +12,14 @@ const Chat = ({
   sendMessage,
   messageAppeared,
   rewrite,
+  r1Mode,
 }: {
   messages: Message[];
   sendMessage: (message: string) => void;
   loading: boolean;
   messageAppeared: boolean;
   rewrite: (messageId: string) => void;
+  r1Mode: boolean;
 }) => {
   const [dividerWidth, setDividerWidth] = useState(0);
   const dividerRef = useRef<HTMLDivElement | null>(null);
@@ -64,6 +66,7 @@ const Chat = ({
               isLast={isLast}
               rewrite={rewrite}
               sendMessage={sendMessage}
+              r1Mode={r1Mode}
             />
             {!isLast && msg.role === 'assistant' && (
               <div className="h-px w-full bg-light-secondary dark:bg-dark-secondary" />
@@ -71,7 +74,8 @@ const Chat = ({
           </Fragment>
         );
       })}
-      {loading && !messageAppeared && <MessageBoxLoading />}
+      {/* {loading && !messageAppeared && <MessageBoxLoading />} */}
+      {loading && !messageAppeared && <MessageBoxLoading r1Mode={r1Mode} />}
       <div ref={messageEnd} className="h-0" />
       {dividerWidth > 0 && (
         <div
