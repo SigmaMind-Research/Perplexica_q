@@ -380,6 +380,7 @@ import Focus from './MessageInputActions/Focus';
 import Optimization from './MessageInputActions/Optimization';
 import { createClient } from '@/utils/supabase/client';
 import { Lightbulb } from 'lucide-react';
+import { getSessionAndUser } from '@/lib/sessionService';
 
 const EmptyChatMessageInput = ({
   sendMessage,
@@ -398,6 +399,20 @@ const EmptyChatMessageInput = ({
   const [suggestions, setSuggestions] = useState<string[]>([]); // For search suggestions
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const [r1Mode, setR1Mode] = useState(false);
+
+  
+  // New: store authenticated user (or null if not authenticated)
+  const [user, setUser] = useState<any>(undefined);
+
+  // Fetch the current user session on mount using centralized session handling.
+  useEffect(() => {
+    async function fetchUser() {
+      const { user } = await getSessionAndUser();
+      setUser(user);
+    }
+    fetchUser();
+  }, []);
+
 
   // Fetch suggestions from the Google Suggest API
   const fetchSuggestions = async (query: string) => {
@@ -492,6 +507,29 @@ const EmptyChatMessageInput = ({
     inputRef.current?.focus();
   };
 
+  // Handler for R1 mode toggle - moved outside of the JSX
+  const handleR1ModeToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    // Redirect to login if not authenticated.
+    if (!user || user.is_anonymous) {
+      window.location.href = '/login';
+      return;
+    }
+    
+    // Toggle R1 mode
+    const newR1Mode = !r1Mode;
+    setR1Mode(newR1Mode);
+    
+    // Set focus mode based on new R1 mode value
+    if (newR1Mode) {
+      setFocusMode('reasoning');
+    } else {
+      setFocusMode('webSearch');
+    }
+  };
+
+
   return (
     <form
       onSubmit={(e) => {
@@ -524,18 +562,7 @@ const EmptyChatMessageInput = ({
 
             <button
               type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                setR1Mode((prev) => {
-                  const newR1Mode = !prev;
-                  if (newR1Mode) {
-                    setFocusMode('reasoning');
-                  } else {
-                    setFocusMode('webSearch');
-                  }
-                  return newR1Mode;
-                });
-              }}
+              onClick={handleR1ModeToggle}
               className={`group flex items-center space-x-0 px-2 py-1 -mt-2 rounded-full border-2 transition duration-200 ${
                 r1Mode
                   ? 'bg-light-secondary dark:bg-dark-secondary text-[#24A0ED] border-[#24A0ED]'
@@ -582,20 +609,6 @@ const EmptyChatMessageInput = ({
 };
 
 export default EmptyChatMessageInput;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
