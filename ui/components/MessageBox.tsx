@@ -873,10 +873,10 @@ const MessageBox = ({
                               className=" hover:text-black transition-all duration-200"
                               onClick={() => setShowAll(true)}
                             >
-                              <div className="text-blue-500 hover:underline ">
+                              {/* <div className="text-blue-500 hover:underline ">
                                 {' '}
                                 See All
-                              </div>
+                              </div> */}
                             </button>
                           </div>
                         </div>
@@ -1092,7 +1092,7 @@ const MessageBox = ({
                         className="flex flex-row items-center space-x-2 group text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white transition duration-200"
                       >
                         <BrainCircuit size={20} />
-                        <h5 className="font-medium">Reasoning</h5>
+                        <h5 className="font-medium">Thinking</h5>
                         <ChevronDown
                           size={16}
                           className={cn(
