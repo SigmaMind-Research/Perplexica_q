@@ -13,9 +13,14 @@ const server = http.createServer(app);
 
 const corsOptions = {
   origin: ['https://thepotatoai.com', 'http://localhost:3000'],
+  // methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'],
+  // allowedHeaders: ['X-Requested-With', 'Content-Type'],
+  // credentials: true, // If using cookies or authentication
 };
 
 app.use(cors(corsOptions));
+// app.options('*', cors(corsOptions)); // Handle preflight
+// Custom CORS Middleware (Overrides cors package if needed)
 app.use(express.json());
 
 app.use('/api', routes);

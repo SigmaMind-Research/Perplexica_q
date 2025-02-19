@@ -256,7 +256,6 @@ export default EmptyChatMessageInput;
 
 */
 
-
 // import { ArrowRight } from 'lucide-react';
 // import { useEffect, useRef, useState } from 'react';
 // import TextareaAutosize from 'react-textarea-autosize';
@@ -374,14 +373,14 @@ export default EmptyChatMessageInput;
 
 // export default EmptyChatMessageInput;
 
-
 import { ArrowRight } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import Focus from './MessageInputActions/Focus';
 import Optimization from './MessageInputActions/Optimization';
 import { createClient } from '@/utils/supabase/client';
-
+import { Lightbulb } from 'lucide-react';
+import { getSessionAndUser } from '@/lib/sessionService';
 
 const EmptyChatMessageInput = ({
   sendMessage,
@@ -399,6 +398,21 @@ const EmptyChatMessageInput = ({
   const [message, setMessage] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]); // For search suggestions
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
+  const [r1Mode, setR1Mode] = useState(false);
+
+  
+  // New: store authenticated user (or null if not authenticated)
+  const [user, setUser] = useState<any>(undefined);
+
+  // Fetch the current user session on mount using centralized session handling.
+  useEffect(() => {
+    async function fetchUser() {
+      const { user } = await getSessionAndUser();
+      setUser(user);
+    }
+    fetchUser();
+  }, []);
+
 
   // Fetch suggestions from the Google Suggest API
   const fetchSuggestions = async (query: string) => {
@@ -406,14 +420,16 @@ const EmptyChatMessageInput = ({
       try {
         // const googleSuggestUrl = `http://suggestqueries.google.com/complete/search?output=firefox&q=${encodeURIComponent(query)}`;
         // const response = await fetch(googleSuggestUrl,{mode:'no-cors'});
-        const response = await fetch(`/api/suggestions?query=${encodeURIComponent(query)}`);
+        const response = await fetch(
+          `/api/suggestions?query=${encodeURIComponent(query)}`,
+        );
         if (!response.ok) {
           throw new Error('No suggested query');
         }
 
         const data = await response.json();
         // console.log('Suggestions fetched:', data); // Log the suggestions
-        
+
         // The suggestions are in the second element of the returned array
         if (Array.isArray(data[1])) {
           setSuggestions(data[1]); // Set suggestions to the second element of the response
@@ -466,9 +482,10 @@ const EmptyChatMessageInput = ({
       }
 
       const userId = data.session.user.id; // Get the user ID from session
+      const formattedMessage = r1Mode ? `${message}` : message; // Get the user ID from session for r1 mode
 
       // Send message with userId
-      sendMessage(message, userId);
+      sendMessage(formattedMessage,userId);
       setMessage('');
       setSuggestions([]); // Clear suggestions after sending the message
     } catch (err) {
@@ -489,6 +506,29 @@ const EmptyChatMessageInput = ({
     setSuggestions([]); // Clear suggestions after selecting one
     inputRef.current?.focus();
   };
+
+  // Handler for R1 mode toggle - moved outside of the JSX
+  const handleR1ModeToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    // Redirect to login if not authenticated.
+    if (!user || user.is_anonymous) {
+      window.location.href = '/login';
+      return;
+    }
+    
+    // Toggle R1 mode
+    const newR1Mode = !r1Mode;
+    setR1Mode(newR1Mode);
+    
+    // Set focus mode based on new R1 mode value
+    if (newR1Mode) {
+      setFocusMode('reasoning');
+    } else {
+      setFocusMode('webSearch');
+    }
+  };
+
 
   return (
     <form
@@ -511,12 +551,30 @@ const EmptyChatMessageInput = ({
           onChange={handleInputChange}
           minRows={2}
           className="bg-transparent placeholder:text-black/50 dark:placeholder:text-white/50 text-sm text-black dark:text-white resize-none focus:outline-none w-full max-h-24 lg:max-h-36 xl:max-h-48"
-          placeholder="Ask anything..."
+          // placeholder={r1Mode ? "Ask R1 anything..." : "Ask anything..."}
+          placeholder={"Ask anything..."}
+
         />
 
         <div className="flex flex-row items-center justify-between mt-4 relative z-20">
           <div className="flex flex-row items-center space-x-4">
-            <Focus focusMode={focusMode} setFocusMode={setFocusMode} />
+            <Focus focusMode={focusMode} setFocusMode={setFocusMode} r1Mode={r1Mode} />
+
+            <button
+              type="button"
+              onClick={handleR1ModeToggle}
+              className={`group flex items-center space-x-0 px-2 py-1 -mt-2 rounded-full border-2 transition duration-200 ${
+                r1Mode
+                  ? 'bg-light-secondary dark:bg-dark-secondary text-[#24A0ED] border-[#24A0ED]'
+                  : 'text-black/50 dark:text-white/50 hover:bg-light-secondary dark:hover:bg-dark-secondary active:bg-light-secondary dark:active:bg-dark-secondary focus:bg-light-secondary dark:focus:bg-dark-secondary border-black/50 dark:border-white/50'
+              }`}
+            >
+              <Lightbulb
+                size={15}
+                className="fill-current text-inherit group-hover:text-yellow-400 group-focus:text-yellow-400 group-active:text-yellow-400"
+              />
+              <span className="font-medium text-xs">R1</span>
+            </button>
           </div>
           <div className="flex flex-row items-center space-x-1 sm:space-x-4">
             <Optimization
@@ -534,7 +592,6 @@ const EmptyChatMessageInput = ({
         {/* Suggestions Dropdown */}
         {suggestions.length > 0 && (
           <ul className="relative flex flex-col bg-light-secondary dark:bg-dark-secondary px-5 pt-5 pb-2 rounded-lg w-full border border-light-200 dark:border-dark-200 w-full z-10 mt-2  ">
-       
             {suggestions.slice(0, 6).map((suggestion, index) => (
               <li
                 key={index}
@@ -552,3 +609,45 @@ const EmptyChatMessageInput = ({
 };
 
 export default EmptyChatMessageInput;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
