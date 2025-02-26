@@ -447,7 +447,14 @@ const Account = ({
     }
   };
 
+ 
+  
+
   const handleAPIGeneration = () => {
+    setIsOpen(false); // Close the modal first
+    setTimeout(() => {
+      router.push('/api-generation'); // Navigate after closing
+    }, 300); // Add a slight delay to ensure smooth closing
     router.push('/api-generation');
   };
 

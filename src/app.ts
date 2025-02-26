@@ -5,6 +5,11 @@ import http from 'http';
 import routes from './routes';
 import { getPort } from './config';
 import logger from './utils/logger';
+import bodyParser from 'body-parser';
+import subscriptionRoutes from './routes/subscription';
+import apipaymentRoutes from './routes/apipayment';
+import apiRoutes from './routes/apikey'
+import * as dotenv from 'dotenv';
 
 const port = getPort();
 
@@ -17,6 +22,21 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+
+
+// Middleware
+app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Root endpoint to avoid "Cannot GET /" error
+app.get('/', (req, res) => {
+  res.send('Welcome to the API server!');
+});
+
+app.use('/api/subscription', subscriptionRoutes);
+app.use('/api/api-payment',apipaymentRoutes);
+// app.use('/api/api-key')
+app.use('/api/api-key', apiRoutes);
 
 app.use('/api', routes);
 app.get('/api', (_, res) => {
