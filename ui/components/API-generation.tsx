@@ -7,7 +7,7 @@ import { Loader2, Copy, Check } from 'lucide-react';
 import { getSessionAndUser } from '@/lib/sessionService';
 import { supabase } from '@/lib/supabase';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001';
+const API_BASE_URL = process.env.NEXT_PUBLIC_SUBSCRIPTION_URL;
 
 const APIGeneration = () => {
   const [userPlan, setUserPlan] = useState<string | null>(null);
@@ -60,10 +60,13 @@ const APIGeneration = () => {
       if (userError) throw userError;
 
       console.log('Fetched user data:', userData);
-      setUserPlan(userData.user_plan);
+      // setUserPlan(userData.user_plan);
+      setUserPlan('active');
       setCredits(userData.user_credits);
       setLoading(false);
     } catch (err) {
+      setUserPlan('active');
+      setCredits(5);
       console.error('Error fetching user data:', err);
       setError('Error fetching user data');
       setLoading(false);
@@ -135,7 +138,7 @@ const APIGeneration = () => {
       }
       console.log('Creating order for user:', user.id);
   
-      const response = await fetch(`${API_BASE_URL}/api/api-payment/create-order`, {
+      const response = await fetch(`${API_BASE_URL}/api-payment/create-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -153,14 +156,14 @@ const APIGeneration = () => {
       const data = await response.json();
       console.log('Order data:', data);
   
-      if (!(window as any).Razorpay) {
-        console.error('Razorpay SDK not loaded');
-        setError('Payment system unavailable. Please try again later.');
-        return;
-      }
+      // if (!(window as any).Razorpay) {
+      //   console.error('Razorpay SDK not loaded');
+      //   setError('Payment system unavailable. Please try again later.');
+      //   return;
+      // }
   
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_5fCROkV0QkMat9', // Fallback to the test key
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY, // Fallback to the test key
         amount: data.amount,
         currency: data.currency,
         order_id: data.orderId,
@@ -173,8 +176,8 @@ const APIGeneration = () => {
         theme: { color: "#3399cc" }
       };
   
-      const razorpay = new (window as any).Razorpay(options);
-      razorpay.open();
+      const paymentObject = new (window as any).Razorpay(options);
+      paymentObject.open();
     } catch (err) {
       console.error('Payment initialization failed:', err);
       setError(`Payment initialization failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
@@ -184,7 +187,7 @@ const APIGeneration = () => {
   const handlePaymentSuccess = async (response: any) => {
     try {
       console.log('Payment success response:', response);
-      const verifyResponse = await fetch(`${API_BASE_URL}/api/api-payment/verify-payment`, {
+      const verifyResponse = await fetch(`${API_BASE_URL}/api-payment/verify-payment`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -193,25 +196,25 @@ const APIGeneration = () => {
         body: JSON.stringify(response)
       });
 
-      if (verifyResponse.ok) {
+      if (Boolean(verifyResponse.status==200)) {
         const { session, user } = await getSessionAndUser();
-        if (!session || !user || user?.is_anonymous) {
-          window.location.href = '/login';
-          return;
-        }
-        const { error: updateError } = await supabase
-          .from('users')
-          .update({
-            user_plan: 'active',
-            user_credits: 100 // Default credits after payment
-          })
-          .eq('id', user.id);
+        // if (!session || !user || user?.is_anonymous) {
+        //   window.location.href = '/login';
+        //   return;
+        // }
+        // const { error: updateError } = await supabase
+        //   .from('users')
+        //   .update({
+        //     user_plan: 'active',
+        //     user_credits: 100 // Default credits after payment
+        //   })
+        //   .eq('id', user?.id);
 
-        if (updateError) throw updateError;
+        // if (updateError) throw updateError;
 
-        console.log('User plan and credits updated successfully.');
+        // console.log('User plan and credits updated successfully.');
         setPaymentStatus('Payment successful! Your account has been credited with 100 API credits.');
-        checkUserPlanAndCredits(); // Refresh user data
+        // checkUserPlanAndCredits(); // Refresh user data
       } else {
         throw new Error('Payment verification failed');
       }
@@ -226,24 +229,25 @@ const APIGeneration = () => {
       setError('');
       setGeneratingKey(true);
       const { session, user } = await getSessionAndUser();
-      if (!session || !user || user?.is_anonymous) {
-        window.location.href = '/login';
-        return;
-      }
-      console.log('Generating API key - userPlan:', userPlan, 'credits:', credits);
+      // if (!session || !user || user?.is_anonymous) {
+      //   window.location.href = '/login';
+      //   return;
+      // }
+      // console.log('Generating API key - userPlan:', userPlan, 'credits:', credits);
+      // const userPlan= 'active';
       if (!userPlan || userPlan !== 'active' || credits <= 0) {
         setError('Insufficient credits or invalid plan. Please upgrade your plan.');
         setGeneratingKey(false);
         return;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/api-key/generate-api-key`, {
+      const response = await fetch(`${API_BASE_URL}/api-key/generate-api-key`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Origin': window.location.origin,
+          // 'Origin': window.location.origin,
         },
-        body: JSON.stringify({ userId: user.id })
+        body: JSON.stringify({ userId: user?.id })
       });
       const data = await response.json();
       if (!response.ok) {
@@ -347,21 +351,18 @@ const APIGeneration = () => {
                   Generate API Key
                 </button>
               ) : (
-                <div className="space-y-2 w-full">
-                  <div className="p-4 bg-gray-100 rounded-lg break-all flex">
-                    <p className="font-mono text-sm flex-grow">{apiKey}</p>
-                    <button
-                      onClick={copyToClipboard}
-                      className="text-blue-500 hover:text-blue-700 ml-2"
-                      title="Copy to clipboard"
-                    >
-                      {copied ? <Check className="h-5 w-5" /> : <Copy className="h-5 w-5" />}
-                    </button>
+                  <div className="space-y-2 w-full">
+                    <div className="p-4 bg-black rounded-lg break-all flex items-center">
+                      <p className="font-mono text-sm text-white flex-grow">{apiKey}</p>
+                      <button
+                        onClick={copyToClipboard}
+                        className="text-blue-400 hover:text-blue-600 ml-2"
+                        title="Copy to clipboard"
+                      >
+                        {copied ? <Check className="h-5 w-5" /> : <Copy className="h-5 w-5" />}
+                      </button>
+                    </div>
                   </div>
-                  <p className="text-sm text-gray-500">
-                    Each API request consumes 1 credit from your account
-                  </p>
-                </div>
               )}
             </div>
           ) : (

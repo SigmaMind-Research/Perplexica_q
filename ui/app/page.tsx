@@ -3,8 +3,8 @@ import { Metadata } from 'next';
 import { Suspense } from 'react';
 
 export const metadata: Metadata = {
-  title: 'Chat - PotatoAI',
-  description: 'Chat with the internet, chat with PotatoAI.',
+  title: 'PotatoAI',
+  description: 'PotatoAI is an AI-powered community based search enigne. Ask questions, chat, and explore with ease.',
 };
 
 const Home = () => {
