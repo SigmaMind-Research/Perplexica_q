@@ -210,12 +210,33 @@ const EmptyChat = ({
      
       <Test isOpen={isTestOpen} setIsOpen={setIsTestOpen} /> */}
         </div>
-        <div className="mt-6 text-center">
+        {/* <div className="mt-6 text-center">
           <p className="text-sm font-medium text-gray-600">Backed by</p>
           <a href="https://www.microsoft.com/en-us/startups" className="mt-6">
             <img src="/MSL.png" alt="Logo" className="h-14 w-auto mx-auto" />
           </a>
-        </div>  
+        </div>   */}
+        <div className="mt-6 text-center">
+  <p className="text-sm font-medium text-gray-600">Backed by</p>
+  <div className="flex justify-center items-center gap-3 mt-4">
+    <a 
+      href="https://www.microsoft.com/en-us/startups" 
+      target="_blank" 
+      rel="noopener noreferrer"
+      className="flex justify-center"
+    >
+      <img src="/MSL.png" alt="Microsoft Logo" className="h-14 w-auto" />
+    </a>
+    <a 
+      href="https://sigmamind.xyz" 
+      target="_blank" 
+      rel="noopener noreferrer"
+      className="flex justify-center"
+    >
+      <img src="/sigmamind.png" alt="SigmaMind Logo" className="h-4 w-15" />
+    </a>
+  </div>
+</div>
       </div>
     </div>
   );
