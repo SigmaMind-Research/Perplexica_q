@@ -1320,21 +1320,19 @@ const Account = ({
                 <div className="flex justify-end space-x-4 mt-0 mr-4">
                   <button
                     onClick={() => setActiveTab('profile')}
-                    className={`text-sm ${
-                      activeTab === 'profile'
-                        ? 'text-white font-semibold'
-                        : 'text-gray-400'
-                    }`}
+                    className={`text-sm ${activeTab === 'profile'
+                      ? 'text-white font-semibold'
+                      : 'text-gray-400'
+                      }`}
                   >
                     Profile
                   </button>
                   <button
                     onClick={() => setActiveTab('api')}
-                    className={`text-sm ${
-                      activeTab === 'api'
-                        ? 'text-white font-semibold'
-                        : 'text-gray-400'
-                    }`}
+                    className={`text-sm ${activeTab === 'api'
+                      ? 'text-white font-semibold'
+                      : 'text-gray-400'
+                      }`}
                   >
                     API
                   </button>
@@ -1454,13 +1452,24 @@ const APIGeneration = () => {
   const [isFirstTimeUser, setIsFirstTimeUser] = useState<boolean>(true);
   const [hasPaymentSetup, setHasPaymentSetup] = useState<boolean>(false);
   const [buyCreditsOpen, setBuyCreditsOpen] = useState<boolean>(false);
-  const [creditsAmount, setCreditsAmount] = useState<number>(2);
+  const [creditsAmount, setCreditsAmount] = useState<number>(0);
   const [currentUsage, setCurrentUsage] = useState<number>(0);
 
   useEffect(() => {
     checkUserPlanAndCredits();
   }, []);
+  const handleBuyNow = () => {
+    const amount = creditsAmount || 0;
+    if (amount < 3) {
+      setError('Minimum amount is 3 dollars.');
+      return;
+    }
 
+    // Clear the error if validation passes
+    setError('');
+    // Proceed with Buy Now logic
+    handleBuyCredits();
+  };
   const checkUserPlanAndCredits = async () => {
     try {
       const { session, user } = await getSessionAndUser();
@@ -1556,26 +1565,25 @@ const APIGeneration = () => {
 
       if (verifyResponse.status === 200) {
         const { session, user } = await getSessionAndUser();
-        if (session && user) {
-          const { error: updateError } = await supabase
-            .from('users')
-            .update({
-              has_payment_setup: true,
-              first_time_user: false,
-              user_plan: 'active',
-            })
-            .eq('id', user.id);
+        // if (session && user) {
+        //   const { error: updateError } = await supabase
+        //     .from('users')
+        //     .update({
+        //       has_payment_setup: true,
+        //       first_time_user: false,
+        //       user_plan: 'active',
+        //     })
+        //     .eq('id', user.id);
 
-          if (updateError) {
-            console.error('Error updating user data:', updateError);
-            throw new Error('Failed to update user status');
-          }
-        }
-
-        setPaymentStatus('Payment successful!');
+        //   if (updateError) {
+        //     console.error('Error updating user data:', updateError);
+        //     throw new Error('Failed to update user status');
+        //   }
+        // }
+        // setPaymentStatus('Payment successful!');
         setHasPaymentSetup(true);
-        setIsFirstTimeUser(false);
         setUserPlan('active');
+        setCredits((prevCredits) => prevCredits + creditsAmount);
       } else {
         throw new Error('Payment verification failed');
       }
@@ -1606,7 +1614,6 @@ const APIGeneration = () => {
         body: JSON.stringify({
           amount,
           userId: user.id,
-          credits: creditsAmount,
         }),
       });
 
@@ -1625,7 +1632,8 @@ const APIGeneration = () => {
         name: 'Buy Credits',
         description: `Purchase ${creditsAmount} Dollars`,
         handler: function (response: any) {
-          handleBuyCreditsSuccess(response, creditsAmount);
+          handlePaymentSuccess(response);
+          // handleBuyCreditsSuccess(response,amount);
         },
         prefill: { email: user.email },
         theme: { color: '#3399cc' },
@@ -1655,7 +1663,6 @@ const APIGeneration = () => {
           },
           body: JSON.stringify({
             ...response,
-            credits: amount,
           }),
         },
       );
@@ -1676,11 +1683,12 @@ const APIGeneration = () => {
         //     throw new Error('Failed to update user credits');
         //   }
         // }
-
         setPaymentStatus(
           `Payment successful! Your account has been credited with ${amount} dollars.`,
         );
-        setCredits((prevCredits) => prevCredits + amount);
+        // setHasPaymentSetup(true);
+        setUserPlan('active');
+        // setCredits((prevCredits) => prevCredits + amount);
       } else {
         throw new Error('Payment verification failed');
       }
@@ -1746,19 +1754,19 @@ const APIGeneration = () => {
 
   const deleteApiKey = async () => {
     try {
-      setError('');
+      // setError('');
       const { session, user } = await getSessionAndUser();
       if (!user) {
         setError('User not authenticated');
         return;
       }
       // Call your API endpoint to delete the key.
-      const response = await fetch(`${API_BASE_URL}/api-key/delete-api-key`, {
-        method: 'DELETE',
+      const response = await fetch(`${API_BASE_URL}/api-key/revoke-api-key`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ userId: user.id }),
+        body: JSON.stringify({ userId: user.id,apiKey }),
       });
       if (!response.ok) {
         throw new Error('Failed to delete API key');
@@ -1783,7 +1791,7 @@ const APIGeneration = () => {
             >
               Docs
             </Link>
-            <Link
+            {/* <Link
               href="/models"
               className="text-gray-800 dark:text-white hover:underline"
             >
@@ -1794,7 +1802,7 @@ const APIGeneration = () => {
               className="text-gray-800 dark:text-white hover:underline"
             >
               Terms of services
-            </Link>
+            </Link> */}
           </div>
           <div>
             <span className="text-gray-800 dark:text-white">Know more</span>
@@ -1819,7 +1827,7 @@ const APIGeneration = () => {
                 onClick={handleSetupPayment}
                 className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
               >
-                Setup
+                Setup API
               </button>
             </div>
           </div>
@@ -1832,7 +1840,7 @@ const APIGeneration = () => {
           <div className="flex flex-col md:flex-row items-center justify-between bg-[#33363D] p-6 rounded shadow">
             <div>
               <p className="text-gray-700 dark:text-gray-300">
-                If you are a student, please fill the form.
+                If you are a student, please fill the form for free API credits.
               </p>
             </div>
             <div className="mt-4 md:mt-0">
@@ -1972,9 +1980,9 @@ const APIGeneration = () => {
 
             <div className="mb-4">
               <label className="block text-gray-300 mb-2">
-                Enter amount in dollars to purchase:
+                Enter Credit Amount :
               </label>
-              <input
+              {/* <input
                 type="number"
                 value={creditsAmount}
                 onChange={(e) =>
@@ -1982,15 +1990,39 @@ const APIGeneration = () => {
                 }
                 className="w-full bg-[#252729] text-white px-4 py-2 rounded-md"
                 min="2"
+              /> */}
+              {/* <input
+                type="number"
+                value={creditsAmount}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === '') {
+                    setCreditsAmount(0);
+                  } else {
+                    setCreditsAmount(Math.max(2, parseInt(value) || 2));
+                  }
+                }}
+                className="w-full bg-[#252729] text-white px-4 py-2 rounded-md"
+                min="2"
+              /> */}
+              <input
+                type="number"
+                value={creditsAmount}
+                onChange={(e) =>
+                  setCreditsAmount(parseInt(e.target.value))}
+                className="w-full bg-[#252729] text-white px-4 py-2 rounded-md"
+                min="0"  // Allowing 0 so the user can edit freely
               />
+              {error && <p className="text-red-500 mt-1">{error}</p>}
               <p className="text-sm text-gray-400 mt-2">
-                Estimated cost: ${creditsAmount.toFixed(2)}
+                Minimum credit: $3
+                {/* ${creditsAmount.toFixed(2)} */}
               </p>
             </div>
 
             <div className="flex justify-end">
               <button
-                onClick={handleBuyCredits}
+                onClick={handleBuyNow}
                 className="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded"
               >
                 Buy Now
