@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import Sidebar from '@/components/Sidebar';
 import { Toaster } from 'sonner';
 import ThemeProvider from '@/components/theme/Provider';
+import Script from 'next/script';
 
 // const montserrat = Montserrat({
   // weight: ['300', '400', '500', '700'],
@@ -85,6 +86,11 @@ export default function RootLayout({
           src="https://cdn.jotfor.ms/s/umd/latest/for-form-embed-handler.js"
           async
         ></script>
+        <Script
+    id="razorpay-checkout-js"
+    src="https://checkout.razorpay.com/v1/checkout.js"
+   />
+        
         {/* <script */}
           {/* // dangerouslySetInnerHTML={{ */}
             {/* // __html: ` */}

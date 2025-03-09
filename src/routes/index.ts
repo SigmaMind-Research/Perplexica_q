@@ -9,6 +9,7 @@ import searchRouter from './search';
 import discoverRouter from './discover';
 import rateLimiter from '../utils/rateLimit';
 
+
 const router = express.Router();
 
 router.use('/images', imagesRouter);
