@@ -121,7 +121,7 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ message: 'Invalid focus mode' });
     }
 
-    const emitter = searchHandler(
+    const emitter = await searchHandler(
       body.query,
       history,
       llm,

@@ -1,8 +1,5 @@
 // azureopenai.ts
-import type { BaseChatModel } from '@langchain/core/language_models/chat_models';
-import { AzureChatOpenAI,OpenAIEmbeddings } from "@langchain/openai";
-import { ChatOpenAI } from '@langchain/openai';
-// import { AzureOpenAIEmbeddings } from '@langchain/azure-openai';
+import { AzureChatOpenAI,OpenAIEmbeddings,ChatOpenAI } from "@langchain/openai";
 
 import { getAzureOpenaiApiKey,getAzureOpenaiNewKey, getAzureEndpoint } from '../../config';
 import logger from '../../utils/logger';
@@ -39,6 +36,71 @@ export const loadAzureOpenAIChatModels = async () => {
           openAIBasePath:azureEndpoint
         })
       },
+      // 'o1-mini': {
+      //   displayName: 'o1-mini',
+
+      //   model: new AzureChatOpenAI({
+      //     modelName:'o1-mini',
+      //     openAIApiKey:azureApiKey,
+      //     azureOpenAIApiInstanceName: "sigmamind-vision",
+      //     openAIApiVersion:"2024-08-01-preview",
+      //     deploymentName:'o1-mini',
+      //     openAIBasePath:azureEndpoint,
+      //     temperature:1,
+      //     streaming:false
+      //   })
+      // },
+      // 'Phi-4': {
+      //   displayName: 'Phi-4',
+      //   model: new ChatOpenAI(
+      //     {
+      //       openAIApiKey:'YxKocelKPm03lI466KdMXuKWMfsqGbZG',
+      //       modelName: 'Phi-4-potato',
+      //       temperature: 0.7,
+      //       streaming:true,
+      //       // maxTokens:4000
+      //     },
+      //     {
+      //       baseURL: 'https://Phi-4-potato.eastus2.models.ai.azure.com',
+      //     },
+      //   ),
+      // },
+      // 'DeepSeek-R1': {
+      //   displayName: 'DeepSeek R1',
+      //   // model: new AzureChatOpenAI({
+      //   //   modelName:'o1-mini',
+      //   //   openAIApiKey:'DLydpzm2npGgI68BRCWmOWRtdHalTyTf',
+      //   //   // azureOpenAIApiInstanceName: "sigmamind-vision",
+      //   //   // openAIApiVersion:"2024-08-01-preview",
+      //   //   deploymentName:'potatoai-deepseek',
+      //   //   openAIBasePath:'https://potatoai-deepseek.eastus2.models.ai.azure.com',
+      //   //   temperature:0.6,
+      //   //   streaming:false
+      //   // })
+      //   model: new ChatOpenAI(
+      //     {
+      //       openAIApiKey:'DLydpzm2npGgI68BRCWmOWRtdHalTyTf',
+      //       modelName: 'potatoai-deepseek',
+      //       temperature: 0.6,
+      //       streaming:false,
+      //       maxTokens:4000,
+      //       configuration:{baseURL: 'https://potatoai-deepseek.eastus2.models.ai.azure.com',
+      //       }
+      //     },
+      //   ),
+      // },
+      // 'DeepSeek R1': {
+      //   displayName: 'DeepSeek R1',
+
+      //   model: new AzureChatOpenAI({
+      //     modelName:'gpt-4o',
+      //     openAIApiKey:azureApiKey,
+      //     azureOpenAIApiInstanceName: "sigmamind-vision",
+      //     openAIApiVersion:"2024-08-01-preview",
+      //     deploymentName:'gpt-4o',
+      //     openAIBasePath:azureEndpoint
+      //   })
+      // },
       //  'DeepSeek-R1': {
       //           displayName: 'DeepSeek R1',
       //           model: new ChatOpenAI(
@@ -51,8 +113,7 @@ export const loadAzureOpenAIChatModels = async () => {
       //               baseURL: 'https://DeepSeek-R1-tdeub.eastus2.models.ai.azure.com',
       //             },
       //           ),
-      //         },
-      
+      //         },      
       // Add more models if available
     };
     // console.log(chatModels);
@@ -82,9 +143,9 @@ export const loadAzureOpenAIEmbeddingsModels = async () => {
         displayName:'text-large',
         model: new OpenAIEmbeddings({
           openAIApiKey:azureApiKey,
-          azureOpenAIApiEmbeddingsDeploymentName:'text-embedding-3-large',
-          azureOpenAIApiVersion:"2023-05-15",
-          azureOpenAIBasePath:azureEndpoint,
+          // azureOpenAIApiEmbeddingsDeploymentName:'text-embedding-3-large',
+          // azureOpenAIApiVersion:"2023-05-15",
+          // azureOpenAIBasePath:azureEndpoint,
         })
       }
     };

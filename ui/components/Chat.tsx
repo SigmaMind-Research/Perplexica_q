@@ -11,6 +11,7 @@ const Chat = ({
   messages,
   sendMessage,
   messageAppeared,
+  focusMode,
   rewrite,
 }: {
   messages: Message[];
@@ -18,6 +19,7 @@ const Chat = ({
   loading: boolean;
   messageAppeared: boolean;
   rewrite: (messageId: string) => void;
+  focusMode: string;
 }) => {
   const [dividerWidth, setDividerWidth] = useState(0);
   const dividerRef = useRef<HTMLDivElement | null>(null);
@@ -71,7 +73,7 @@ const Chat = ({
           </Fragment>
         );
       })}
-      {loading && !messageAppeared && <MessageBoxLoading />}
+      {loading && !messageAppeared && <MessageBoxLoading focusMode={focusMode} />}
       <div ref={messageEnd} className="h-0" />
       {dividerWidth > 0 && (
         <div

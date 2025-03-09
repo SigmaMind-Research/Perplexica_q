@@ -63,7 +63,7 @@
 
 // export default EmptyChat;
 
-import { Settings, Library, History,ArrowRight } from 'lucide-react';
+import { Settings, Library, History, ArrowRight } from 'lucide-react';
 
 import EmptyChatMessageInput from './EmptyChatMessageInput';
 import SettingsDialog from './SettingsDialog';
@@ -93,10 +93,9 @@ const EmptyChat = ({
   const allTrendingQuestions = [
     "What is the latest technology in AI?",
     "How to improve coding skills?",
-    "What are the top programming languages of 2025?",
-    "How to start a career in data science?",
-    "What are the benefits of learning JavaScript?",
-    "What is the future of blockchain?",
+    "What is Elon Musk's Grok 3 AI model?",
+    "How does Grok 3 compare to OpenAI's o3?",
+    "How does Grok 3 perform in math, science, and coding benchmarks?",
     "How to create a successful startup?",
     "What are the best practices for web development?",
     "How to ace coding interviews?",
@@ -174,7 +173,7 @@ const EmptyChat = ({
       </div>
       <div className="flex flex-col items-center justify-center min-h-screen max-w-screen-sm mx-auto p-2 space-y-8">
         {/* <h2 className="text-black/70 dark:text-white/70 text-3xl font-medium -mt-8"> */}
-          {/* PotatoAI */}
+        {/* PotatoAI */}
         {/* </h2> */}
         {/* Styled H5 */}
         <h5 className="text-2xl text-white tracking-wide">
@@ -201,7 +200,7 @@ const EmptyChat = ({
             </button>
           ))}
 
-{/* <ArrowRight
+          {/* <ArrowRight
         onClick={() => setIsTestOpen(!isTestOpen)}
         className="cursor-pointer text-gray-800 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
         aria-label="Open Test Modal"
@@ -215,7 +214,7 @@ const EmptyChat = ({
           <a href="https://www.microsoft.com/en-us/startups" className="mt-6">
             <img src="/MSL.png" alt="Logo" className="h-14 w-auto mx-auto" />
           </a>
-        </div>  
+        </div>
       </div>
     </div>
   );
