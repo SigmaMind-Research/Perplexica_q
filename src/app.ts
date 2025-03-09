@@ -24,16 +24,6 @@ app.use(cors(corsOptions));
 // Custom CORS Middleware (Overrides cors package if needed)
 app.use(express.json());
 
-
-// Middleware
-app.use(bodyParser.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Root endpoint to avoid "Cannot GET /" error
-app.get('/', (req, res) => {
-  res.send('Welcome to the API server!');
-});
-
 app.use('/api', routes);
 app.get('/api', (_, res) => {
   res.status(200).json({ status: 'ok' });
