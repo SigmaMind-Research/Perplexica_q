@@ -90,22 +90,52 @@ export const handleConnection = async (
       }
     }, 5);
 
-    ws.on(
-      'message',
-      async (message) =>
-        await handleMessage(message.toString(), ws, llm, embeddings),
-    );
+//     ws.on(
+//       'message',
+//       async (message) =>
+//         await handleMessage(message.toString(), ws, llm, embeddings),
+//     );
 
-    ws.on('close', () => logger.debug('Connection closed'));
+//     ws.on('close', () => logger.debug('Connection closed'));
+//   } catch (err) {
+//     ws.send(
+//       JSON.stringify({
+//         type: 'error',
+//         data: 'Internal server error.',
+//         key: 'INTERNAL_SERVER_ERROR',
+//       }),
+//     );
+//     ws.close();
+//     logger.error(err);
+//   }
+// };
+// Respond to ping messages from the client
+ws.on('message', async (message) => {
+  try {
+    const data = JSON.parse(message.toString());
+    // If the client sends a ping, respond with a pong and return
+    if (data.type === 'ping') {
+      ws.send(JSON.stringify({ type: 'pong' }));
+      // console.log('Pong sent to client.');
+      return;
+    }
+    // Otherwise, handle as a normal message
+    await handleMessage(message.toString(), ws, llm, embeddings);
   } catch (err) {
-    ws.send(
-      JSON.stringify({
-        type: 'error',
-        data: 'Internal server error.',
-        key: 'INTERNAL_SERVER_ERROR',
-      }),
-    );
-    ws.close();
-    logger.error(err);
+    logger.error('Failed to process message:', err);
   }
+});
+
+ws.on('close', () => logger.debug('Connection closed'));
+} catch (err) {
+ws.send(
+  JSON.stringify({
+    type: 'error',
+    data: 'Internal server error.',
+    key: 'INTERNAL_SERVER_ERROR',
+  }),
+);
+ws.close();
+logger.error(err);
+}
 };

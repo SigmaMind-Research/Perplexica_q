@@ -31,10 +31,24 @@ const APIGeneration = () => {
         return;
       }
       console.log('Authenticated user id:', user.id);
+      // Fetch user plan and credits
+      const { data: userData, error: userError } = await supabase
+        .from('user_plan')
+        .select('balance, total_usage')
+        .eq('userId', user.id)
+        .single();
+
+      if (userError) throw userError;
+
+      console.log('Fetched user data:', userData);
+      // setUserPlan(userData.user_plan);
+      setUserPlan('active');
+      setCredits(userData.balance);
+      setLoading(false);
 
       // Fetch existing active API key (if any)
       const { data: keyData, error: keyError } = await supabase
-        .from('api_keys')
+        .from('')
         .select('apiKey')
         .eq('userId', user.id)
         .eq('status', 'active')
@@ -50,20 +64,6 @@ const APIGeneration = () => {
         console.log('No active API key found for user:', user.id);
       }
 
-      // Fetch user plan and credits
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('user_plan, user_credits')
-        .eq('id', user.id)
-        .single();
-
-      if (userError) throw userError;
-
-      console.log('Fetched user data:', userData);
-      // setUserPlan(userData.user_plan);
-      setUserPlan('active');
-      setCredits(userData.user_credits);
-      setLoading(false);
     } catch (err) {
       setUserPlan('active');
       setCredits(5);

@@ -177,31 +177,65 @@ const useSocket = (
           }
         }, 10000);
 
+
+        // ws.addEventListener('message', (e) => {
+        //   const data = JSON.parse(e.data);
+        //   if (data.type === 'signal' && data.data === 'open') {
+        //     const interval = setInterval(() => {
+        //       if (ws.readyState === 1) {
+        //         setIsWSReady(true);
+        //         clearInterval(interval);
+        //       }
+        //     }, 5);
+        //     clearTimeout(timeoutId);
+        //     // console.log('[DEBUG] opened');
+        //   }
+        //   if (data.type === 'error') {
+        //     toast.error(data.data);
+        //   }
+        // });
+        // When the socket opens, set WS ready and start sending pings
+        ws.addEventListener('open', () => {
+          clearTimeout(timeoutId);
+          setIsWSReady(true);
+          // console.log('WebSocket connection opened.');
+
+          // Start sending ping messages every 20 seconds
+          const pingInterval = setInterval(() => {
+            if (ws.readyState === WebSocket.OPEN) {
+              ws.send(JSON.stringify({ type: 'ping' }));
+              // console.log('Ping sent to server.');
+            }
+          }, 20000);
+
+          // Save the ping interval reference if needed for cleanup
+        });
+
         ws.addEventListener('message', (e) => {
           const data = JSON.parse(e.data);
           if (data.type === 'signal' && data.data === 'open') {
-            const interval = setInterval(() => {
-              if (ws.readyState === 1) {
-                setIsWSReady(true);
-                clearInterval(interval);
-              }
-            }, 5);
-            clearTimeout(timeoutId);
-            // console.log('[DEBUG] opened');
+            // Signal received—set WebSocket ready if needed
+            setIsWSReady(true);
+          }
+          if (data.type === 'pong') {
+            // console.log('Pong received from server.');
           }
           if (data.type === 'error') {
             toast.error(data.data);
           }
         });
 
+
         ws.onerror = () => {
           clearTimeout(timeoutId);
+          // clearInterval(pingInterval);
           setError(true);
           toast.error('WebSocket connection error.');
         };
 
         ws.onclose = () => {
           clearTimeout(timeoutId);
+          // clearInterval(pingInterval);
           setError(true);
           // console.log('[DEBUG] closed');
         };

@@ -1228,7 +1228,7 @@ import { useRouter } from 'next/navigation';
 import ChatModel from './ChatModel';
 import Link from 'next/link';
 import { getSessionAndUser } from '@/lib/sessionService';
-import { supabase } from '@/lib/supabase';
+// import { supabase } from '@/lib/supabase';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_SUBSCRIPTION_URL;
 
@@ -1249,11 +1249,11 @@ const Account = ({
     'docs',
   );
   const router = useRouter();
+  const supabase = createClient();
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const supabase = createClient();
         const { data: sessionData, error: sessionError } =
           await supabase.auth.getSession();
         if (sessionError) {
@@ -1454,6 +1454,8 @@ const APIGeneration = () => {
   const [buyCreditsOpen, setBuyCreditsOpen] = useState<boolean>(false);
   const [creditsAmount, setCreditsAmount] = useState<number>(0);
   const [currentUsage, setCurrentUsage] = useState<number>(0);
+  
+  const supabase = createClient();
 
   useEffect(() => {
     checkUserPlanAndCredits();
@@ -1470,6 +1472,63 @@ const APIGeneration = () => {
     // Proceed with Buy Now logic
     handleBuyCredits();
   };
+  // const checkUserPlanAndCredits = async () => {
+  //   try {
+  //     const { session, user } = await getSessionAndUser();
+  //     if (!session || !user || user?.is_anonymous) {
+  //       window.location.href = '/login';
+  //       return;
+  //     }
+  //     console.log('Authenticated user id:', user.id);
+
+  //     // Fetch existing active API key (if any)
+  //     const { data: keyData, error: keyError } = await supabase
+  //       .from('api_keys')
+  //       .select('apiKey')
+  //       .eq('userId', user.id)
+  //       .eq('status', 'active')
+  //       .single();
+
+  //     if (keyError) {
+  //       console.error('Error fetching API key:', keyError);
+  //     }
+  //     if (keyData?.apiKey) {
+  //       console.log('Existing API key found:', keyData.apiKey);
+  //       setApiKey(keyData.apiKey);
+  //     } else {
+  //       console.log('No active API key found for user:', user.id);
+  //     }
+
+  //     // Fetch user plan, credits, payment status and usage
+  //     const { data: userData, error: userError } = await supabase
+  //       .from('users')
+  //       .select(
+  //         'user_plan, user_credits, has_payment_setup, first_time_user, current_usage',
+  //       )
+  //       .eq('id', user.id)
+  //       .single();
+
+  //     if (userError) throw userError;
+
+  //     console.log('Fetched user data:', userData);
+  //     setUserPlan(userData.user_plan || 'inactive');
+  //     setCredits(userData.user_credits || 0);
+  //     setHasPaymentSetup(userData.has_payment_setup || false);
+  //     setIsFirstTimeUser(userData.first_time_user !== false); // If undefined/null, assume first time
+  //     setCurrentUsage(userData.current_usage || 0);
+  //     setLoading(false);
+  //   } catch (err) {
+  //     console.error('Error fetching user data:', err);
+  //     setError('Error fetching user data');
+  //     setLoading(false);
+  //     // Set default values for development testing
+  //     setUserPlan('inactive');
+  //     setCredits(0);
+  //     setIsFirstTimeUser(true);
+  //     setHasPaymentSetup(false);
+  //     setCurrentUsage(0);
+  //   }
+  // };
   const checkUserPlanAndCredits = async () => {
     try {
       const { session, user } = await getSessionAndUser();
@@ -1478,55 +1537,62 @@ const APIGeneration = () => {
         return;
       }
       console.log('Authenticated user id:', user.id);
-
-      // Fetch existing active API key (if any)
+  
+      // Step 1: Check if user has an active plan
+      const { data: userPlanData, error: userPlanError } = await supabase
+        .from('user_plan')
+        .select('balance, total_usage, remaining_credits')
+        .eq('userId', user.id)
+        .single();
+  
+      if (userPlanError || !userPlanData) {
+        console.warn('No active user plan found.');
+        setUserPlan('inactive');
+        setCredits(0);
+        setCurrentUsage(0);
+        setLoading(false);
+        return;
+      }  
+      else{// ✅ Step 2: Fetch API key if user has an active plan
       const { data: keyData, error: keyError } = await supabase
         .from('api_keys')
-        .select('apiKey')
+        .select('api_key') // 🔹 Correct field name
         .eq('userId', user.id)
-        .eq('status', 'active')
+        .eq('status', true) // 🔹 Correct boolean check
         .single();
-
+  
       if (keyError) {
         console.error('Error fetching API key:', keyError);
       }
-      if (keyData?.apiKey) {
-        console.log('Existing API key found:', keyData.apiKey);
-        setApiKey(keyData.apiKey);
+  
+      if (keyData?.api_key) {
+        console.log('Existing API key found:', keyData.api_key);
+        setApiKey(keyData.api_key);
       } else {
         console.log('No active API key found for user:', user.id);
       }
-
-      // Fetch user plan, credits, payment status and usage
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select(
-          'user_plan, user_credits, has_payment_setup, first_time_user, current_usage',
-        )
-        .eq('id', user.id)
-        .single();
-
-      if (userError) throw userError;
-
-      console.log('Fetched user data:', userData);
-      setUserPlan(userData.user_plan || 'inactive');
-      setCredits(userData.user_credits || 0);
-      setHasPaymentSetup(userData.has_payment_setup || false);
-      setIsFirstTimeUser(userData.first_time_user !== false); // If undefined/null, assume first time
-      setCurrentUsage(userData.current_usage || 0);
+    }
+      // ✅ Step 4: Update state with user plan details
+      setUserPlan('active');
+      setCredits(userPlanData.balance || 0);
+      setCurrentUsage(userPlanData.total_usage || 0);
+      setHasPaymentSetup(true);
+      // setIsFirstTimeUser(userData?.first_time_user !== false); // Defaults to true if undefined
       setLoading(false);
     } catch (err) {
       console.error('Error fetching user data:', err);
       setError('Error fetching user data');
       setLoading(false);
-      // Set default values for development testing
+  
+      // Default fallback values
       setUserPlan('inactive');
       setCredits(0);
-      setIsFirstTimeUser(true);
-      setHasPaymentSetup(false);
       setCurrentUsage(0);
+      setHasPaymentSetup(false);
+      setIsFirstTimeUser(true);
     }
   };
+  
 
   // Modified handleSetupPayment to open Credit Purchase modal for first-time users
   const handleSetupPayment = async () => {
@@ -1548,20 +1614,40 @@ const APIGeneration = () => {
   };
 
   // Updated handlePaymentSuccess for credits purchase flow (without altering credits)
-  const handlePaymentSuccess = async (response: any) => {
+  const handlePaymentSuccess = async (response: any,amount:number) => {
     try {
       console.log('Payment success response:', response);
-      const verifyResponse = await fetch(
-        `${API_BASE_URL}/api-payment/verify-payment`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Origin: window.location.origin,
-          },
-          body: JSON.stringify(response),
-        },
-      );
+      // const verifyResponse = await fetch(
+      //   `${API_BASE_URL}/api-payment/verify-payment`,
+      //   {
+      //     method: 'POST',
+      //     headers: {
+      //       'Content-Type': 'application/json',
+      //       Origin: window.location.origin,
+      //     },
+      //     body: JSON.stringify(response),
+      //   },
+      // );
+       // Get user session to include userId
+    const { user } = await getSessionAndUser();
+    if (!user || !user.id) {
+      console.error('User not authenticated');
+      return;
+    }
+
+    // Include userId in request body
+    const verifyResponse = await fetch(`${API_BASE_URL}/api-payment/verify-payment`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Origin: window.location.origin,
+      },
+      body: JSON.stringify({
+        ...response, // Send Razorpay response data
+        userId: user.id, // Include user ID
+        amount
+      }),
+    });
 
       if (verifyResponse.status === 200) {
         const { session, user } = await getSessionAndUser();
@@ -1632,7 +1718,7 @@ const APIGeneration = () => {
         name: 'Buy Credits',
         description: `Purchase ${creditsAmount} Dollars`,
         handler: function (response: any) {
-          handlePaymentSuccess(response);
+          handlePaymentSuccess(response,amount);
           // handleBuyCreditsSuccess(response,amount);
         },
         prefill: { email: user.email },
@@ -1811,7 +1897,7 @@ const APIGeneration = () => {
       </div>
 
       {/* Setup Payment Section - Only show if user hasn't set up payment yet */}
-      {isFirstTimeUser && !hasPaymentSetup && (
+      {!hasPaymentSetup && (
         <div className="container mx-auto px-4 mb-8">
           <div className="flex flex-col md:flex-row items-center justify-between bg-[#33363D] p-6 rounded shadow">
             <div>
@@ -1835,7 +1921,7 @@ const APIGeneration = () => {
       )}
 
       {/* Student Form Links Section - Just below the Setup Payment Section */}
-      {isFirstTimeUser && !hasPaymentSetup && (
+      {!hasPaymentSetup && (
         <div className="container mx-auto px-4 mb-8">
           <div className="flex flex-col md:flex-row items-center justify-between bg-[#33363D] p-6 rounded shadow">
             <div>
@@ -1856,7 +1942,7 @@ const APIGeneration = () => {
       )}
 
       {/* API Generation Section - Only show if user has set up payment */}
-      {(!isFirstTimeUser || hasPaymentSetup) && (
+      {(hasPaymentSetup) && (
         <div className="container mx-auto px-4">
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 mb-4 rounded">

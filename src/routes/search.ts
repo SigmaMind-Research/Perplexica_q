@@ -2,13 +2,14 @@ import express from 'express';
 import logger from '../utils/logger';
 import { BaseChatModel } from '@langchain/core/language_models/chat_models';
 import type { Embeddings } from '@langchain/core/embeddings';
-import { AzureChatOpenAI,ChatOpenAI} from '@langchain/openai';
+import { AzureChatOpenAI, ChatOpenAI } from '@langchain/openai';
 import {
   getAvailableChatModelProviders,
   getAvailableEmbeddingModelProviders,
 } from '../lib/providers';
 import { searchHandlers } from '../websocket/messageHandler';
 import { AIMessage, BaseMessage, HumanMessage } from '@langchain/core/messages';
+import { countTokens } from '../utils/tokenCount';
 
 const router = express.Router();
 
@@ -131,17 +132,31 @@ router.post('/', async (req, res) => {
 
     let message = '';
     let sources = [];
+    let inputTokens = 0;
+    let outputTokens = 0;
 
     emitter.on('data', (data) => {
+      // console.log(data);
       const parsedData = JSON.parse(data);
+      // const parsedData = typeof data === "string" ? JSON.parse(data) : data;
+      // Extract token count from metadata if available
       if (parsedData.type === 'response') {
         message += parsedData.data;
+        // if (parsedData.metadata?.dynamicToken) {
+        //   inputTokens = parsedData.metadata?.dynamicToken;
+        // }
       } else if (parsedData.type === 'sources') {
         sources = parsedData.data;
       }
     });
 
-    emitter.on('end', () => {
+    emitter.on('end', (data) => {
+      let inputTokens = data?.dynamicToken || 0; // Retrieve dynamicToken from end event
+      let outputTokens = countTokens(message); // Count output tokens
+
+      // console.log("Input Tokens:", inputTokens);
+      // console.log("Output Tokens:", outputTokens);
+
       res.status(200).json({ message, sources });
     });
 

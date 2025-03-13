@@ -28,8 +28,9 @@ import { AzureChatOpenAI} from '@langchain/openai';
 import {
   getAvailableChatModelProviders,
 } from '../lib/providers';
+import {countTokens} from '../utils/tokenCount'
 
-
+let dynamicToken = 0;
 
 const basicSearchRetrieverPrompt = `
 You are PotatoAI,an AI question rephraser. You will be given a conversation and a follow-up question,  you will have to rephrase the follow up question so it is a standalone question and can be used by another LLM to search the web for information to answer it.
@@ -400,8 +401,7 @@ const createBasicWebSearchAnsweringChain = (
     }
 
     if (query.toLocaleLowerCase() === 'summarize') {
-      // return docs.slice(0, 15)
-      return docs.slice(0,6)
+      return docs.slice(0, 15)
     }
     // console.log("Query being passed to rerankDocs:", query); // Log the query
     const docsWithContent = docs.filter(
@@ -409,6 +409,7 @@ const createBasicWebSearchAnsweringChain = (
     );
 
     if (optimizationMode === 'speed') {
+      dynamicToken += docs.slice(0, 15).reduce((sum, doc) => sum + countTokens(doc.pageContent), 0);
       return docsWithContent.slice(0, 15);
     } else if (optimizationMode === 'balanced') {
       const [docEmbeddings, queryEmbedding] = await Promise.all([
@@ -473,7 +474,7 @@ const basicWebSearch = (
   embeddings: Embeddings,
   optimizationMode: 'speed' | 'balanced' | 'quality',
 ) => {
-  const emitter = new eventEmitter();    
+  const emitter = new eventEmitter();
     
   try {
     const basicWebSearchAnsweringChain = createBasicWebSearchAnsweringChain(
@@ -512,6 +513,7 @@ const handleWebSearch = (
 ): EventEmitter => {
 
   const emitter = new EventEmitter();
+  
   try {
     const webSearchEmitter = basicWebSearch(
       message,
@@ -520,11 +522,19 @@ const handleWebSearch = (
       embeddings,
       optimizationMode,
     );
+     // 🔹 Fixed Prompt Tokens
+    const fixedPromptTokens = 547 + 623 + 730 +100; 
 
+    // 🔹 Dynamic Tokens
+    dynamicToken += fixedPromptTokens;
+    dynamicToken += countTokens(message);
     // Relay events from the basicWebSearch emitter to the returned emitter
     webSearchEmitter.on('data', (data) => emitter.emit('data', data));
     webSearchEmitter.on('error', (error) => emitter.emit('error', error));
-    webSearchEmitter.on('end', () => emitter.emit('end'));
+    // webSearchEmitter.on('end', () => emitter.emit('end'));
+    webSearchEmitter.on("end", () => {
+      emitter.emit("end", { dynamicToken }); // Send dynamicToken in the end event
+    });
   } catch (error) {
     // Log error and emit an error event
     const errorMessage =
