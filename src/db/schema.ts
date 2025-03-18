@@ -42,10 +42,10 @@ export const chats = pgTable('chats', {
 // 🟢 User Plan (Tracks User Balance & Subscription)
 export const userPlan = pgTable("user_plan", {
   id: serial("id").primaryKey(),
-  userId: uuid("user_id").notNull().unique(), // Each user has one plan
-  balance: numeric("balance", { precision: 10, scale: 2 }).default(sql`0`), // User's available balance in $
-  totalUsage: numeric("total_usage", { precision: 10, scale: 2 }).default(sql`0`), // Total spent
-  remainingCredits: numeric("remaining_credits", { precision: 10, scale: 2 }).default(sql`0`), // Remaining credits in $
+  userId: uuid("userId").notNull().unique(), // Each user has one plan
+  balance: numeric("balance", { precision: 20, scale: 8 }).default(sql`0`), // User's available balance in $
+  totalUsage: numeric("total_usage", { precision: 20, scale: 8 }).default(sql`0`), // Total spent
+  remainingCredits: numeric("remaining_credits", { precision: 20, scale: 8 }).default(sql`0`), // Remaining credits in $
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
   updatedAt: timestamp("updated_at").default(sql`CURRENT_TIMESTAMP`),
 });
@@ -64,16 +64,16 @@ export const planTier = pgTable("plan_tier", {
 export const modelPricing = pgTable("model_pricing", {
   id: serial("id").primaryKey(),
   modelName: text("model_name").notNull().unique(), // e.g., "GPT-4", "Claude"
-  inputTokenPrice: numeric("input_token_price", { precision: 10, scale: 6 }).notNull(), // Price per input token
-  outputTokenPrice: numeric("output_token_price", { precision: 10, scale: 6 }).notNull(), // Price per output token
+  inputTokenPrice: numeric("input_token_price").notNull(), // Price per input token
+  outputTokenPrice: numeric("output_token_price").notNull(), // Price per output token
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
 // 🟢 API Keys (User Authentication & Tracking)
 export const apiKeys = pgTable("api_keys", {
   id: serial("id"),
-  userId: uuid("user_id").notNull().references(() => userPlan.userId), // Links to user
-  api_key: varchar("key", { length: 64 }).notNull().unique(), // API key
+  userId: uuid("userId").notNull().references(() => userPlan.userId), // Links to user
+  api_key: varchar("api_key", { length: 64 }).notNull().unique(), // API key
   status: boolean("is_active").default(true), // Key status
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
@@ -81,7 +81,7 @@ export const apiKeys = pgTable("api_keys", {
 // 🟢 API Usage (Tracks User Consumption & Cost)
 export const apiUsage = pgTable("api_usage", {
   id: serial("id").primaryKey(),
-  userId: uuid("user_id").notNull().references(() => userPlan.userId),
+  userId: uuid("userId").notNull().references(() => userPlan.userId),
   apiKeyId: integer("api_key_id").notNull().references(() => apiKeys.id),
   modelId: integer("model_id").notNull().references(() => modelPricing.id),
   inputTokens: integer("input_tokens").default(0), // Input tokens used

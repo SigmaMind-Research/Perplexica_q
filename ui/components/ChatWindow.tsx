@@ -537,6 +537,18 @@ const ChatWindow = ({ id }: { id?: string }) => {
             }),
           );
         }
+        const autoImageSearch = true;
+        // localStorage.getItem('autoImageSearch');
+        const autoVideoSearch = true
+        // localStorage.getItem('autoVideoSearch');
+
+        if (autoImageSearch === true) {
+          document.getElementById('search-images')?.click();
+        }
+
+        if (autoVideoSearch === true) {
+          document.getElementById('search-videos')?.click();
+        }
       }
     };
 

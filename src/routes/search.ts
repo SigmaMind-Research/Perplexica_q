@@ -10,8 +10,18 @@ import {
 import { searchHandlers } from '../websocket/messageHandler';
 import { AIMessage, BaseMessage, HumanMessage } from '@langchain/core/messages';
 import { countTokens } from '../utils/tokenCount';
+import db from '../db';
+import { userPlan, apiUsage} from '../db/schema';
+import { eq } from 'drizzle-orm';
+import {calculatePricing} from '../utils/calculatePricing';
 
 const router = express.Router();
+// Mapping for chat models (User-defined → Actual GPT model)
+const CHAT_MODEL_MAPPING: Record<string, string> = {
+  "orca": "gpt-4o-mini",
+  "orca-pro": "gpt-4",
+  // Add more mappings as needed
+};
 
 interface chatModel {
   provider: string;
@@ -29,7 +39,7 @@ interface ChatRequestBody {
   optimizationMode: 'speed' | 'balanced';
   focusMode: string;
   chatModel?: chatModel;
-  embeddingModel?: embeddingModel;
+  // embeddingModel?: embeddingModel;
   query: string;
   history: Array<[string, string]>;
 }
@@ -37,6 +47,37 @@ interface ChatRequestBody {
 router.post('/', async (req, res) => {
   try {
     const body: ChatRequestBody = req.body;
+    const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            return res.status(401).json({ error: 'Unauthorized: No API key provided' });
+        }
+
+        const apiKey = authHeader.split(" ")[1]; // Extract API key from "Bearer <api-key>"
+        const response = await fetch("http://localhost:3002/api/api-key/verify", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ apiKey }),
+        });
+    
+        if (!response.ok) {
+          throw new Error(`Error: ${response.statusText}`);
+        }
+        const data = await response.json();
+        const userId = data.userId;        
+        if (!userId) {
+            return res.status(403).json({ error: 'Forbidden: Invalid API key' });
+        }
+        const userPlanData = await db.query.userPlan.findFirst({
+          where: eq(userPlan.userId, userId),
+      });
+
+      if (!userPlanData ) {
+          return res.status(400).json({ error: 'User plan not found' });
+      }else if(Number(userPlan.remainingCredits) < 3){
+        return res.status(400).json({ error: 'Reamining credits are less the than $3' });
+      } 
 
     if (!body.focusMode || !body.query) {
       return res.status(400).json({ message: 'Missing focus mode or query' });
@@ -62,17 +103,17 @@ router.post('/', async (req, res) => {
       getAvailableEmbeddingModelProviders(),
     ]);
 
-    const chatModelProvider =
-      body.chatModel?.provider || Object.keys(chatModelProviders)[0];
-    const chatModel =
-      body.chatModel?.model ||
-      Object.keys(chatModelProviders[chatModelProvider])[0];
+    const chatModelProvider = 'azure';
+      // body.chatModel?.provider || Object.keys(chatModelProviders)[0];
+    const chatModel = CHAT_MODEL_MAPPING[body.chatModel?.model];
+      // body.chatModel?.model ||
+      // Object.keys(chatModelProviders[chatModelProvider])[0];
 
-    const embeddingModelProvider =
-      body.embeddingModel?.provider || Object.keys(embeddingModelProviders)[0];
-    const embeddingModel =
-      body.embeddingModel?.model ||
-      Object.keys(embeddingModelProviders[embeddingModelProvider])[0];
+    const embeddingModelProvider = 'local';
+      // body.embeddingModel?.provider || Object.keys(embeddingModelProviders)[0];
+    const embeddingModel = 'xenova-bge-small-en-v1.5' ;
+      // body.embeddingModel?.model ||
+      // Object.keys(embeddingModelProviders[embeddingModelProvider])[0];
 
     let llm: BaseChatModel | undefined;
     let embeddings: Embeddings | undefined;
@@ -132,34 +173,39 @@ router.post('/', async (req, res) => {
 
     let message = '';
     let sources = [];
-    let inputTokens = 0;
-    let outputTokens = 0;
 
     emitter.on('data', (data) => {
       // console.log(data);
       const parsedData = JSON.parse(data);
-      // const parsedData = typeof data === "string" ? JSON.parse(data) : data;
       // Extract token count from metadata if available
       if (parsedData.type === 'response') {
         message += parsedData.data;
-        // if (parsedData.metadata?.dynamicToken) {
-        //   inputTokens = parsedData.metadata?.dynamicToken;
-        // }
       } else if (parsedData.type === 'sources') {
         sources = parsedData.data;
       }
     });
 
-    emitter.on('end', (data) => {
+    emitter.on('end', async (data) => {
       let inputTokens = data?.dynamicToken || 0; // Retrieve dynamicToken from end event
       let outputTokens = countTokens(message); // Count output tokens
 
-      // console.log("Input Tokens:", inputTokens);
-      // console.log("Output Tokens:", outputTokens);
-
+      const totalCost = await calculatePricing(body.chatModel?.model,inputTokens,outputTokens);
+      // 0.0048;
+      console.log(totalCost);
+      if (userPlanData.balance !== null) {
+        if (Number(userPlanData.remainingCredits) < Number(totalCost)) {
+          return res.status(400).json({ error: 'Insufficient balance' });
+        }
+        // Update balance
+        await db.update(userPlan)
+            .set({ balance: (Number(userPlanData.balance) - Number(totalCost)).toFixed(4), 
+              remainingCredits:(Number(userPlanData.remainingCredits) - Number(totalCost)).toFixed(4),
+            totalUsage:(Number(userPlanData.totalUsage)+ Number(totalCost)).toFixed(4)})
+            .where(eq(userPlan.userId, userId))
+            .execute();
+    }
       res.status(200).json({ message, sources });
     });
-
     emitter.on('error', (data) => {
       const parsedData = JSON.parse(data);
       res.status(500).json({ message: parsedData.data });
