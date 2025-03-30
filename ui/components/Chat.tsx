@@ -42,10 +42,16 @@ const Chat = ({
   });
 
   useEffect(() => {
-    messageEnd.current?.scrollIntoView({ behavior: 'smooth' });
+    const scroll = () => {
+      messageEnd.current?.scrollIntoView({ behavior: 'smooth' });
+    };
 
     if (messages.length === 1) {
       document.title = `${messages[0].content.substring(0, 30)} - PotatoAI`;
+    }
+
+    if (messages[messages.length - 1]?.role == 'user') {
+      scroll();
     }
   }, [messages]);
 

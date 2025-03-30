@@ -559,6 +559,7 @@ const EmptyChatMessageInput = ({
         <div className="flex flex-row items-center justify-between mt-4 relative z-20">
           <div className="flex flex-row items-center space-x-4">
             <Focus focusMode={focusMode} setFocusMode={setFocusMode} r1Mode={r1Mode} />
+            
 
             <button
               type="button"

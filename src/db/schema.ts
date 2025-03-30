@@ -18,7 +18,7 @@
   // focusMode: text('focusMode').notNull(),
 // });
 // 
-import { json,pgTable, serial, text, varchar, timestamp,integer, boolean, numeric, uuid } from 'drizzle-orm/pg-core';
+import { json,pgTable, serial, text, varchar, jsonb ,timestamp,integer, boolean, numeric, uuid } from 'drizzle-orm/pg-core';
 import { sql } from "drizzle-orm";
 
 export const messages = pgTable('messages', {
@@ -96,6 +96,20 @@ export const webSearchPricing = pgTable("web_search_pricing", {
   id: serial("id").primaryKey(),
   pricePerSearch: numeric("price_per_search", { precision: 10, scale: 4 }).notNull(), // Cost per web search
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const userPreferences = pgTable("user_preferences", {
+  id: serial("id").primaryKey(),                               // Auto-incrementing ID
+  userId: uuid('userId').notNull(), // Use UUID type for userId
+  categories: jsonb("categories")                              // JSONB array for categories
+    .default(sql`'["AI", "Technology"]'::jsonb`)
+    .$type<string[]>(),
+  languages: jsonb("languages")                                // JSONB array for languages
+    .default(sql`'[]'::jsonb`)
+    .$type<string[]>(),
+  createdAt:timestamp("created_at").default(sql`CURRENT_TIMESTAMP`)
+    .defaultNow(),
+  updatedAt:timestamp("updated_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
 // potatoai@123

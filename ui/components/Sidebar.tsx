@@ -481,7 +481,7 @@ import React, { useState, useEffect, useRef, type ReactNode } from 'react';
 import Layout from './Layout';
 import Account from './Account';
 
-import SettingsDialog from './SettingsDialog';
+// import SettingsDialog from './SettingsDialog';
 
 import { createClient } from '@/utils/supabase/client'; // import to fetch user data
 

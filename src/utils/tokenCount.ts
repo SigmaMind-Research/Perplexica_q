@@ -7,15 +7,14 @@ export const countTokens = (text: string) => enc.encode(text).length;
 export const estimateTotalTokens = ({
   query,
   chat_history,
-  docs,
   model,
 }: {
   query: string;
   chat_history: string[];
-  docs: Document[];
   model: string;
 }) => {
-  let totalTokens = 547+623;
+  let totalTokens = 0;
+  // 547+623;
 
   // 🔹 Fixed Prompt Token Costs
 //   const promptTokens = {

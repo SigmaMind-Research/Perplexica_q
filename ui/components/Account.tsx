@@ -89,34 +89,35 @@ const Account = ({
               </button>
 
               {/* Header with Navbar & Tab Links */}
-              <div className="mb-4">
-                <div className="flex items-center justify-between">
-                  <h1 className="text-xl font-semibold text-white ml-4 -mb-5">
-                    Account
-                  </h1>
+              <div className="mb-4 my-2">
+                <div className="flex items-center ml-4 mr-4">
+                  <h1 className="text-xl font-semibold text-white mr-4">Account</h1>
+                  <div className="inline-flex items-center bg-[#171717] rounded-full p-1 ml-5">
+                    <button
+                      onClick={() => setActiveTab('profile')}
+                      className={`text-sm font-semibold px-3 py-2 transition-all duration-300 ${activeTab === 'profile'
+                          ? 'bg-[#212122] text-white rounded-full'
+                          : 'text-white'
+                        }`}
+                    >
+                      Profile
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('api')}
+                      className={`text-sm font-semibold px-4 py-2 transition-all duration-300 ${activeTab === 'api'
+                          ? 'bg-[#212121] text-white rounded-full'
+                          : 'text-white'
+                        }`}
+                    >
+                      API
+                    </button>
+                  </div>
                 </div>
-                <div className="flex justify-end space-x-4 mt-0 mr-4">
-                  <button
-                    onClick={() => setActiveTab('profile')}
-                    className={`text-sm ${activeTab === 'profile'
-                      ? 'text-white font-semibold'
-                      : 'text-gray-400'
-                      }`}
-                  >
-                    Profile
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('api')}
-                    className={`text-sm ${activeTab === 'api'
-                      ? 'text-white font-semibold'
-                      : 'text-gray-400'
-                      }`}
-                  >
-                    API
-                  </button>
-                </div>
-                <hr className="border-t border-[#252729] mt-2" />
+                <hr className="border-t border-[#212122] mt-2" />
               </div>
+
+
+
 
               {/* Conditional Content */}
               {activeTab === 'profile' ? (
@@ -232,7 +233,7 @@ const APIGeneration = () => {
   const [buyCreditsOpen, setBuyCreditsOpen] = useState<boolean>(false);
   const [creditsAmount, setCreditsAmount] = useState<number>(0);
   const [currentUsage, setCurrentUsage] = useState<number>(0);
-  
+
   const supabase = createClient();
 
   useEffect(() => {
@@ -315,14 +316,14 @@ const APIGeneration = () => {
         return;
       }
       // console.log('Authenticated user id:', user.id);
-  
+
       // Step 1: Check if user has an active plan
       const { data: userPlanData, error: userPlanError } = await supabase
         .from('user_plan')
         .select('balance, total_usage, remaining_credits')
         .eq('userId', user.id)
         .single();
-  
+
       if (userPlanError || !userPlanData) {
         console.warn('No active user plan found.');
         setUserPlan('inactive');
@@ -330,26 +331,26 @@ const APIGeneration = () => {
         setCurrentUsage(0);
         setLoading(false);
         return;
-      }  
-      else{// ✅ Step 2: Fetch API key if user has an active plan
-      const { data: keyData, error: keyError } = await supabase
-        .from('api_keys')
-        .select('api_key') // 🔹 Correct field name
-        .eq('userId', user.id)
-        .eq('status', true) // 🔹 Correct boolean check
-        .single();
-  
-      if (keyError) {
-        console.error('Error fetching API key:', keyError);
       }
-  
-      if (keyData?.api_key) {
-        // console.log('Existing API key found:', keyData.api_key);
-        setApiKey(keyData.api_key);
-      } else {
-        setError('No active API key found for user');
+      else {// ✅ Step 2: Fetch API key if user has an active plan
+        const { data: keyData, error: keyError } = await supabase
+          .from('api_keys')
+          .select('api_key') // 🔹 Correct field name
+          .eq('userId', user.id)
+          .eq('status', true) // 🔹 Correct boolean check
+          .single();
+
+        if (keyError) {
+          console.error('Error fetching API key:', keyError);
+        }
+
+        if (keyData?.api_key) {
+          // console.log('Existing API key found:', keyData.api_key);
+          setApiKey(keyData.api_key);
+        } else {
+          setError('No active API key found for user');
+        }
       }
-    }
       // ✅ Step 4: Update state with user plan details
       setUserPlan('active');
       setCredits(userPlanData.balance || 0);
@@ -361,7 +362,7 @@ const APIGeneration = () => {
       console.error('Error fetching user data:', err);
       setError('Error fetching user data');
       setLoading(false);
-  
+
       // Default fallback values
       setUserPlan('inactive');
       setCredits(0);
@@ -370,7 +371,7 @@ const APIGeneration = () => {
       setIsFirstTimeUser(true);
     }
   };
-  
+
 
   // Modified handleSetupPayment to open Credit Purchase modal for first-time users
   const handleSetupPayment = async () => {
@@ -392,7 +393,7 @@ const APIGeneration = () => {
   };
 
   // Updated handlePaymentSuccess for credits purchase flow (without altering credits)
-  const handlePaymentSuccess = async (response: any,amount:number) => {
+  const handlePaymentSuccess = async (response: any, amount: number) => {
     try {
       console.log('Payment success response:', response);
       // const verifyResponse = await fetch(
@@ -406,26 +407,26 @@ const APIGeneration = () => {
       //     body: JSON.stringify(response),
       //   },
       // );
-       // Get user session to include userId
-    const { user } = await getSessionAndUser();
-    if (!user || !user.id) {
-      console.error('User not authenticated');
-      return;
-    }
+      // Get user session to include userId
+      const { user } = await getSessionAndUser();
+      if (!user || !user.id) {
+        console.error('User not authenticated');
+        return;
+      }
 
-    // Include userId in request body
-    const verifyResponse = await fetch(`${API_BASE_URL}/api-payment/verify-payment`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Origin: window.location.origin,
-      },
-      body: JSON.stringify({
-        ...response, // Send Razorpay response data
-        userId: user.id, // Include user ID
-        amount
-      }),
-    });
+      // Include userId in request body
+      const verifyResponse = await fetch(`${API_BASE_URL}/api-payment/verify-payment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Origin: window.location.origin,
+        },
+        body: JSON.stringify({
+          ...response, // Send Razorpay response data
+          userId: user.id, // Include user ID
+          amount
+        }),
+      });
 
       if (verifyResponse.status === 200) {
         const { session, user } = await getSessionAndUser();
@@ -496,7 +497,7 @@ const APIGeneration = () => {
         name: 'Buy Credits',
         description: `Purchase ${creditsAmount} Dollars`,
         handler: function (response: any) {
-          handlePaymentSuccess(response,amount);
+          handlePaymentSuccess(response, amount);
           // handleBuyCreditsSuccess(response,amount);
         },
         prefill: { email: user.email },
@@ -630,7 +631,7 @@ const APIGeneration = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ userId: user.id,apiKey }),
+        body: JSON.stringify({ userId: user.id, apiKey }),
       });
       if (!response.ok) {
         throw new Error('Failed to delete API key');
@@ -660,13 +661,13 @@ const APIGeneration = () => {
               className="text-gray-800 dark:text-white hover:underline"
             >
               Supported Models
-            </Link>
+            </Link>*/}
             <Link
               href="/terms"
               className="text-gray-800 dark:text-white hover:underline"
             >
               Terms of services
-            </Link> */}
+            </Link>
           </div>
           <div>
             <span className="text-gray-800 dark:text-white">Know more</span>
@@ -709,7 +710,7 @@ const APIGeneration = () => {
             </div>
             <div className="mt-4 md:mt-0">
               <Link
-                href="/student-form"
+                href="https://forms.office.com/r/BJWSW003UB"
                 className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded"
               >
                 Fill Form

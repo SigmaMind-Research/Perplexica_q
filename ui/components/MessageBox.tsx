@@ -646,7 +646,16 @@ const MessageBox = ({
   useEffect(() => {
     const regex = /\[(\d+)\]/g;
     const thinkRegex = /<think>(.*?)(?:<\/think>|$)(.*)/s;
+    const autoImageSearch = true;
+    // localStorage.getItem('autoImageSearch');
+    const autoVideoSearch = true
+    if (autoImageSearch === true) {
+      document.getElementById('search-images')?.click();
+    }
 
+    if (autoVideoSearch === true) {
+      document.getElementById('search-videos')?.click();
+    }
     // Check for thinking content, including partial tags
     const match = message.content.match(thinkRegex);
     if (match) {

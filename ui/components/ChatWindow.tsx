@@ -11,7 +11,9 @@ import { useSearchParams } from 'next/navigation';
 import { getSuggestions } from '@/lib/actions';
 import Error from 'next/error';
 import { createClient } from '@/utils/supabase/client';
-import { useRouter } from 'next/router';
+// import { useRouter } from 'next/router';
+import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 
 
@@ -169,13 +171,13 @@ const useSocket = (
 
         const ws = new WebSocket(wsURL.toString());
 
-        const timeoutId = setTimeout(() => {
-          if (ws.readyState !== 1) {
-            toast.error(
-              'Failed to connect to the server. Please try again later.',
-            );
-          }
-        }, 10000);
+        // const timeoutId = setTimeout(() => {
+        //   if (ws.readyState !== 1) {
+        //     toast.error(
+        //       'Failed to connect to the server. Please try again later.',
+        //     );
+        //   }
+        // }, 10000);
 
 
         // ws.addEventListener('message', (e) => {
@@ -196,7 +198,7 @@ const useSocket = (
         // });
         // When the socket opens, set WS ready and start sending pings
         ws.addEventListener('open', () => {
-          clearTimeout(timeoutId);
+          // clearTimeout(timeoutId);
           setIsWSReady(true);
           // console.log('WebSocket connection opened.');
 
@@ -215,7 +217,9 @@ const useSocket = (
           const data = JSON.parse(e.data);
           if (data.type === 'signal' && data.data === 'open') {
             // Signal received—set WebSocket ready if needed
+            // clearTimeout(timeoutId);
             setIsWSReady(true);
+            // console.log('WebSocket connection opened.');
           }
           if (data.type === 'pong') {
             // console.log('Pong received from server.');
@@ -227,14 +231,14 @@ const useSocket = (
 
 
         ws.onerror = () => {
-          clearTimeout(timeoutId);
+          // clearTimeout(timeoutId);
           // clearInterval(pingInterval);
           setError(true);
           toast.error('WebSocket connection error.');
         };
 
         ws.onclose = () => {
-          clearTimeout(timeoutId);
+          // clearTimeout(timeoutId);
           // clearInterval(pingInterval);
           setError(true);
           // console.log('[DEBUG] closed');
@@ -268,7 +272,7 @@ const loadMessages = async (
     },
   );
   if (res.status === 404) {
-    console.log(res);
+    // console.log(res);
     setNotFound(true);
     setIsMessagesLoaded(true);
     return;
@@ -300,6 +304,7 @@ const loadMessages = async (
 const ChatWindow = ({ id }: { id?: string }) => {
   const searchParams = useSearchParams();
   const initialMessage = searchParams.get('q');
+  
 
   const [chatId, setChatId] = useState<string | undefined>(id);
   const [newChatCreated, setNewChatCreated] = useState(false);
@@ -350,15 +355,15 @@ const ChatWindow = ({ id }: { id?: string }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    return () => {
-      if (ws?.readyState === 1) {
-        ws.close();
-        // console.log('[DEBUG] closed');
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     if (ws?.readyState === 1) {
+  //       // ws.close();
+  //       console.log('[DEBUG] closed');
+  //     }
+  //   };
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   const messagesRef = useRef<Message[]>([]);
 
@@ -368,6 +373,7 @@ const ChatWindow = ({ id }: { id?: string }) => {
 
   useEffect(() => {
     if (isMessagesLoaded && isWSReady) {
+      // console.log('[DEBUG] ready');
       setIsReady(true);
       // console.log('[DEBUG] ready');
     }
@@ -574,6 +580,7 @@ const ChatWindow = ({ id }: { id?: string }) => {
 
   useEffect(() => {
     if (isReady && initialMessage && ws?.readyState === 1) {
+      // console.log('[DEBUG] sending initial message');
       sendMessage(initialMessage);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

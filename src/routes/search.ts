@@ -64,7 +64,7 @@ router.post('/', async (req, res) => {
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`);
         }
-        const data = await response.json();
+        const data = (await response.json()) as { userId: string };  // I have done changes for Docker build error so if it is not working then please check this line
         const userId = data.userId;        
         if (!userId) {
             return res.status(403).json({ error: 'Forbidden: Invalid API key' });
@@ -191,16 +191,16 @@ router.post('/', async (req, res) => {
 
       const totalCost = await calculatePricing(body.chatModel?.model,inputTokens,outputTokens);
       // 0.0048;
-      console.log(totalCost);
+      // console.log(totalCost);
       if (userPlanData.balance !== null) {
         if (Number(userPlanData.remainingCredits) < Number(totalCost)) {
           return res.status(400).json({ error: 'Insufficient balance' });
         }
         // Update balance
         await db.update(userPlan)
-            .set({ balance: (Number(userPlanData.balance) - Number(totalCost)).toFixed(4), 
-              remainingCredits:(Number(userPlanData.remainingCredits) - Number(totalCost)).toFixed(4),
-            totalUsage:(Number(userPlanData.totalUsage)+ Number(totalCost)).toFixed(4)})
+            .set({ balance: (Number(userPlanData.balance) - Number(totalCost)).toFixed(8), 
+              remainingCredits:(Number(userPlanData.remainingCredits) - Number(totalCost)).toFixed(8),
+            totalUsage:(Number(userPlanData.totalUsage)+ Number(totalCost)).toFixed(8)})
             .where(eq(userPlan.userId, userId))
             .execute();
     }

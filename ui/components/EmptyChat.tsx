@@ -85,8 +85,8 @@ const EmptyChat = ({
   optimizationMode: string;
   setOptimizationMode: (mode: string) => void;
 }) => {
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isTestOpen, setIsTestOpen] = useState(false);
+  // const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  // const [isTestOpen, setIsTestOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false); // State to track mounting of component
 
   // Predefined trending questions
