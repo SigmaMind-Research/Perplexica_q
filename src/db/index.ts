@@ -15,7 +15,7 @@ import { getDatabaseUrl } from '.././config';
 
 
 // Define the connection string for Supabase
-const connectionString ="postgresql://postgres.lqfncvigfsrmhownygra:potatoSigma@123@aws-0-ap-south-1.pooler.supabase.com:5432/postgres";
+const connectionString ="";
 
 // Initialize the PostgreSQL client
 const client = postgres(connectionString, { ssl: 'require', prepare: false });
