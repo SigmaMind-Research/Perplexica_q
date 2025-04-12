@@ -98,6 +98,7 @@ export const webSearchPricing = pgTable("web_search_pricing", {
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
+// 🟢 User Preferences (User-specific settings)
 export const userPreferences = pgTable("user_preferences", {
   id: serial("id").primaryKey(),                               // Auto-incrementing ID
   userId: uuid('userId').notNull(), // Use UUID type for userId
@@ -112,7 +113,26 @@ export const userPreferences = pgTable("user_preferences", {
   updatedAt:timestamp("updated_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
-// potatoai@123
+// 🟢 Blogs tables 
+
+export const blogmessages = pgTable('messages', {
+  id: serial('id').primaryKey(), // Auto-incrementing ID
+  content: text('content').notNull(), // Content column
+  blogId: varchar('blogId', { length: 255 }).notNull(), // Chat ID (varchar with max length)
+  messageId: varchar('messageId', { length: 255 }).notNull(), // Message ID (varchar with max length)
+  imageUrl:text('image'),
+  role: text('role', { enum: ['assistant', 'user'] }), // Role column with enum
+  metadata:json('metadata'), // Use json type for metadata  , // Uncomment if metadata is required and supported in your schema
+});
+
+export const blogs = pgTable('chats', {
+  id: varchar('id', { length: 255 }).primaryKey(), // UUID or text ID
+  title: text('title').notNull(), // Title column
+  userId: uuid('userId'), // Use UUID type for userId
+  imageUrl:text('image').notNull(), // Image URL
+  // userId:varchar('userId', { length: 255 }),
+  createdAt: text('createdAt').notNull(), // Timestamp with default
+});
 // postgresql://postgres:[YOUR-PASSWORD]@db.lqfncvigfsrmhownygra.supabase.co:5432/postgres 
 
 

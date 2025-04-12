@@ -23,9 +23,9 @@ const Account = ({
   const [isChatModelOpen, setIsChatModelOpen] = useState(false);
   // State to control the active tab: 'profile' or 'api'
   const [activeTab, setActiveTab] = useState<'profile' | 'api'>('profile');
-  const [activeSubTab, setActiveSubTab] = useState<'docs' | 'models' | 'terms'>(
-    'docs',
-  );
+  // const [activeSubTab, setActiveSubTab] = useState<'docs' | 'models' | 'terms'>(
+  //   'docs',
+  // );
   const router = useRouter();
   const supabase = createClient();
 
@@ -325,10 +325,10 @@ const APIGeneration = () => {
         .single();
 
       if (userPlanError || !userPlanData) {
-        console.warn('No active user plan found.');
+        // console.warn('No active user plan found.');
         setUserPlan('inactive');
-        setCredits(0);
-        setCurrentUsage(0);
+        // setCredits(0);
+        // setCurrentUsage(0);
         setLoading(false);
         return;
       }
@@ -353,8 +353,10 @@ const APIGeneration = () => {
       }
       // ✅ Step 4: Update state with user plan details
       setUserPlan('active');
-      setCredits(userPlanData.balance || 0);
-      setCurrentUsage(userPlanData.total_usage || 0);
+      // setCredits(userPlanData.balance || 0);
+      // setCurrentUsage(userPlanData.total_usage || 0);
+      setCredits(parseFloat((userPlanData.balance || 0).toFixed(3)));
+      setCurrentUsage(parseFloat((userPlanData.total_usage || 0).toFixed(3)));
       setHasPaymentSetup(true);
       // setIsFirstTimeUser(userData?.first_time_user !== false); // Defaults to true if undefined
       setLoading(false);
@@ -395,7 +397,7 @@ const APIGeneration = () => {
   // Updated handlePaymentSuccess for credits purchase flow (without altering credits)
   const handlePaymentSuccess = async (response: any, amount: number) => {
     try {
-      console.log('Payment success response:', response);
+      // console.log('Payment success response:', response);
       // const verifyResponse = await fetch(
       //   `${API_BASE_URL}/api-payment/verify-payment`,
       //   {
